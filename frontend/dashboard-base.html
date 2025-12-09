@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการกำลังพล - สำนักงานนิติวิทยาศาสตร์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+        
+        tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge-green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-yellow {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-red {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-blue {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .filter-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            font-size: 1rem;
+            min-width: 300px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .search-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white font-bold">
+                        ตร.
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">ระบบจัดการกำลังพล</h1>
+                        <p class="text-sm text-gray-600">สำนักงานนิติวิทยาศาสตร์ กรมตำรวจ</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">สถานะระบบ: <span class="text-green-600 font-semibold">✓ ออนไลน์</span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+        
+        <!-- Filter Section -->
+        <div class="filter-box">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex-1">
+                    <label class="block text-white font-semibold mb-2 text-lg">🔍 เลือกหน่วยงาน/สังกัด</label>
+                    <select id="sangkatFilter" class="filter-select" onchange="filterBySangkat()">
+                        <option value="all">-- ทั้งหมด --</option>
+                    </select>
+                </div>
+                <div class="text-white">
+                    <p class="text-sm opacity-90">แสดงข้อมูล</p>
+                    <p class="text-3xl font-bold" id="displayCount">0</p>
+                    <p class="text-sm opacity-90">รายการ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="mb-8">
+            
+            <!-- Main Header with Logo -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center justify-center space-x-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-20 h-20 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center">
+                            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <h2 class="text-2xl font-bold text-gray-800">อัตรากำลังพล</h2>
+                            <p class="text-lg text-blue-600 font-semibold">สำนักงานพิสูจน์หลักฐานตำรวจ</p>
+                            <p class="text-sm text-gray-500">Office of Forensic Science</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="bg-red-600 text-white px-6 py-3 rounded-lg inline-block">
+                            <p class="text-3xl font-bold">🏠</p>
+                            <p class="text-sm">หน้าหลัก</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Stats Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-lg shadow-lg p-6">
+                    <p class="text-blue-100 text-sm mb-2">ทั้งหมด</p>
+                    <h3 class="text-5xl font-bold mb-2" id="statTotal">0</h3>
+                    <p class="text-blue-100 text-lg font-semibold">100 %</p>
+                </div>
+                
+                <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6">
+                    <p class="text-green-100 text-sm mb-2">คนครอง</p>
+                    <h3 class="text-5xl font-bold mb-2" id="statOccupied">0</h3>
+                    <p class="text-green-100 text-lg font-semibold"><span id="statOccupiedPercent">0</span> %</p>
+                </div>
+                
+                <div class="stat-card bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-lg shadow-lg p-6">
+                    <p class="text-yellow-100 text-sm mb-2">ตำแหน่งว่าง</p>
+                    <h3 class="text-5xl font-bold mb-2" id="statVacant">0</h3>
+                    <p class="text-yellow-100 text-lg font-semibold"><span id="statVacantPercent">0</span> %</p>
+                </div>
+
+                <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
+                    <p class="text-purple-100 text-sm mb-2">สัดส่วนเพศ</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-purple-100">ชาย</p>
+                            <h3 class="text-3xl font-bold" id="statMale">0</h3>
+                        </div>
+                        <div>
+                            <p class="text-sm text-purple-100">หญิง</p>
+                            <h3 class="text-3xl font-bold" id="statFemale">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">📊 สถิติตามยศ (Top 5)</h3>
+                    <div id="rankStats" class="space-y-2">
+                        <div class="text-gray-500 text-center py-4">กำลังโหลดข้อมูล...</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🏢 สถิติตามสังกัด (Top 5)</h3>
+                    <div id="sangkatStats" class="space-y-2">
+                        <div class="text-gray-500 text-center py-4">กำลังโหลดข้อมูล...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Grid Section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">📋 ตารางข้อมูลกำลังพล</h2>
+                <div class="flex items-center space-x-4">
+                    <input type="text" id="searchBox" class="search-box" placeholder="🔍 ค้นหา... (ชื่อ, ยศ, ตำแหน่ง)" onkeyup="searchTable()">
+                    <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                        📥 Export Excel
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="personnelTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ยศ</th>
+                            <th>เพศ</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>ตำแหน่ง</th>
+                            <th>สังกัด</th>
+                            <th>สถานะ</th>
+                            <th>วันบรรจุ</th>
+                            <th>วันเกษียณ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="9" class="text-center py-8">
+                                <div class="loading mx-auto"></div>
+                                <p class="text-gray-500 mt-4">กำลังโหลดข้อมูล...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-sm text-gray-600 flex items-center justify-between">
+                <span>แสดง <span id="tableCount" class="font-semibold">0</span> รายการ</span>
+                <span id="filterStatus" class="text-blue-600"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let allData = [];
+        let filteredData = [];
+        let currentSangkat = 'all';
+
+        // โหลดข้อมูลเมื่อเริ่มต้น
+        async function loadInitialData() {
+            try {
+                // โหลดรายการสังกัด
+                const sangkatResponse = await fetch(`${API_URL}/sangkat`);
+                const sangkatList = await sangkatResponse.json();
+                
+                const sangkatFilter = document.getElementById('sangkatFilter');
+                sangkatList.forEach(sangkat => {
+                    const option = document.createElement('option');
+                    option.value = sangkat;
+                    option.textContent = sangkat;
+                    sangkatFilter.appendChild(option);
+                });
+
+                // โหลดข้อมูลทั้งหมด
+                await filterBySangkat();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบว่า Server กำลังรันอยู่');
+            }
+        }
+
+        // กรองข้อมูลตามสังกัด
+        async function filterBySangkat() {
+            const sangkat = document.getElementById('sangkatFilter').value;
+            currentSangkat = sangkat;
+
+            try {
+                // โหลดข้อมูล
+                const response = await fetch(`${API_URL}/personnel/filter?sangkat=${sangkat}`);
+                filteredData = await response.json();
+                allData = filteredData;
+
+                // อัพเดท Dashboard
+                await updateDashboard(sangkat);
+
+                // อัพเดทตาราง
+                updateTable(filteredData);
+
+                // อัพเดทจำนวนที่แสดง
+                document.getElementById('displayCount').textContent = filteredData.length.toLocaleString();
+                
+                // อัพเดทสถานะการกรอง
+                const filterStatus = document.getElementById('filterStatus');
+                if (sangkat === 'all') {
+                    filterStatus.textContent = '';
+                } else {
+                    filterStatus.textContent = `🔍 กรองโดย: ${sangkat}`;
+                }
+
+            } catch (error) {
+                console.error('Error filtering data:', error);
+            }
+        }
+
+        // อัพเดท Dashboard
+        async function updateDashboard(sangkat) {
+            try {
+                const response = await fetch(`${API_URL}/stats?sangkat=${sangkat}`);
+                const stats = await response.json();
+
+                // อัพเดทสถิติหลัก
+                document.getElementById('statTotal').textContent = stats.total.toLocaleString();
+                document.getElementById('statOccupied').textContent = stats.occupied.toLocaleString();
+                document.getElementById('statVacant').textContent = stats.vacant.toLocaleString();
+                document.getElementById('statOccupiedPercent').textContent = stats.occupiedPercent;
+                document.getElementById('statVacantPercent').textContent = stats.vacantPercent;
+                document.getElementById('statMale').textContent = stats.male.toLocaleString();
+                document.getElementById('statFemale').textContent = stats.female.toLocaleString();
+
+                // อัพเดทสถิติตามยศ (Top 5)
+                const rankStatsDiv = document.getElementById('rankStats');
+                const topRanks = Object.entries(stats.byRank)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                rankStatsDiv.innerHTML = topRanks.map(([rank, count]) => `
+                    <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                        <span class="font-medium">${rank}</span>
+                        <span class="badge badge-blue">${count} คน</span>
+                    </div>
+                `).join('');
+
+                // อัพเดทสถิติตามสังกัด (Top 5)
+                const sangkatStatsDiv = document.getElementById('sangkatStats');
+                const topSangkat = Object.entries(stats.bySangkat)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                sangkatStatsDiv.innerHTML = topSangkat.map(([sangkat, count]) => `
+                    <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                        <span class="font-medium text-sm">${sangkat}</span>
+                        <span class="badge badge-green">${count} คน</span>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+            }
+        }
+
+        // อัพเดทตาราง
+        function updateTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center py-8 text-gray-500">
+                            ไม่พบข้อมูล
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('tableCount').textContent = '0';
+                return;
+            }
+
+            tableBody.innerHTML = data.map((row, index) => {
+                const statusBadge = row['ว่าง'] === 'คนครอง' 
+                    ? '<span class="badge badge-green">คนครอง</span>'
+                    : '<span class="badge badge-yellow">ว่าง</span>';
+
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${row['ยศ'] || '-'}</td>
+                        <td>${row['เพศ'] || '-'}</td>
+                        <td>${row['ชื่อ-นามสกุล'] || '-'}</td>
+                        <td>${row['ชื่อตำแหน่ง'] || '-'}</td>
+                        <td>${row['สังกัด'] || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${row['วันบรรจุสัญญาบัตร'] || '-'}</td>
+                        <td>${row['เกษียณ'] || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('tableCount').textContent = data.length.toLocaleString();
+        }
+
+        // ค้นหาในตาราง
+        function searchTable() {
+            const searchText = document.getElementById('searchBox').value.toLowerCase();
+            
+            if (searchText === '') {
+                updateTable(allData);
+                return;
+            }
+
+            const filtered = allData.filter(row => {
+                return (
+                    (row['ชื่อ-นามสกุล'] && row['ชื่อ-นามสกุล'].toLowerCase().includes(searchText)) ||
+                    (row['ยศ'] && row['ยศ'].toLowerCase().includes(searchText)) ||
+                    (row['ชื่อตำแหน่ง'] && row['ชื่อตำแหน่ง'].toLowerCase().includes(searchText)) ||
+                    (row['สังกัด'] && row['สังกัด'].toLowerCase().includes(searchText))
+                );
+            });
+
+            updateTable(filtered);
+        }
+
+        // Export to Excel (simple CSV format)
+        function exportToExcel() {
+            const csv = convertToCSV(filteredData);
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const sangkatName = currentSangkat === 'all' ? 'ทั้งหมด' : currentSangkat;
+            link.setAttribute('href', url);
+            link.setAttribute('download', `ข้อมูลกำลังพล_${sangkatName}_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function convertToCSV(data) {
+            if (data.length === 0) return '';
+            
+            const headers = Object.keys(data[0]);
+            const rows = data.map(row => {
+                return headers.map(header => {
+                    const value = row[header] || '';
+                    return `"${value}"`;
+                }).join(',');
+            });
+            
+            return [headers.join(','), ...rows].join('\n');
+        }
+
+        // เริ่มต้นโหลดข้อมูล
+        loadInitialData();
+    </script>
+
+</body>
+</html>

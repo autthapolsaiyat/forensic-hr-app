@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Management | 4M – สพฐ.ตร.</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+            --footer-text: rgba(255,255,255,0.7);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+            --footer-text: rgba(30,60,114,0.7);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+            transition: all 0.3s ease;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+            flex-shrink: 0;
+        }
+        .header-title { flex: 1; text-align: center; min-width: 150px; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 42px); color: var(--text-color); font-weight: bold; line-height: 1.2; }
+        .header-title p { font-size: clamp(12px, 2vw, 16px); color: var(--text-color); opacity: 0.9; margin-top: 5px; display: none; }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        .theme-toggle:active { transform: scale(0.95); }
+        .map-btn, .search-btn, .org-btn {
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-height: 44px;
+        }
+        .map-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+        }
+        .search-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            box-shadow: 0 5px 20px rgba(52,152,219,0.4);
+        }
+        .org-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            box-shadow: 0 5px 20px rgba(39,174,96,0.4);
+        }
+        .map-btn:hover, .search-btn:hover, .org-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+        .map-btn:active, .search-btn:active, .org-btn:active { transform: scale(0.95); }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-color);
+        }
+        .stat-card:active { transform: scale(0.98); }
+        .stat-icon { font-size: clamp(28px, 5vw, 42px); margin-bottom: 8px; }
+        .stat-label { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-color); opacity: 0.9; margin-bottom: 8px; }
+        .stat-value { font-size: clamp(24px, 5vw, 48px); font-weight: bold; color: var(--text-color); text-shadow: 0 2px 10px var(--shadow-color); }
+        .stat-percentage { font-size: clamp(12px, 2vw, 14px); color: var(--text-color); opacity: 0.8; margin-top: 5px; }
+
+        /* Gender Stats Section */
+        .gender-stats {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 15px;
+        }
+        .gender-stats h3 {
+            font-size: clamp(20px, 3vw, 28px);
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .gender-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+        .gender-group {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .gender-icons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin: 15px 0;
+            min-height: 100px;
+        }
+        .gender-icon {
+            font-size: 24px;
+            opacity: 0;
+            animation: fadeInIcon 0.3s ease-in forwards;
+        }
+        @keyframes fadeInIcon {
+            to { opacity: 1; }
+        }
+        .gender-label {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        .gender-percentage {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .male-color { color: #3498db; }
+        .female-color { color: #e74c3c; }
+        
+        /* Charts Section - Collapsible */
+        .charts-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 15px;
+        }
+        .charts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .charts-header h2 {
+            font-size: clamp(24px, 4vw, 32px);
+            color: var(--text-color);
+            margin: 0;
+        }
+        .collapse-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .collapse-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .collapse-btn:active {
+            transform: scale(0.95);
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            transition: all 0.4s ease;
+            max-height: 2000px;
+            overflow: hidden;
+        }
+        .charts-grid.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+        .chart-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--card-border);
+        }
+        .chart-card h3 {
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .chart-card canvas { max-height: 300px; }
+        
+        .departments-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+        .departments-section h2 {
+            font-size: clamp(24px, 4vw, 32px);
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .dept-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 140px;
+        }
+        .dept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            background: rgba(255,255,255,0.15);
+        }
+        .dept-card:active { transform: scale(0.98); }
+        .dept-name {
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+        .dept-vacancy {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .dept-vacancy-label {
+            font-size: clamp(14px, 2.5vw, 16px);
+            color: var(--text-color);
+        }
+        .dept-vacancy-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: clamp(13px, 2vw, 14px);
+        }
+        .dept-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(13px, 2vw, 15px);
+            color: var(--text-color);
+            opacity: 0.9;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .dept-gender-mini {
+            display: flex;
+            gap: 10px;
+            font-size: clamp(12px, 2vw, 14px);
+            margin-top: 8px;
+        }
+        
+        /* Footer */
+        .site-footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--footer-text);
+            font-size: clamp(12px, 2vw, 14px);
+            line-height: 1.8;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            margin-top: 30px;
+        }
+        .site-footer div { margin: 5px 0; }
+        .site-footer strong { color: var(--text-color); }
+        
+        @media (min-width: 768px) {
+            body { padding: 20px; padding-bottom: 100px; }
+            .header { padding: 25px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+            .header-title p { display: block; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+            .stat-card { padding: 25px; }
+            .charts-grid { gap: 20px; }
+            .chart-card { padding: 25px; }
+            .dept-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+        }
+        
+        @media (min-width: 1024px) {
+            .header-actions { flex-wrap: nowrap; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .charts-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (min-width: 1440px) {
+            .stats-grid { grid-template-columns: repeat(7, 1fr); }
+        }
+        
+        @media (max-width: 374px) {
+            .header-actions { width: 100%; }
+            .theme-toggle, .map-btn, .search-btn, .org-btn { flex: 1; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ตร.</div>
+            <div class="header-title">
+                <h1>🏛️ Management | 4M – สพฐ.ตร.</h1>
+                <p>Dashboard</p>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+                <a href="/organization.html" class="org-btn">🌳 <span class="btn-text">โครงสร้าง</span></a>
+                <a href="/search.html" class="search-btn">🔍 <span class="btn-text">ค้นหา</span></a>
+                <a href="/map.html" class="map-btn">🗺️ <span class="btn-text">แผนที่</span></a>
+            </div>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">ทั้งหมด</div>
+                <div class="stat-value" id="totalStat">-</div>
+                <div class="stat-percentage">100%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">คนครอง</div>
+                <div class="stat-value" id="occupiedStat">-</div>
+                <div class="stat-percentage" id="occupiedPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-label">ว่าง</div>
+                <div class="stat-value" id="vacantStat">-</div>
+                <div class="stat-percentage" id="vacantPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎖️</div>
+                <div class="stat-label">สัญญาบัตร</div>
+                <div class="stat-value" id="sanyabatStat">-</div>
+                <div class="stat-percentage" id="sanyabatPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-label">ประทวน</div>
+                <div class="stat-value" id="pratawanStat">-</div>
+                <div class="stat-percentage" id="pratawanPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👨</div>
+                <div class="stat-label">ชาย</div>
+                <div class="stat-value" id="maleStat">-</div>
+                <div class="stat-percentage" id="malePct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👩</div>
+                <div class="stat-label">หญิง</div>
+                <div class="stat-value" id="femaleStat">-</div>
+                <div class="stat-percentage" id="femalePct">-%</div>
+            </div>
+        </div>
+
+        <!-- Gender Icon Stats -->
+        <div class="gender-stats">
+            <h3>📊 สัดส่วนเพศ (คนครอง)</h3>
+            <div class="gender-display">
+                <div class="gender-group">
+                    <div class="gender-label male-color">👨 ชาย</div>
+                    <div class="gender-icons" id="maleIcons"></div>
+                    <div class="gender-percentage male-color" id="malePercentDisplay">0%</div>
+                </div>
+                <div class="gender-group">
+                    <div class="gender-label female-color">👩 หญิง</div>
+                    <div class="gender-icons" id="femaleIcons"></div>
+                    <div class="gender-percentage female-color" id="femalePercentDisplay">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Section - Collapsible -->
+        <div class="charts-section">
+            <div class="charts-header">
+                <h2>📈 กราฟสถิติ</h2>
+                <button class="collapse-btn" onclick="toggleCharts()">
+                    <span id="collapseIcon">👁️</span>
+                    <span id="collapseText">ซ่อน</span>
+                </button>
+            </div>
+            <div class="charts-grid" id="chartsGrid">
+                <div class="chart-card">
+                    <h3>🥧 คนครอง/ว่าง</h3>
+                    <canvas id="occupancyChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>🎯 เพศ</h3>
+                    <canvas id="genderChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>📊 สัญญาบัตร/ประทวน</h3>
+                    <canvas id="rankTypeChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>🏆 Top 10 หน่วยงาน</h3>
+                    <canvas id="topDeptChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="departments-section">
+            <h2>🏢 หน่วยงานทั้งหมด</h2>
+            <div class="dept-grid" id="deptGrid"></div>
+        </div>
+        
+        <footer class="site-footer">
+            <div><strong>Developed by:</strong> QXV0dGhhcG9sIFNhaXlhdA==(AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </footer>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.protocol + '//' + window.location.host + '/api';
+        let charts = {};
+        let chartsVisible = true;
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? '' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            Object.values(charts).forEach(chart => chart.destroy());
+            loadData();
+        }
+        
+        function toggleCharts() {
+            chartsVisible = !chartsVisible;
+            const grid = document.getElementById('chartsGrid');
+            const icon = document.getElementById('collapseIcon');
+            const text = document.getElementById('collapseText');
+            
+            if (chartsVisible) {
+                grid.classList.remove('collapsed');
+                icon.textContent = '👁️';
+                text.textContent = 'ซ่อน';
+            } else {
+                grid.classList.add('collapsed');
+                icon.textContent = '👁️‍🗨️';
+                text.textContent = 'แสดง';
+            }
+        }
+        
+        function displayGenderIcons(male, female) {
+            const totalOccupied = male + female;
+            const malePercent = totalOccupied > 0 ? Math.round((male / totalOccupied) * 100) : 0;
+            const femalePercent = totalOccupied > 0 ? Math.round((female / totalOccupied) * 100) : 0;
+            
+            const maleIcons = Math.min(Math.round((male / totalOccupied) * 50), 50);
+            const femaleIcons = Math.min(Math.round((female / totalOccupied) * 50), 50);
+            
+            const maleContainer = document.getElementById('maleIcons');
+            maleContainer.innerHTML = '';
+            for (let i = 0; i < maleIcons; i++) {
+                const icon = document.createElement('span');
+                icon.className = 'gender-icon male-color';
+                icon.textContent = '👨';
+                icon.style.animationDelay = `${i * 0.02}s`;
+                maleContainer.appendChild(icon);
+            }
+            
+            const femaleContainer = document.getElementById('femaleIcons');
+            femaleContainer.innerHTML = '';
+            for (let i = 0; i < femaleIcons; i++) {
+                const icon = document.createElement('span');
+                icon.className = 'gender-icon female-color';
+                icon.textContent = '👩';
+                icon.style.animationDelay = `${i * 0.02}s`;
+                femaleContainer.appendChild(icon);
+            }
+            
+            document.getElementById('malePercentDisplay').textContent = `${malePercent}%`;
+            document.getElementById('femalePercentDisplay').textContent = `${femalePercent}%`;
+        }
+        
+        async function loadData() {
+            try {
+                const [summaryRes, deptsRes] = await Promise.all([
+                    fetch(`${API_BASE}/statistics/summary`),
+                    fetch(`${API_BASE}/statistics/departments`)
+                ]);
+                
+                const summary = await summaryRes.json();
+                const depts = await deptsRes.json();
+                
+                if (summary.success) {
+                    displayStats(summary.data);
+                    displayGenderIcons(parseInt(summary.data.male), parseInt(summary.data.female));
+                    createCharts(summary.data);
+                }
+                
+                if (depts.success) {
+                    displayDepartments(depts.data);
+                    updateTopDeptChart(depts.data);
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        function displayStats(data) {
+            const total = parseInt(data.total);
+            const occupied = parseInt(data.occupied);
+            const vacant = parseInt(data.vacant);
+            const male = parseInt(data.male);
+            const female = parseInt(data.female);
+            const sanyabat = parseInt(data.sanyabat);
+            const pratawan = parseInt(data.pratawan);
+            
+            document.getElementById('totalStat').textContent = total.toLocaleString();
+            document.getElementById('occupiedStat').textContent = occupied.toLocaleString();
+            document.getElementById('vacantStat').textContent = vacant.toLocaleString();
+            document.getElementById('maleStat').textContent = male.toLocaleString();
+            document.getElementById('femaleStat').textContent = female.toLocaleString();
+            document.getElementById('sanyabatStat').textContent = sanyabat.toLocaleString();
+            document.getElementById('pratawanStat').textContent = pratawan.toLocaleString();
+            
+            document.getElementById('occupiedPct').textContent = `${Math.round(occupied/total*100)}%`;
+            document.getElementById('vacantPct').textContent = `${Math.round(vacant/total*100)}%`;
+            document.getElementById('malePct').textContent = `${Math.round(male/occupied*100)}%`;
+            document.getElementById('femalePct').textContent = `${Math.round(female/occupied*100)}%`;
+            document.getElementById('sanyabatPct').textContent = `${Math.round(sanyabat/total*100)}%`;
+            document.getElementById('pratawanPct').textContent = `${Math.round(pratawan/total*100)}%`;
+        }
+        
+        function createCharts(data) {
+            const isDark = !document.documentElement.getAttribute('data-theme');
+            const textColor = isDark ? '#fff' : '#1e3c72';
+            
+            const occupancyCtx = document.getElementById('occupancyChart');
+            if (charts.occupancy) charts.occupancy.destroy();
+            charts.occupancy = new Chart(occupancyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['คนครอง', 'ว่าง'],
+                    datasets: [{
+                        data: [data.occupied, data.vacant],
+                        backgroundColor: ['#27ae60', '#e74c3c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor, font: { size: 14 } }
+                        }
+                    }
+                }
+            });
+            
+            const genderCtx = document.getElementById('genderChart');
+            if (charts.gender) charts.gender.destroy();
+            charts.gender = new Chart(genderCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['ชาย', 'หญิง'],
+                    datasets: [{
+                        data: [data.male, data.female],
+                        backgroundColor: ['#3498db', '#e74c3c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor, font: { size: 14 } }
+                        }
+                    }
+                }
+            });
+            
+            const rankCtx = document.getElementById('rankTypeChart');
+            if (charts.rankType) charts.rankType.destroy();
+            charts.rankType = new Chart(rankCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['สัญญาบัตร', 'ประทวน'],
+                    datasets: [{
+                        data: [data.sanyabat, data.pratawan],
+                        backgroundColor: ['#f39c12', '#9b59b6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            ticks: { color: textColor }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateTopDeptChart(depts) {
+            const isDark = !document.documentElement.getAttribute('data-theme');
+            const textColor = isDark ? '#fff' : '#1e3c72';
+            
+            const top10 = depts.slice(0, 10);
+            const labels = top10.map(d => d.dept);
+            const values = top10.map(d => parseInt(d.total));
+            
+            const topCtx = document.getElementById('topDeptChart');
+            if (charts.topDept) charts.topDept.destroy();
+            charts.topDept = new Chart(topCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'จำนวน',
+                        data: values,
+                        backgroundColor: '#3498db',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { color: textColor }
+                        },
+                        y: {
+                            ticks: { color: textColor }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function displayDepartments(depts) {
+            const grid = document.getElementById('deptGrid');
+            grid.innerHTML = depts.map(dept => {
+                const total = parseInt(dept.total);
+                const vacant = parseInt(dept.vacant);
+                const male = parseInt(dept.male || 0);
+                const female = parseInt(dept.female || 0);
+                const malePercent = male + female > 0 ? Math.round((male / (male + female)) * 100) : 0;
+                const femalePercent = male + female > 0 ? Math.round((female / (male + female)) * 100) : 0;
+                
+                return `
+                    <div class="dept-card" onclick="window.location.href='/department.html?dept=${encodeURIComponent(dept.dept)}'">
+                        <div class="dept-name">${dept.dept}</div>
+                        <div class="dept-vacancy">
+                            <span class="dept-vacancy-label">⚠️ ตำแหน่งว่าง:</span>
+                            <span class="dept-vacancy-badge">${vacant}</span>
+                        </div>
+                        <div class="dept-stats">
+                            <span>👥 ทั้งหมด: ${total}</span>
+                        </div>
+                        <div class="dept-gender-mini">
+                            <span style="color: #3498db">👨 ${male} (${malePercent}%)</span>
+                            <span style="color: #e74c3c">👩 ${female} (${femalePercent}%)</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>

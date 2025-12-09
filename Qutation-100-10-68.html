@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบเสนอราคา - ระบบจัดการข้อมูลกำลังพล สพฐ.ตร.</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        
+        body {
+            font-family: "TH Sarabun New", "Sarabun", sans-serif;
+            font-size: 16pt;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            border-bottom: 3px solid #003366;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .company-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .company-left {
+            flex: 1;
+        }
+        
+        .company-logo {
+            width: 120px;
+            text-align: center;
+            font-weight: bold;
+            color: #003366;
+            border: 2px solid #003366;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        
+        .company-name-th {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #003366;
+        }
+        
+        .company-name-en {
+            font-size: 14pt;
+            color: #666;
+        }
+        
+        .contact-info {
+            font-size: 14pt;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .tax-id {
+            color: #003366;
+            font-weight: bold;
+            border-bottom: 2px solid #003366;
+            display: inline-block;
+            padding-bottom: 2px;
+        }
+        
+        .document-title {
+            text-align: center;
+            font-size: 20pt;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #003366;
+        }
+        
+        .recipient-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-left: 4px solid #003366;
+        }
+        
+        .recipient-title {
+            font-weight: bold;
+            font-size: 16pt;
+        }
+        
+        .document-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #e6f2ff;
+        }
+        
+        .info-item {
+            font-size: 14pt;
+        }
+        
+        .info-label {
+            font-weight: bold;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background-color: #003366;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 16pt;
+            border: 1px solid #003366;
+        }
+        
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            font-size: 15pt;
+        }
+        
+        .item-desc {
+            text-align: left;
+            padding-left: 15px;
+        }
+        
+        .item-desc ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        
+        .item-desc li {
+            margin: 3px 0;
+        }
+        
+        .amount {
+            text-align: right;
+            padding-right: 15px;
+        }
+        
+        .total-section {
+            margin-top: 10px;
+        }
+        
+        .total-row {
+            text-align: right;
+            padding: 8px 15px;
+        }
+        
+        .grand-total {
+            font-weight: bold;
+            font-size: 17pt;
+            background-color: #e6f2ff;
+        }
+        
+        .total-text {
+            text-align: center;
+            font-style: italic;
+            padding: 10px;
+            color: #003366;
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        
+        .signature-box {
+            width: 45%;
+            text-align: center;
+        }
+        
+        .signature-line {
+            border-bottom: 1px dotted #000;
+            margin: 60px 20px 10px 20px;
+        }
+        
+        .signature-label {
+            font-size: 14pt;
+        }
+        
+        .note-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fffacd;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .note-title {
+            font-weight: bold;
+            color: #ff6600;
+        }
+        
+        .sales-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            font-size: 14pt;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="company-info">
+            <div class="company-left">
+                <div class="company-name-th">บริษัท แสงวิทย์ซายน์ จำกัด (สำนักงานใหญ่)</div>
+                <div class="company-name-en">Saengvith Science Co.,Ltd. (Head Office)</div>
+                <div class="contact-info">
+                    123/4-5 ซอยสมเด็จพระปิ่นเกล้า 9 ถ.สมเด็จพระปิ่นเกล้า<br>
+                    แขวงอรุณอมรินทร์ เขตบางกอกน้อย กรุงเทพฯ 10700<br>
+                    โทร. (662) 886-9200-7 แฟกซ์. (662) 433-9168<br>
+                    E-mail : info@saengvithscience.co.th
+                </div>
+                <div style="margin-top: 10px;">
+                    <span class="tax-id">เลขประจำตัวผู้เสียภาษี 0105545053424</span>
+                </div>
+            </div>
+            <div class="company-logo">
+                SAENGVITH<br>SCIENCE
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Title -->
+    <div class="document-title">ใบเสนอราคา / Quotation</div>
+
+    <!-- Document Info -->
+    <div class="document-info">
+        <div class="info-item">
+            <span class="info-label">เลขที่/No. :</span> SVS-334-11-68-R1-1
+        </div>
+        <div class="info-item">
+            <span class="info-label">วันที่/Date. :</span> 5 พฤศจิกายน 2568
+        </div>
+    </div>
+    
+    <div class="document-info">
+        <div class="info-item">
+            <span class="info-label">กำหนดยืนราคา/Validity :</span> 30 วัน
+        </div>
+        <div class="info-item">
+            <span class="info-label">กำหนดส่งของ/Delivery :</span> 180 วัน
+        </div>
+        <div class="info-item">
+            <span class="info-label">กำหนดชำระ/Payment Term :</span> 30 วัน
+        </div>
+    </div>
+
+    <!-- Recipient -->
+    <div class="recipient-section">
+        <div class="recipient-title">เรื่อง เสนอราคาระบบจัดการข้อมูลกำลังพล - ระบบ Management | 4M สพฐ.ตร.</div>
+        <div style="margin-top: 10px;">
+            <strong>เรียน</strong> ผบช.สพฐ.ตร.
+        </div>
+        <div style="margin-top: 5px;">
+            <strong>ที่อยู่</strong> สำนักงานพิสูจน์หลักฐานตำรวจ<br>
+            ถนนองรีดูนงต์ แขวงวังใหม่ เขตปทุมวัน กรุงเทพมหานคร 10330
+        </div>
+        <div style="margin-top: 10px;">
+            <strong>โทร/Tel :</strong> 085-0709938<br>
+            <strong>E-mail :</strong> -
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 8%;">ลำดับ<br>Item</th>
+                <th style="width: 12%;">จำนวน<br>Quantity</th>
+                <th style="width: 45%;">รายการ<br>Descriptions</th>
+                <th style="width: 17%;">ราคาต่อหน่วย<br>Unit Price</th>
+                <th style="width: 18%;">จำนวนเงิน<br>Amount (Baht)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center;">1</td>
+                <td style="text-align: center;">1 งาน</td>
+                <td class="item-desc">
+                    <strong>ระบบจัดการข้อมูลกำลังพล สำนักงานนิติวิทยาศาสตร์ตำรวจ (สพฐ.ตร.)</strong><br>
+                    <strong>Management | 4M – Forensic HR System</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Frontend Development</strong> - 5 หน้าเว็บแอปพลิเคชัน
+                            <ul>
+                                <li>Dashboard (summary.html) - แสดงสถิติและกราฟ 4 แบบ</li>
+                                <li>Organization Chart (organization.html) - แผนผังองค์กรแบบลำดับชั้น</li>
+                                <li>Search & Filter (search.html) - ค้นหาและกรองข้อมูล</li>
+                                <li>Interactive Map (map.html) - แผนที่แสดงตำแหน่งหน่วยงาน 15 ศูนย์</li>
+                                <li>Department Details (department.html) - รายละเอียดแต่ละหน่วยงาน</li>
+                            </ul>
+                        </li>
+                        <li><strong>Backend Development</strong> - Node.js + Express
+                            <ul>
+                                <li>RESTful API สำหรับสถิติ (7 endpoints)</li>
+                                <li>ระบบค้นหาและกรองข้อมูล</li>
+                                <li>Authentication & Authorization (JWT)</li>
+                                <li>Import Excel Data (4,569 บุคลากร)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Database</strong> - Azure PostgreSQL Flexible Server
+                            <ul>
+                                <li>ออกแบบและสร้างโครงสร้างฐานข้อมูล</li>
+                                <li>นำเข้าข้อมูลจาก Excel (2 sheets: สัญญาบัตร, ประทวน)</li>
+                                <li>รองรับข้อมูล 15 หน่วยงาน 233 แผนก</li>
+                            </ul>
+                        </li>
+                        <li><strong>Cloud Deployment</strong> - Microsoft Azure
+                            <ul>
+                                <li>Azure Container Registry & Container Apps</li>
+                                <li>SSL/HTTPS Auto-managed</li>
+                                <li>Resource: 1 CPU, 2GB RAM</li>
+                                <li>Region: Southeast Asia</li>
+                            </ul>
+                        </li>
+                        <li><strong>Features</strong>
+                            <ul>
+                                <li>Responsive Design (Mobile, Tablet, Desktop)</li>
+                                <li>Light/Dark Theme Switcher</li>
+                                <li>Chart.js Visualization (Doughnut, Pie, Bar Charts)</li>
+                                <li>Leaflet.js Interactive Map</li>
+                                <li>Real-time Statistics & Analytics</li>
+                            </ul>
+                        </li>
+                        <li><strong>Documentation</strong>
+                            <ul>
+                                <li>README.md - คู่มือการติดตั้งและใช้งาน</li>
+                                <li>AZURE_DEPLOYMENT.md - คู่มือ Deploy</li>
+                                <li>API Documentation</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+                <td class="amount">7,476,635.51</td>
+                <td class="amount">7,476,635.51</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Total Section -->
+    <div class="total-section">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="border: none; width: 60%;"></td>
+                <td style="border: 1px solid #ddd; text-align: right; padding: 8px; width: 20%;"><strong>ราคาสินค้า</strong></td>
+                <td style="border: 1px solid #ddd; text-align: right; padding: 8px; width: 20%;">7,476,635.51</td>
+            </tr>
+            <tr>
+                <td style="border: none;"></td>
+                <td style="border: 1px solid #ddd; text-align: right; padding: 8px;"><strong>ภาษีมูลค่าเพิ่ม 7%</strong></td>
+                <td style="border: 1px solid #ddd; text-align: right; padding: 8px;">523,364.49</td>
+            </tr>
+            <tr>
+                <td style="border: none;"></td>
+                <td style="border: 1px solid #ddd; text-align: right; padding: 8px; background-color: #e6f2ff;"><strong>ราคาสินค้ารวมทั้งสิ้น</strong></td>
+                <td style="border: 1px solid #ddd; text-align: right; padding: 8px; background-color: #e6f2ff; font-size: 18pt;"><strong>8,000,000.00</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Total in Words -->
+    <div class="total-text">
+        <strong>แปดล้านบาทถ้วน</strong>
+    </div>
+
+    <!-- Note Section -->
+    <div class="note-section">
+        <div class="note-title">หมายเหตุ/Remark :</div>
+        <ul style="margin-top: 5px;">
+            <li>ระยะเวลาพัฒนา: 180 วัน นับจากวันลงนามในสัญญา</li>
+            <li>URL Production: https://forensic-hr-app.wonderfulglacier-e7722499.southeastasia.azurecontainerapps.io</li>
+            <li>รวมการติดตั้ง Deploy และ Training การใช้งาน</li>
+            <li>รับประกันระบบ 1 ปี นับจากวันส่งมอบงาน</li>
+        </ul>
+    </div>
+
+    <!-- Sales Info -->
+    <div class="sales-info">
+        <strong>Sales :</strong> อรรถพล ไสยาติ (บอย)<br>
+        <strong>โทร :</strong> 085-0709938
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-line"></div>
+            <div class="signature-label">
+                อนุมัติการสั่งซื้อ<br>
+                (..........................................)<br>
+                วันที่......./......./....... 
+            </div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line"></div>
+            <div class="signature-label">
+                ขอแสดงความนับถืออย่างสูง<br>
+                <strong>(นายวิทยา แซ่ตั้ง)</strong><br>
+                กรรมการผู้จัดการ
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

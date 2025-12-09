@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+npm-debug.log
+package-lock.json
+
+# Backend
+backend/node_modules
+backend/npm-debug.log
+
+# Python
+python/__pycache__
+python/*.pyc
+python/venv
+
+# Development
+.env
+.env.local
+.git
+.gitignore
+.DS_Store
+
+# Uploads
+uploads/*
+
+# Logs
+*.log
+logs
+
+# IDE
+.vscode
+.idea
+
+# Testing
+coverage
+.nyc_output
+
+# Build artifacts
+dist
+build

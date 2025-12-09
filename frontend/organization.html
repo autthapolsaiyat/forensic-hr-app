@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>โครงสร้างหน่วยงาน - สพฐ.ตร.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+            --footer-text: rgba(255,255,255,0.7);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+            --footer-text: rgba(30,60,114,0.7);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+            flex-shrink: 0;
+        }
+        .header-title { flex: 1; text-align: center; min-width: 150px; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 36px); color: var(--text-color); font-weight: bold; }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:active { transform: scale(0.95); }
+        .back-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white; padding: 10px 20px; border-radius: 50px;
+            text-decoration: none; font-size: clamp(14px, 2vw, 18px); font-weight: bold;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+            white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .org-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 15px;
+        }
+        
+        .org-unit {
+            margin-bottom: 15px;
+        }
+        .unit-header {
+            background: linear-gradient(135deg, rgba(231,76,60,0.8) 0%, rgba(192,57,43,0.8) 100%);
+            padding: 15px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid rgba(231,76,60,0.6);
+            transition: all 0.3s ease;
+            min-height: 50px;
+        }
+        .unit-header:active { transform: scale(0.98); }
+        .unit-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .expand-icon {
+            font-size: 16px;
+            color: var(--text-color);
+            transition: transform 0.3s ease;
+        }
+        .expand-icon.expanded { transform: rotate(90deg); }
+        .unit-name {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .unit-stats {
+            display: flex;
+            gap: 15px;
+            font-size: clamp(14px, 2.5vw, 16px);
+            color: var(--text-color);
+        }
+        
+        .sub-units {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 30px;
+        }
+        .sub-units.expanded {
+            max-height: 5000px;
+            margin-top: 15px;
+        }
+        
+        .sub-unit {
+            background: rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .sub-unit-name {
+            font-size: clamp(16px, 2.5vw, 18px);
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .sub-unit-count {
+            font-size: clamp(14px, 2vw, 16px);
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-color);
+            font-size: clamp(16px, 3vw, 20px);
+        }
+        
+        /* Footer */
+        .site-footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--footer-text);
+            font-size: clamp(12px, 2vw, 14px);
+            line-height: 1.8;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            margin-top: 30px;
+        }
+        .site-footer div { margin: 5px 0; }
+        .site-footer strong { color: var(--text-color); }
+        
+        @media (min-width: 768px) {
+            body { padding: 20px; padding-bottom: 100px; }
+            .header { padding: 25px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ตร.</div>
+            <div class="header-title"><h1>🌲 โครงสร้างหน่วยงาน</h1></div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+                <a href="/summary.html" class="back-btn">← ย้อนกลับ</a>
+            </div>
+        </div>
+        
+        <div class="org-section">
+            <div id="orgContent" class="loading">กำลังโหลด...</div>
+        </div>
+        
+        <footer class="site-footer">
+            <div>Developed by "QXV0dGhhcG9sIFNhaXlhdA=="(AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </footer>
+    </div>
+    
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        function toggleUnit(unitId) {
+            const subUnits = document.getElementById('sub-' + unitId);
+            const icon = document.getElementById('icon-' + unitId);
+            if (subUnits.classList.contains('expanded')) {
+                subUnits.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                subUnits.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
+        }
+        
+        async function loadOrganization() {
+            try {
+                const response = await fetch('/api/statistics/organization');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    renderOrganization(result.data);
+                } else {
+                    document.getElementById('orgContent').innerHTML = '<div class="loading">ไม่พบข้อมูล</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('orgContent').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+        
+        function renderOrganization(data) {
+            let html = '';
+            let unitIndex = 0;
+            
+            data.forEach(hq => {
+                const unitId = 'unit' + unitIndex++;
+                
+                html += `
+                    <div class="org-unit">
+                        <div class="unit-header" onclick="toggleUnit('${unitId}')">
+                            <div class="unit-header-left">
+                                <span class="expand-icon" id="icon-${unitId}">▶</span>
+                                <div class="unit-name">🏢 ${hq.headquarters}</div>
+                            </div>
+                            <div class="unit-stats">
+                                <span>👥 ${hq.total}</span>
+                                <span>📁 ${hq.dept_count} แผนก</span>
+                            </div>
+                        </div>
+                        <div class="sub-units" id="sub-${unitId}">
+                `;
+                
+                if (hq.departments && hq.departments.length > 0) {
+                    hq.departments.forEach(dept => {
+                        html += `
+                            <div class="sub-unit">
+                                <div class="sub-unit-name">📂 ${dept.name}</div>
+                                <div class="sub-unit-count">👥 ${dept.count} คน</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<div class="sub-unit"><div class="sub-unit-name">ไม่มีแผนกย่อย</div></div>';
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('orgContent').innerHTML = html;
+        }
+        
+        loadOrganization();
+    </script>
+</body>
+</html>

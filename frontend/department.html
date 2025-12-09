@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>รายละเอียดหน่วยงาน - สพฐ.ตร.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+            --footer-text: rgba(255,255,255,0.7);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+            --footer-text: rgba(30,60,114,0.7);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+            flex-shrink: 0;
+        }
+        .header-title { flex: 1; text-align: center; min-width: 150px; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 36px); color: var(--text-color); font-weight: bold; }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        .theme-toggle:active { transform: scale(0.95); }
+        .back-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white; padding: 10px 20px; border-radius: 50px;
+            text-decoration: none; font-size: clamp(14px, 2vw, 18px); font-weight: bold;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+            white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+        .back-btn:active { transform: scale(0.95); }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            text-align: center;
+        }
+        .stat-icon { font-size: clamp(28px, 5vw, 42px); margin-bottom: 8px; }
+        .stat-label { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-color); opacity: 0.9; margin-bottom: 8px; }
+        .stat-value { font-size: clamp(24px, 5vw, 48px); font-weight: bold; color: var(--text-color); text-shadow: 0 2px 10px var(--shadow-color); }
+        
+        .section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 15px;
+        }
+        .section h2 {
+            font-size: clamp(24px, 4vw, 32px);
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .dept-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+        .dept-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+        .dept-name {
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+        .dept-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(13px, 2vw, 15px);
+            color: var(--text-color);
+            opacity: 0.9;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-color);
+            font-size: clamp(16px, 3vw, 20px);
+        }
+        
+        /* Footer */
+        .site-footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--footer-text);
+            font-size: clamp(12px, 2vw, 14px);
+            line-height: 1.8;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            margin-top: 30px;
+        }
+        .site-footer div { margin: 5px 0; }
+        .site-footer strong { color: var(--text-color); }
+        
+        @media (min-width: 768px) {
+            body { padding: 20px; padding-bottom: 100px; }
+            .header { padding: 25px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+            .stat-card { padding: 25px; }
+        }
+        
+        @media (min-width: 1024px) {
+            .header-actions { flex-wrap: nowrap; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        @media (min-width: 1440px) {
+            .stats-grid { grid-template-columns: repeat(7, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ตร.</div>
+            <div class="header-title">
+                <h1 id="deptName">🏢 กำลังโหลด...</h1>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+                <a href="/summary.html" class="back-btn">← ย้อนกลับ</a>
+            </div>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">ทั้งหมด</div>
+                <div class="stat-value" id="totalStat">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">คนครอง</div>
+                <div class="stat-value" id="occupiedStat">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-label">ว่าง</div>
+                <div class="stat-value" id="vacantStat">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎖️</div>
+                <div class="stat-label">สัญญาบัตร</div>
+                <div class="stat-value" id="sanyabatStat">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg width="42" height="42" viewBox="0 0 48 48" style="display: inline-block; vertical-align: middle;">
+                        <g transform="translate(24, 24)">
+                            <!-- Chevron 1 (บน) - ปลายชี้ลง -->
+                            <path d="M -10,-12 L -6,-12 L 0,-16 L 6,-12 L 10,-12 L 0,-8 Z" 
+                                  fill="#f1c40f" stroke="#e0b000" stroke-width="0.5"/>
+                            <!-- Chevron 2 (กลาง) - ปลายชี้ลง -->
+                            <path d="M -10,-2 L -6,-2 L 0,-6 L 6,-2 L 10,-2 L 0,2 Z" 
+                                  fill="#f1c40f" stroke="#e0b000" stroke-width="0.5"/>
+                            <!-- Chevron 3 (ล่าง) - ปลายชี้ลง -->
+                            <path d="M -10,8 L -6,8 L 0,4 L 6,8 L 10,8 L 0,12 Z" 
+                                  fill="#f1c40f" stroke="#e0b000" stroke-width="0.5"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="stat-label">ประทวน</div>
+                <div class="stat-value" id="pratawanStat">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👨</div>
+                <div class="stat-label">ชาย</div>
+                <div class="stat-value" id="maleStat">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👩</div>
+                <div class="stat-label">หญิง</div>
+                <div class="stat-value" id="femaleStat">-</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🏢 แผนก/ฝ่าย</h2>
+            <div id="subDeptContent" class="loading">กำลังโหลด...</div>
+        </div>
+        
+        <footer class="site-footer">
+            <div><strong>Developed by:</strong> QXV0dGhhcG9sIFNhaXlhdA==(AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </footer>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.protocol + '//' + window.location.host + '/api';
+        
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? '' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        const params = new URLSearchParams(window.location.search);
+        const deptName = params.get('dept'); // แก้จาก 'name' เป็น 'dept'
+        
+        if (!deptName) {
+            document.getElementById('deptName').textContent = '❌ ไม่พบหน่วยงาน';
+            document.getElementById('subDeptContent').innerHTML = '<div class="loading">กรุณาระบุชื่อหน่วยงาน</div>';
+        } else {
+            document.getElementById('deptName').textContent = '🏢 ' + deptName;
+            loadData(deptName);
+        }
+        
+        async function loadData(name) {
+            try {
+                const response = await fetch(`${API_BASE}/statistics/department/${encodeURIComponent(name)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    
+                    document.getElementById('totalStat').textContent = parseInt(stats.total).toLocaleString();
+                    document.getElementById('occupiedStat').textContent = parseInt(stats.occupied).toLocaleString();
+                    document.getElementById('vacantStat').textContent = parseInt(stats.vacant).toLocaleString();
+                    document.getElementById('sanyabatStat').textContent = parseInt(stats.sanyabat).toLocaleString();
+                    document.getElementById('pratawanStat').textContent = parseInt(stats.pratawan).toLocaleString();
+                    document.getElementById('maleStat').textContent = parseInt(stats.male).toLocaleString();
+                    document.getElementById('femaleStat').textContent = parseInt(stats.female).toLocaleString();
+                    
+                    if (result.subDepartments && result.subDepartments.length > 0) {
+                        const html = '<div class="dept-grid">' + 
+                            result.subDepartments.map(dept => `
+                                <div class="dept-item">
+                                    <div class="dept-name">${dept.dept}</div>
+                                    <div class="dept-stats">
+                                        <span>👥 ${dept.total}</span>
+                                        <span>🎖️ ${dept.sanyabat}</span>
+                                        <span><svg width="16" height="16" viewBox="0 0 48 48" style="display: inline-block; vertical-align: middle; margin-right: 2px;"><g transform="translate(24, 24)"><path d="M -10,-12 L -6,-12 L 0,-16 L 6,-12 L 10,-12 L 0,-8 Z" fill="#f1c40f" stroke="#e0b000" stroke-width="0.5"/><path d="M -10,-2 L -6,-2 L 0,-6 L 6,-2 L 10,-2 L 0,2 Z" fill="#f1c40f" stroke="#e0b000" stroke-width="0.5"/><path d="M -10,8 L -6,8 L 0,4 L 6,8 L 10,8 L 0,12 Z" fill="#f1c40f" stroke="#e0b000" stroke-width="0.5"/></g></svg> ${dept.pratawan}</span>
+                                        ${dept.vacant > 0 ? `<span>⚠️ ${dept.vacant}</span>` : ''}
+                                    </div>
+                                </div>
+                            `).join('') + 
+                            '</div>';
+                        document.getElementById('subDeptContent').innerHTML = html;
+                    } else {
+                        document.getElementById('subDeptContent').innerHTML = '<div class="loading">ไม่มีข้อมูลแผนก/ฝ่าย</div>';
+                    }
+                } else {
+                    document.getElementById('deptName').textContent = '❌ ไม่พบข้อมูลหน่วยงาน';
+                    document.getElementById('subDeptContent').innerHTML = '<div class="loading">ไม่พบข้อมูลหน่วยงานนี้</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('deptName').textContent = '❌ เกิดข้อผิดพลาด';
+                document.getElementById('subDeptContent').innerHTML = '<div class="loading">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>';
+            }
+        }
+    </script>
+</body>
+</html>

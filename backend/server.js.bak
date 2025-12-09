@@ -1,0 +1,153 @@
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
+    useTempFiles: true,
+    tempFileDir: '/app/uploads/'
+}));
+
+// Serve static files (frontend)
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Routes
+const authRoutes = require('./routes/auth');
+const personnelRoutes = require('./routes/personnel');
+const logsRoutes = require('./routes/logs');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/personnel', personnelRoutes);
+app.use('/api/logs', logsRoutes);
+
+// Import Excel endpoint
+app.post('/api/import', async (req, res) => {
+    try {
+        if (!req.files || !req.files.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'กรุณาเลือกไฟล์'
+            });
+        }
+
+        const file = req.files.file;
+        
+        // ตรวจสอบนามสกุลไฟล์
+        const allowedExtensions = ['.xlsx', '.xls'];
+        const fileExtension = path.extname(file.name).toLowerCase();
+        
+        if (!allowedExtensions.includes(fileExtension)) {
+            return res.status(400).json({
+                success: false,
+                message: 'กรุณาอัปโหลดไฟล์ Excel (.xlsx, .xls)'
+            });
+        }
+
+        // บันทึกไฟล์ชั่วคราว
+        const uploadPath = path.join(__dirname, '../uploads', file.name);
+        await file.mv(uploadPath);
+
+        // เรียก Python script เพื่อ import
+        const { spawn } = require('child_process');
+        const pythonProcess = spawn('python3', [
+            path.join(__dirname, '../python/excel_parser.py'),
+            uploadPath
+        ]);
+
+        let output = '';
+        let errorOutput = '';
+
+        pythonProcess.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+
+        pythonProcess.stderr.on('data', (data) => {
+            errorOutput += data.toString();
+        });
+
+        pythonProcess.on('close', (code) => {
+            // ลบไฟล์ชั่วคราว
+            const fs = require('fs');
+            fs.unlinkSync(uploadPath);
+
+            if (code === 0) {
+                res.json({
+                    success: true,
+                    message: 'นำเข้าข้อมูลสำเร็จ',
+                    output: output
+                });
+            } else {
+                res.status(500).json({
+                    success: false,
+                    message: 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล',
+                    error: errorOutput
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error('Import error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล'
+        });
+    }
+});
+
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'Route not found'
+    });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`
+╔══════════════════════════════════════════════════════════════╗
+║  🚀 ระบบจัดการกำลังพล - สำนักงานนิติวิทยาศาสตร์              ║
+║     Forensic HR Management System                           ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ Server is running on port ${PORT}
+🌐 URL: http://localhost:${PORT}
+📊 Environment: ${process.env.NODE_ENV || 'development'}
+⏰ Started at: ${new Date().toLocaleString('th-TH')}
+    `);
+});
+
+module.exports = app;

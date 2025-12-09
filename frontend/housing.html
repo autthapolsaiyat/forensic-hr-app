@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการที่พักอาศัย - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-primary: #1a5276;
+            --bg-secondary: #2980b9;
+            --bg-card: #2471a3;
+            --text-primary: #ffffff;
+            --text-secondary: #d4e6f1;
+            --accent-blue: #3498db;
+            --accent-green: #27ae60;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8f4fc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a5276;
+            --text-secondary: #5a7a9a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .logo {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 35px;
+        }
+
+        .header-title h1 { font-size: 32px; font-weight: bold; }
+        .header-title p { font-size: 16px; color: var(--text-secondary); }
+
+        .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn.primary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .nav-btn.secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .nav-btn:hover { transform: translateY(-2px); }
+
+        .overview-section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-blue);
+        }
+
+        .section-title { font-size: 24px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+
+        .year-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .year-filter label { color: var(--text-secondary); font-size: 14px; font-weight: bold; }
+
+        .year-select {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .year-select:focus { outline: none; border-color: var(--accent-blue); }
+        .year-select option { background: var(--bg-primary); color: var(--text-primary); }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover { transform: translateY(-2px); }
+        .filter-btn.primary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .filter-btn.secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+
+        .year-info {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+
+        .year-info strong { color: var(--accent-blue); }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.15); }
+
+        .stat-icon { font-size: 40px; margin-bottom: 10px; }
+        .stat-label { font-size: 16px; color: var(--text-secondary); margin-bottom: 10px; }
+        .stat-number { font-size: 48px; font-weight: bold; }
+        .stat-sub { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+        .stat-sub .damaged { color: #e74c3c; }
+        .stat-sub .construction { color: #f39c12; }
+
+        .division-section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .section-title-full {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .division-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .division-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .division-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.15); }
+
+        .division-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .division-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+
+        .division-stat {
+            text-align: center;
+            padding: 12px 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .division-stat-icon { font-size: 24px; margin-bottom: 5px; }
+        .division-stat-value { font-size: 24px; font-weight: bold; }
+        .division-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .summary-card {
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .summary-card.shortage { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        .summary-card.vacant { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+
+        .summary-icon { font-size: 50px; margin-bottom: 15px; }
+        .summary-number { font-size: 64px; font-weight: bold; }
+        .summary-label { font-size: 20px; margin-top: 10px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+            margin: 3% auto;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .modal-header h2 { font-size: 28px; }
+
+        .close-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-body { padding: 30px; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: rgba(255,255,255,0.1); padding: 15px; text-align: left; }
+        .data-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .data-table tr:hover { background: rgba(255,255,255,0.05); }
+
+        .loading { text-align: center; padding: 60px; font-size: 20px; color: var(--text-secondary); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .stat-number { font-size: 36px; }
+            .division-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🏠</div>
+                <div class="header-title">
+                    <h1>ที่พักอาศัย | สพฐ.ตร.</h1>
+                    <p>Dashboard - ระบบจัดการที่พักอาศัยข้าราชการ</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="/housing-search.html" class="nav-btn primary">🔍 ค้นหา</a>
+                <a href="/" class="nav-btn secondary">← กลับ</a>
+                <button class="nav-btn secondary" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">โหมดมืด</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="overview-section">
+            <div class="overview-header">
+                <h2 class="section-title">📊 สถิติภาพรวมรายการทั้งหมด</h2>
+                <div class="year-filter">
+                    <label>ปีที่ได้รับ:</label>
+                    <select id="yearStart" class="year-select"><option value="">ทุกปี</option></select>
+                    <span style="color: var(--text-secondary);">ถึง</span>
+                    <select id="yearEnd" class="year-select"><option value="">ทุกปี</option></select>
+                    <button class="filter-btn primary" onclick="applyYearFilter()">🔍 กรอง</button>
+                    <button class="filter-btn secondary" onclick="resetYearFilter()">🔄 ล้าง</button>
+                </div>
+            </div>
+            <div class="year-info" id="yearInfo">📅 แสดงข้อมูล: <strong>ทุกปี</strong></div>
+            <div class="stats-row" id="typeStats">
+                <div class="loading">กำลังโหลดข้อมูล...</div>
+            </div>
+        </div>
+
+        <div class="division-section">
+            <h2 class="section-title-full">🏛️ สถิติแยกตามหน่วยงาน</h2>
+            <div class="division-grid" id="divisionGrid">
+                <div class="loading">กำลังโหลดข้อมูล...</div>
+            </div>
+        </div>
+
+        <div class="summary-row">
+            <div class="summary-card shortage">
+                <div class="summary-icon">👥</div>
+                <div class="summary-number" id="totalShortage">-</div>
+                <div class="summary-label">ขาดแคลน</div>
+            </div>
+            <div class="summary-card vacant">
+                <div class="summary-icon">🚪</div>
+                <div class="summary-number" id="totalVacant">-</div>
+                <div class="summary-label">ห้องว่าง</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">-</h2>
+                <button class="close-btn" onclick="closeModal()">← ย้อนกลับ</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let statsData = null;
+        let currentYearStart = '';
+        let currentYearEnd = '';
+
+        const typeIcons = { 'แฟลต 5 ชั้น': '🏢', 'แฟลต 4 ชั้น': '🏬', 'เรือนแถว': '🏘️', 'บ้านพัก': '🏠' };
+
+        function getTypeIcon(type) {
+            if (!type) return '🏠';
+            for (const key in typeIcons) if (type.includes(key)) return typeIcons[key];
+            return '🏠';
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('housingTheme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+            document.getElementById('themeText').textContent = newTheme === 'light' ? 'โหมดมืด' : 'โหมดสว่าง';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('housingTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '🌙';
+                document.getElementById('themeText').textContent = 'โหมดมืด';
+            }
+            loadYears();
+            loadData();
+        });
+
+        async function loadYears() {
+            try {
+                const response = await fetch('/api/housing/years');
+                const result = await response.json();
+                if (result.success) {
+                    const yearStart = document.getElementById('yearStart');
+                    const yearEnd = document.getElementById('yearEnd');
+                    result.data.forEach(year => {
+                        yearStart.innerHTML += `<option value="${year}">${year}</option>`;
+                        yearEnd.innerHTML += `<option value="${year}">${year}</option>`;
+                    });
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        async function applyYearFilter() {
+            currentYearStart = document.getElementById('yearStart').value;
+            currentYearEnd = document.getElementById('yearEnd').value;
+            if (currentYearStart && currentYearEnd && parseInt(currentYearStart) > parseInt(currentYearEnd)) {
+                alert('ปีเริ่มต้นต้องน้อยกว่าหรือเท่ากับปีสิ้นสุด');
+                return;
+            }
+            await loadData();
+        }
+
+        async function resetYearFilter() {
+            document.getElementById('yearStart').value = '';
+            document.getElementById('yearEnd').value = '';
+            currentYearStart = '';
+            currentYearEnd = '';
+            await loadData();
+        }
+
+        function updateYearInfo(data) {
+            const yearInfo = document.getElementById('yearInfo');
+            let info = '';
+            
+            if (currentYearStart && currentYearEnd) {
+                info = `📅 แสดงข้อมูล: <strong>ปี ${currentYearStart} - ${currentYearEnd}</strong>`;
+            } else if (currentYearStart) {
+                info = `📅 แสดงข้อมูล: <strong>ปี ${currentYearStart} เป็นต้นไป</strong>`;
+            } else if (currentYearEnd) {
+                info = `📅 แสดงข้อมูล: <strong>ถึงปี ${currentYearEnd}</strong>`;
+            } else {
+                info = `📅 แสดงข้อมูล: <strong>ทุกปี</strong>`;
+            }
+            
+            // เพิ่มจำนวนปีและรายการปี
+            if (data && data.yearsInRange) {
+                info += ` | จำนวน <strong>${data.yearsInRange} ปี</strong>`;
+                if (data.yearsList && data.yearsList.length > 0 && data.yearsList.length <= 10) {
+                    info += ` (${data.yearsList.join(', ')})`;
+                }
+            }
+            
+            yearInfo.innerHTML = info;
+        }
+
+        async function loadData() {
+            try {
+                let params = new URLSearchParams();
+                if (currentYearStart) params.append('yearStart', currentYearStart);
+                if (currentYearEnd) params.append('yearEnd', currentYearEnd);
+                
+                const response = await fetch(`/api/housing/stats${params.toString() ? '?' + params.toString() : ''}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    statsData = result.data;
+                    updateYearInfo(statsData);
+                    renderTypeStats(statsData);
+                    renderDivisionGrid(statsData);
+                    renderSummary(statsData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('typeStats').innerHTML = '<div class="loading">ไม่สามารถโหลดข้อมูลได้</div>';
+            }
+        }
+
+        function renderTypeStats(data) {
+            const container = document.getElementById('typeStats');
+            const typeGroups = {
+                'แฟลต 5 ชั้น': { icon: '🏢', rooms: 0, damaged: 0, construction: 0 },
+                'แฟลต 4 ชั้น': { icon: '🏬', rooms: 0, damaged: 0, construction: 0 },
+                'เรือนแถว': { icon: '🏘️', rooms: 0, damaged: 0, construction: 0 },
+                'บ้านพัก': { icon: '🏠', rooms: 0, damaged: 0, construction: 0 }
+            };
+            
+            if (data.byType) {
+                data.byType.forEach(t => {
+                    const type = t.housing_type || '';
+                    for (const key in typeGroups) {
+                        if (type.includes(key)) {
+                            typeGroups[key].rooms += parseInt(t.total_rooms) || 0;
+                            typeGroups[key].damaged += parseInt(t.damaged_rooms) || 0;
+                            typeGroups[key].construction += parseInt(t.under_construction) || 0;
+                            break;
+                        }
+                    }
+                });
+            }
+            
+            const allTypes = [
+                ...Object.entries(typeGroups).map(([name, d]) => ({ name, icon: d.icon, value: d.rooms, damaged: d.damaged, construction: d.construction })),
+                { name: 'บ้านพักส่วนตัว', icon: '🏡', value: parseInt(data.total_private) || 0 },
+                { name: 'เบิกค่าเช่าบ้าน', icon: '💰', value: parseInt(data.total_rent_allowance) || 0 },
+                { name: 'อาศัยหน่วยอื่น', icon: '🤝', value: parseInt(data.total_other_agency) || 0 }
+            ];
+            
+            container.innerHTML = allTypes.map(t => `
+                <div class="stat-card" onclick="showTypeDetail('${t.name}')">
+                    <div class="stat-icon">${t.icon}</div>
+                    <div class="stat-label">${t.name}</div>
+                    <div class="stat-number">${t.value.toLocaleString()}</div>
+                    ${t.damaged !== undefined ? `<div class="stat-sub"><span class="damaged">ชำรุด ${t.damaged}</span>${t.construction > 0 ? ` <span class="construction">ก่อสร้าง ${t.construction}</span>` : ''}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderDivisionGrid(data) {
+            const container = document.getElementById('divisionGrid');
+            if (!data.byDivision || data.byDivision.length === 0) {
+                container.innerHTML = '<div class="loading">ไม่มีข้อมูลหน่วยงาน</div>';
+                return;
+            }
+            
+            container.innerHTML = data.byDivision.map(div => `
+                <div class="division-card" onclick="showDivisionDetail('${div.division}')">
+                    <div class="division-header">${div.division || 'ส่วนกลาง'}</div>
+                    <div class="division-stats">
+                        <div class="division-stat"><div class="division-stat-icon">🏢</div><div class="division-stat-value">${parseInt(div.total_rooms || 0)}</div><div class="division-stat-label">ห้องทั้งหมด</div></div>
+                        <div class="division-stat"><div class="division-stat-icon">🏡</div><div class="division-stat-value">${parseInt(div.private_housing || 0)}</div><div class="division-stat-label">บ้านส่วนตัว</div></div>
+                        <div class="division-stat"><div class="division-stat-icon">💰</div><div class="division-stat-value">${parseInt(div.rent_allowance || 0)}</div><div class="division-stat-label">เบิกค่าเช่า</div></div>
+                        <div class="division-stat"><div class="division-stat-icon">🤝</div><div class="division-stat-value">${parseInt(div.other_agency || 0)}</div><div class="division-stat-label">หน่วยอื่น</div></div>
+                        <div class="division-stat"><div class="division-stat-icon">👥</div><div class="division-stat-value">${parseInt(div.shortage || 0)}</div><div class="division-stat-label">ขาดแคลน</div></div>
+                        <div class="division-stat"><div class="division-stat-icon">🚪</div><div class="division-stat-value">${parseInt(div.vacant_rooms || 0)}</div><div class="division-stat-label">ห้องว่าง</div></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSummary(data) {
+            document.getElementById('totalShortage').textContent = (parseInt(data.total_shortage) || 0).toLocaleString();
+            document.getElementById('totalVacant').textContent = (parseInt(data.vacant_rooms) || 0).toLocaleString();
+        }
+
+        async function showTypeDetail(typeName) {
+            document.getElementById('modalTitle').innerHTML = `${getTypeIcon(typeName)} ${typeName}`;
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalBody').innerHTML = '<div class="loading">กำลังโหลดข้อมูล...</div>';
+            
+            try {
+                let params = new URLSearchParams();
+                params.append('limit', '100');
+                if (currentYearStart) params.append('yearStart', currentYearStart);
+                if (currentYearEnd) params.append('yearEnd', currentYearEnd);
+                
+                const response = await fetch(`/api/housing?${params.toString()}`);
+                const result = await response.json();
+                if (result.success) renderModalTable(result.data.filter(d => d.housing_type && d.housing_type.includes(typeName.replace('แฟลต ', 'แฟลต '))));
+            } catch (error) { document.getElementById('modalBody').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>'; }
+        }
+
+        async function showDivisionDetail(division) {
+            document.getElementById('modalTitle').innerHTML = `🏛️ ${division}`;
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalBody').innerHTML = '<div class="loading">กำลังโหลดข้อมูล...</div>';
+            
+            try {
+                let params = new URLSearchParams();
+                params.append('division', division);
+                params.append('limit', '100');
+                if (currentYearStart) params.append('yearStart', currentYearStart);
+                if (currentYearEnd) params.append('yearEnd', currentYearEnd);
+                
+                const response = await fetch(`/api/housing?${params.toString()}`);
+                const result = await response.json();
+                if (result.success) renderModalTable(result.data);
+            } catch (error) { document.getElementById('modalBody').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>'; }
+        }
+
+        function renderModalTable(data) {
+            const body = document.getElementById('modalBody');
+            if (!data || data.length === 0) { body.innerHTML = '<div class="loading">ไม่พบข้อมูล</div>'; return; }
+            
+            body.innerHTML = `<table class="data-table">
+                <thead><tr><th>หน่วยงาน</th><th>ประเภท</th><th>ห้อง</th><th>ชำรุด</th><th>ได้รับสิทธิ</th><th>บ้านส่วนตัว</th><th>เบิกค่าเช่า</th><th>ขาดแคลน</th><th>ปีงบ</th></tr></thead>
+                <tbody>${data.map(d => `<tr>
+                    <td>${d.subdivision || d.division || '-'}</td>
+                    <td>${getTypeIcon(d.housing_type)} ${d.housing_type || '-'}</td>
+                    <td>${d.total_rooms || 0}</td>
+                    <td>${d.damaged_rooms || 0}</td>
+                    <td>${d.entitled_stay || 0}</td>
+                    <td>${d.private_housing || 0}</td>
+                    <td>${d.rent_allowance || 0}</td>
+                    <td>${d.shortage || 0}</td>
+                    <td>${d.budget_year || '-'}</td>
+                </tr>`).join('')}</tbody></table>`;
+        }
+
+        function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
+        window.onclick = function(e) { if (e.target === document.getElementById('detailModal')) closeModal(); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก - สพฐ.ตร.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a3a5c 0%, #2c5282 50%, #1a3a5c 100%);
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #1a3a5c;
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section-title {
+            color: #1a3a5c;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+
+        .error-text {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-register:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .error-msg {
+            background: #fee;
+            color: #c0392b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="header">
+            <div class="logo">📝</div>
+            <h1>สมัครสมาชิก</h1>
+            <p class="subtitle">กรอกข้อมูลเพื่อสมัครใช้งานระบบ</p>
+        </div>
+        
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="success-msg" id="successMsg"></div>
+        
+        <form id="registerForm">
+            <div class="section-title">📋 ข้อมูลส่วนตัว</div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ยศ</label>
+                    <select id="rank">
+                        <option value="">-- เลือกยศ --</option>
+                        <option value="พล.ต.อ.">พล.ต.อ.</option>
+                        <option value="พล.ต.ท.">พล.ต.ท.</option>
+                        <option value="พล.ต.ต.">พล.ต.ต.</option>
+                        <option value="พ.ต.อ.">พ.ต.อ.</option>
+                        <option value="พ.ต.ท.">พ.ต.ท.</option>
+                        <option value="พ.ต.ต.">พ.ต.ต.</option>
+                        <option value="ร.ต.อ.">ร.ต.อ.</option>
+                        <option value="ร.ต.ท.">ร.ต.ท.</option>
+                        <option value="ร.ต.ต.">ร.ต.ต.</option>
+                        <option value="ด.ต.">ด.ต.</option>
+                        <option value="ส.ต.อ.">ส.ต.อ.</option>
+                        <option value="ส.ต.ท.">ส.ต.ท.</option>
+                        <option value="ส.ต.ต.">ส.ต.ต.</option>
+                        <option value="นาย">นาย</option>
+                        <option value="นาง">นาง</option>
+                        <option value="นางสาว">นางสาว</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ชื่อ-นามสกุล <span class="required">*</span></label>
+                    <input type="text" id="fullName" placeholder="ชื่อ นามสกุล" required>
+                    <div class="error-text" id="fullNameError">กรุณากรอกชื่อ-นามสกุล</div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ตำแหน่ง</label>
+                    <input type="text" id="position" placeholder="เช่น นักวิทยาศาสตร์">
+                </div>
+                <div class="form-group">
+                    <label>หน่วยงาน <span class="required">*</span></label>
+                    <select id="division" required>
+                        <option value="">-- เลือกหน่วยงาน --</option>
+                        <option value="สพฐ.ตร.">สพฐ.ตร. (ส่วนกลาง)</option>
+                        <option value="พฐก.">พฐก.</option>
+                        <option value="ทว.">ทว.</option>
+                        <option value="สฝจ.">สฝจ.</option>
+                        <option value="บก.อก.สพฐ.ตร.">บก.อก.สพฐ.ตร.</option>
+                        <option value="ศพฐ.1">ศพฐ.1 (ปทุมธานี)</option>
+                        <option value="ศพฐ.2">ศพฐ.2 (ชลบุรี)</option>
+                        <option value="ศพฐ.3">ศพฐ.3 (นครราชสีมา)</option>
+                        <option value="ศพฐ.4">ศพฐ.4 (ขอนแก่น)</option>
+                        <option value="ศพฐ.5">ศพฐ.5 (ลำปาง)</option>
+                        <option value="ศพฐ.6">ศพฐ.6 (พิษณุโลก)</option>
+                        <option value="ศพฐ.7">ศพฐ.7 (นครปฐม)</option>
+                        <option value="ศพฐ.8">ศพฐ.8 (สุราษฎร์ธานี)</option>
+                        <option value="ศพฐ.9">ศพฐ.9 (สงขลา)</option>
+                        <option value="ศพฐ.10">ศพฐ.10 (ยะลา)</option>
+                    </select>
+                    <div class="error-text" id="divisionError">กรุณาเลือกหน่วยงาน</div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>พฐ.จว. (ถ้ามี)</label>
+                    <input type="text" id="subdivision" placeholder="เช่น พฐ.จว.ชลบุรี">
+                </div>
+                <div class="form-group">
+                    <label>เบอร์โทรศัพท์</label>
+                    <input type="tel" id="phone" placeholder="0XX-XXX-XXXX">
+                </div>
+            </div>
+            
+            <div class="form-group full">
+                <label>อีเมล</label>
+                <input type="email" id="email" placeholder="example@police.go.th">
+            </div>
+            
+            <div class="section-title">🔐 ข้อมูลเข้าสู่ระบบ</div>
+            
+            <div class="form-group">
+                <label>ชื่อผู้ใช้ <span class="required">*</span></label>
+                <input type="text" id="username" placeholder="ตัวอักษรภาษาอังกฤษและตัวเลข" required>
+                <div class="error-text" id="usernameError">กรุณากรอกชื่อผู้ใช้</div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>รหัสผ่าน <span class="required">*</span></label>
+                    <input type="password" id="password" placeholder="อย่างน้อย 6 ตัวอักษร" required>
+                    <div class="error-text" id="passwordError">รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร</div>
+                </div>
+                <div class="form-group">
+                    <label>ยืนยันรหัสผ่าน <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง" required>
+                    <div class="error-text" id="confirmPasswordError">รหัสผ่านไม่ตรงกัน</div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-register" id="btnRegister">
+                📝 สมัครสมาชิก
+            </button>
+        </form>
+        
+        <div class="notice">
+            ⚠️ หลังสมัครสมาชิก กรุณารอผู้ดูแลระบบอนุมัติก่อนเข้าใช้งาน
+        </div>
+        
+        <div class="login-link">
+            มีบัญชีอยู่แล้ว? <a href="/login.html">เข้าสู่ระบบ</a>
+        </div>
+    </div>
+
+    <script>
+        // Validate form
+        function validateForm() {
+            let isValid = true;
+            
+            // Full name
+            const fullName = document.getElementById('fullName');
+            const fullNameError = document.getElementById('fullNameError');
+            if (!fullName.value.trim()) {
+                fullName.classList.add('error');
+                fullNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                fullName.classList.remove('error');
+                fullNameError.style.display = 'none';
+            }
+            
+            // Division
+            const division = document.getElementById('division');
+            const divisionError = document.getElementById('divisionError');
+            if (!division.value) {
+                division.classList.add('error');
+                divisionError.style.display = 'block';
+                isValid = false;
+            } else {
+                division.classList.remove('error');
+                divisionError.style.display = 'none';
+            }
+            
+            // Username
+            const username = document.getElementById('username');
+            const usernameError = document.getElementById('usernameError');
+            if (!username.value.trim() || !/^[a-zA-Z0-9_]+$/.test(username.value)) {
+                username.classList.add('error');
+                usernameError.textContent = username.value ? 'ชื่อผู้ใช้ต้องเป็นตัวอักษรภาษาอังกฤษและตัวเลขเท่านั้น' : 'กรุณากรอกชื่อผู้ใช้';
+                usernameError.style.display = 'block';
+                isValid = false;
+            } else {
+                username.classList.remove('error');
+                usernameError.style.display = 'none';
+            }
+            
+            // Password
+            const password = document.getElementById('password');
+            const passwordError = document.getElementById('passwordError');
+            if (password.value.length < 6) {
+                password.classList.add('error');
+                passwordError.style.display = 'block';
+                isValid = false;
+            } else {
+                password.classList.remove('error');
+                passwordError.style.display = 'none';
+            }
+            
+            // Confirm password
+            const confirmPassword = document.getElementById('confirmPassword');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.classList.add('error');
+                confirmPasswordError.style.display = 'block';
+                isValid = false;
+            } else {
+                confirmPassword.classList.remove('error');
+                confirmPasswordError.style.display = 'none';
+            }
+            
+            return isValid;
+        }
+        
+        // Submit form
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+            
+            const btn = document.getElementById('btnRegister');
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = '⏳ กำลังสมัคร...';
+            
+            const data = {
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value,
+                fullName: document.getElementById('fullName').value.trim(),
+                rank: document.getElementById('rank').value,
+                position: document.getElementById('position').value.trim(),
+                division: document.getElementById('division').value,
+                subdivision: document.getElementById('subdivision').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim()
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    successMsg.textContent = '✅ สมัครสมาชิกสำเร็จ! กรุณารอผู้ดูแลระบบอนุมัติ';
+                    successMsg.style.display = 'block';
+                    
+                    // Clear form
+                    document.getElementById('registerForm').reset();
+                    
+                    // Redirect after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 3000);
+                } else {
+                    errorMsg.textContent = result.error;
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                errorMsg.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📝 สมัครสมาชิก';
+            }
+        });
+        
+        // Real-time validation
+        document.getElementById('username').addEventListener('blur', function() {
+            const usernameError = document.getElementById('usernameError');
+            if (this.value && !/^[a-zA-Z0-9_]+$/.test(this.value)) {
+                this.classList.add('error');
+                usernameError.textContent = 'ชื่อผู้ใช้ต้องเป็นตัวอักษรภาษาอังกฤษและตัวเลขเท่านั้น';
+                usernameError.style.display = 'block';
+            } else {
+                this.classList.remove('error');
+                usernameError.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('confirmPassword').addEventListener('blur', function() {
+            const password = document.getElementById('password').value;
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            if (this.value && this.value !== password) {
+                this.classList.add('error');
+                confirmPasswordError.style.display = 'block';
+            } else {
+                this.classList.remove('error');
+                confirmPasswordError.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

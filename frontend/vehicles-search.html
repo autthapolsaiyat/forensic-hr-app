@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหายานพาหนะ - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+            --hover-bg: #f7fafc;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a202c;
+            --bg-gradient-end: #2d3748;
+            --card-bg: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #cbd5e0;
+            --border-color: #4a5568;
+            --hover-bg: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-toggle span {
+            font-size: 24px;
+        }
+
+        .theme-toggle-text {
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .header-logo .fallback-icon {
+            font-size: 40px;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 25px 18px 55px;
+            font-size: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-hint {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .results-count {
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .results-count strong {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        /* Result Cards */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .result-card {
+            background: linear-gradient(135deg, #374151 0%, #4a5568 100%);
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .result-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .result-card-icon {
+            font-size: 48px;
+        }
+
+        .result-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .status-damaged {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+        }
+
+        .status-disposed {
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            color: white;
+        }
+
+        .result-card-body {
+            color: var(--text-primary);
+        }
+
+        .result-license {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .result-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .result-type-badge .type-icon {
+            font-size: 18px;
+        }
+
+        .result-type-badge .type-text {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .result-type {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .result-department {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-department-icon {
+            font-size: 24px;
+        }
+
+        .result-department-text {
+            flex: 1;
+        }
+
+        .result-department-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .result-department-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .no-results-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .no-results-hint {
+            font-size: 16px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            font-size: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Initial State */
+        .initial-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .initial-state-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .initial-state-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .initial-state-hint {
+            font-size: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-input-wrapper {
+                min-width: 100%;
+            }
+
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="themeIcon">🌙</span>
+        <span class="theme-toggle-text" id="themeText">โหมดมืด</span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-logo" id="headerLogo">
+                <span class="fallback-icon">🏛️</span>
+            </div>
+            <div class="header-content">
+                <h1 id="headerTitle">ค้นหายานพาหนะ</h1>
+                <p id="headerSubtitle">สำนักงานพิสูจน์หลักฐานตำรวจ (สพฐ.ตร.)</p>
+            </div>
+            <div class="header-nav">
+                <a href="/vehicles.html" class="nav-btn">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="/" class="nav-btn">
+                    <span>🏠</span> หน้าหลัก
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2 class="section-title">🔍 ค้นหายานพาหนะ</h2>
+            
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" 
+                           id="searchInput" 
+                           class="search-input" 
+                           placeholder="ค้นหาทะเบียน, ยี่ห้อ, รุ่น..."
+                           onkeypress="if(event.key === 'Enter') performSearch()">
+                </div>
+                <button class="search-btn" onclick="performSearch()">
+                    <span>🔍</span> ค้นหา
+                </button>
+            </div>
+
+            <div class="search-filters">
+                <select id="filterDepartment" class="filter-select" onchange="performSearch()">
+                    <option value="">-- ทุกหน่วยงาน --</option>
+                </select>
+                <select id="filterType" class="filter-select" onchange="performSearch()">
+                    <option value="">-- ทุกประเภท --</option>
+                </select>
+                <select id="filterStatus" class="filter-select" onchange="performSearch()">
+                    <option value="">-- ทุกสถานะ --</option>
+                    <option value="ใช้งานได้">✓ ใช้งานได้</option>
+                    <option value="ชำรุด">✗ ชำรุด</option>
+                    <option value="รอจำหน่าย">⏳ รอจำหน่าย</option>
+                    <option value="จำหน่าย">⚫ จำหน่าย</option>
+                </select>
+            </div>
+
+            <p class="search-hint">💡 พิมพ์ทะเบียนรถ, ยี่ห้อ หรือรุ่น แล้วกด Enter หรือคลิกปุ่มค้นหา</p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="section-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">📋 ผลการค้นหา</h2>
+                <div class="results-count" id="resultsCount"></div>
+            </div>
+            
+            <div id="resultsContainer">
+                <div class="initial-state">
+                    <div class="initial-state-icon">🚗</div>
+                    <div class="initial-state-text">พร้อมค้นหา</div>
+                    <div class="initial-state-hint">กรอกข้อมูลด้านบนเพื่อเริ่มค้นหายานพาหนะ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Vehicle type icons
+        const typeIcons = {
+            'รถเก๋ง': '🚗',
+            'กระบะ': '🚚',
+            'รถจักรยานยนต์': '🏍️',
+            'จักรยานยนต์': '🏍️',
+            'รถตู้': '🚐',
+            'รถบัส': '🚌',
+            'รถตรวจการณ์': '🚓',
+            'รถพิเศษ': '🚔',
+            'เกราะ': '🚔',
+            'รถหุ้มเกราะ': '🚔'
+        };
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            
+            if (newTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'โหมดสว่าง';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'โหมดมืด';
+            }
+        }
+
+        // Load on page ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            
+            if (savedTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'โหมดสว่าง';
+            }
+
+            // Load site settings
+            loadSiteSettings();
+            
+            // Load filter options
+            loadFilterOptions();
+        });
+
+        // Load site settings
+        async function loadSiteSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.data) {
+                        applySiteSettings(result.data);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.log('Using default settings');
+            }
+
+            const savedSettings = localStorage.getItem('siteSettings');
+            if (savedSettings) {
+                try {
+                    applySiteSettings(JSON.parse(savedSettings));
+                } catch (e) {}
+            }
+        }
+
+        function applySiteSettings(settings) {
+            const logoContainer = document.getElementById('headerLogo');
+            if (settings.logoUrl) {
+                logoContainer.innerHTML = `<img src="${settings.logoUrl}" alt="Logo" onerror="this.parentElement.innerHTML='<span class=\\'fallback-icon\\'>🏛️</span>'">`;
+            }
+        }
+
+        // Load filter options
+        async function loadFilterOptions() {
+            try {
+                const response = await fetch('/api/vehicles/stats');
+                const result = await response.json();
+
+                if (result.success) {
+                    // Populate departments
+                    const deptSelect = document.getElementById('filterDepartment');
+                    result.data.byDepartment.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.department_code;
+                        option.textContent = `${dept.department_code} (${dept.count})`;
+                        deptSelect.appendChild(option);
+                    });
+
+                    // Populate types
+                    const typeSelect = document.getElementById('filterType');
+                    result.data.categorized.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.category;
+                        option.textContent = `${cat.category} (${cat.count})`;
+                        typeSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading filter options:', error);
+            }
+        }
+
+        // Perform search
+        async function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const department = document.getElementById('filterDepartment').value;
+            const type = document.getElementById('filterType').value;
+            const status = document.getElementById('filterStatus').value;
+
+            // Show loading
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner">⏳</div>
+                    <div>กำลังค้นหา...</div>
+                </div>
+            `;
+
+            try {
+                // Build query params
+                let params = new URLSearchParams();
+                if (searchTerm) params.append('search', searchTerm);
+                if (department) params.append('department', department);
+                if (type) params.append('type', type);
+                if (status) params.append('status', status);
+                params.append('limit', '100');
+
+                const response = await fetch(`/api/vehicles?${params.toString()}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayResults(result.data);
+                } else {
+                    showError('เกิดข้อผิดพลาดในการค้นหา');
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                showError('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+            }
+        }
+
+        // Display results
+        function displayResults(vehicles) {
+            const container = document.getElementById('resultsContainer');
+            const countEl = document.getElementById('resultsCount');
+
+            countEl.innerHTML = `พบ <strong>${vehicles.length}</strong> รายการ`;
+
+            if (vehicles.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <div class="no-results-text">ไม่พบข้อมูล</div>
+                        <div class="no-results-hint">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="results-grid">';
+
+            vehicles.forEach(v => {
+                const icon = getVehicleIcon(v.vehicle_type);
+                const statusClass = getStatusClass(v.status);
+                const statusText = v.status || 'ใช้งานได้';
+
+                html += `
+                    <div class="result-card">
+                        <div class="result-card-header">
+                            <div class="result-card-icon">${icon}</div>
+                            <div class="result-status ${statusClass}">${getStatusIcon(v.status)} ${statusText}</div>
+                        </div>
+                        <div class="result-card-body">
+                            <div class="result-license">${v.license_plate || '-'}</div>
+                            
+                            <div class="result-type-badge">
+                                <span class="type-icon">${icon}</span>
+                                <span class="type-text">${v.vehicle_type || '-'}</span>
+                            </div>
+                            
+                            <div class="result-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">ยี่ห้อ</span>
+                                    <span class="detail-value">${v.brand || '-'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">อายุรถ</span>
+                                    <span class="detail-value">${v.vehicle_age ? v.vehicle_age + ' ปี' : '-'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">แหล่งที่มา</span>
+                                    <span class="detail-value">${v.source || '-'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">หมายเหตุ</span>
+                                    <span class="detail-value">${v.remarks || '-'}</span>
+                                </div>
+                            </div>
+
+                            <div class="result-department">
+                                <div class="result-department-icon">🏢</div>
+                                <div class="result-department-text">
+                                    <div class="result-department-label">สังกัดหน่วยงาน</div>
+                                    <div class="result-department-name">${v.department_code || '-'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Get vehicle icon
+        function getVehicleIcon(type) {
+            if (!type) return '🚗';
+            for (const key in typeIcons) {
+                if (type.includes(key)) {
+                    return typeIcons[key];
+                }
+            }
+            return '🚗';
+        }
+
+        // Get status class
+        function getStatusClass(status) {
+            if (status === 'ใช้งานได้') return 'status-available';
+            if (status === 'ชำรุด') return 'status-damaged';
+            if (status === 'รอจำหน่าย' || status === 'อยู่ระหว่างจำหน่าย') return 'status-pending';
+            if (status === 'จำหน่าย') return 'status-disposed';
+            return 'status-available';
+        }
+
+        // Get status icon
+        function getStatusIcon(status) {
+            if (status === 'ใช้งานได้') return '✓';
+            if (status === 'ชำรุด') return '✗';
+            if (status === 'รอจำหน่าย' || status === 'อยู่ระหว่างจำหน่าย') return '⏳';
+            if (status === 'จำหน่าย') return '⚫';
+            return '✓';
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">❌</div>
+                    <div class="no-results-text">${message}</div>
+                    <div class="no-results-hint">กรุณาลองใหม่อีกครั้ง</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

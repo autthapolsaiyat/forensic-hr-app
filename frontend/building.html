@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบอาคารที่ทำการ - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-primary: #1a3a5c;
+            --bg-secondary: #2c5282;
+            --bg-card: #2b4a6f;
+            --bg-stat: #3d6a99;
+            --text-primary: #ffffff;
+            --text-secondary: #a0c4e8;
+            --accent-green: #48bb78;
+            --accent-blue: #4299e1;
+            --accent-orange: #ed8936;
+            --accent-purple: #9f7aea;
+            --border-color: #4a7ab0;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8f0f5;
+            --bg-secondary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-stat: #d6eaf8;
+            --text-primary: #1a5276;
+            --text-secondary: #5a7a9a;
+            --border-color: #c5d9e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        [data-theme="light"] .header {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid #3498db;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .logo {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 35px;
+        }
+
+        .header-title h1 { font-size: 32px; font-weight: bold; }
+        .header-title p { font-size: 16px; color: var(--text-secondary); }
+
+        .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn.primary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .nav-btn.search { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+        .nav-btn.secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .nav-btn:hover { transform: translateY(-2px); }
+
+        [data-theme="light"] .nav-btn.secondary {
+            background: var(--bg-stat);
+        }
+
+        .section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        [data-theme="light"] .section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title { 
+            font-size: 24px; 
+            font-weight: bold; 
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-stat);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .stat-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+        }
+
+        [data-theme="light"] .stat-icon {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .stat-title { font-size: 16px; color: var(--text-secondary); }
+        .stat-number { font-size: 48px; font-weight: bold; }
+        .stat-sub { font-size: 14px; color: var(--text-secondary); margin-top: 5px; }
+        .stat-percent { 
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+
+        .branch-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .branch-stat {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .branch-stat {
+            background: var(--bg-stat);
+        }
+
+        .branch-stat:hover { transform: translateY(-3px); background: rgba(255,255,255,0.15); }
+        [data-theme="light"] .branch-stat:hover { background: #c9e2f5; }
+
+        .branch-stat-icon { font-size: 30px; margin-bottom: 10px; }
+        .branch-stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .branch-stat-value { font-size: 32px; font-weight: bold; }
+        .branch-stat-total { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
+        .branch-stat-percent { font-size: 14px; color: var(--accent-green); margin-top: 3px; }
+
+        .division-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .division-card {
+            background: var(--bg-stat);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .division-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .division-card:hover { transform: translateY(-3px); }
+
+        .division-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        [data-theme="light"] .division-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .division-name { font-size: 18px; font-weight: bold; }
+        .division-count { font-size: 14px; color: var(--text-secondary); }
+
+        .division-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .division-stat {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        [data-theme="light"] .division-stat {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .division-stat-value { font-size: 20px; font-weight: bold; }
+        .division-stat-label { font-size: 11px; color: var(--text-secondary); }
+
+        .division-stat.green .division-stat-value { color: var(--accent-green); }
+        .division-stat.blue .division-stat-value { color: var(--accent-blue); }
+        .division-stat.orange .division-stat-value { color: var(--accent-orange); }
+        .division-stat.purple .division-stat-value { color: var(--accent-purple); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        [data-theme="light"] .modal-content {
+            background: var(--bg-secondary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        [data-theme="light"] .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .modal-header h2 { font-size: 24px; display: flex; align-items: center; gap: 10px; }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-summary {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .modal-summary-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        [data-theme="light"] .modal-summary-item {
+            background: var(--bg-stat);
+        }
+
+        .modal-summary-item strong { color: var(--accent-green); }
+
+        .modal-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .modal-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .modal-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-item:hover { transform: translateX(5px); }
+
+        .modal-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .modal-item-title { font-size: 16px; font-weight: bold; }
+        .modal-item-details { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-badge.active { background: var(--accent-green); color: white; }
+        .status-badge.other { background: var(--accent-orange); color: white; }
+        .status-badge.waiting { background: var(--accent-blue); color: white; }
+        .status-badge.finding { background: var(--accent-purple); color: white; }
+
+        .loading { text-align: center; padding: 60px; font-size: 20px; color: var(--text-secondary); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .division-grid { grid-template-columns: 1fr; }
+            .stat-number { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🏢</div>
+                <div class="header-title">
+                    <h1>อาคารที่ทำการ | สพฐ.ตร.</h1>
+                    <p>Dashboard - ระบบจัดการอาคารที่ทำการ</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="/building-search.html" class="nav-btn search">🔍 ค้นหา</a>
+                <a href="/" class="nav-btn secondary">← กลับ</a>
+                <button class="nav-btn secondary" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">โหมดมืด</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📊 สถิติภาพรวมอาคารที่ทำการ</h2>
+            <div class="stats-grid" id="mainStats">
+                <div class="loading">กำลังโหลดข้อมูล...</div>
+            </div>
+            
+            <div class="branch-stats" id="branchStats"></div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🏛️ หน่วยงานทั้งหมด</h2>
+            <div class="division-grid" id="divisionGrid">
+                <div class="loading">กำลังโหลดข้อมูล...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">-</h2>
+                <button class="close-btn" onclick="closeModal()">✕ ปิด</button>
+            </div>
+            <div class="modal-summary" id="modalSummary"></div>
+            <div class="modal-list" id="modalList">
+                <div class="loading">กำลังโหลด...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let statsData = null;
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            return Number(num).toLocaleString('th-TH');
+        }
+
+        function calcPercent(value, total) {
+            if (!total || total === 0) return 0;
+            return Math.round((value / total) * 100);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('buildingTheme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+            document.getElementById('themeText').textContent = newTheme === 'light' ? 'โหมดมืด' : 'โหมดสว่าง';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('buildingTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '🌙';
+                document.getElementById('themeText').textContent = 'โหมดมืด';
+            }
+            loadData();
+        });
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/building/stats');
+                const result = await response.json();
+                
+                if (result.success) {
+                    statsData = result.data;
+                    renderMainStats(statsData);
+                    renderBranchStats(statsData);
+                    renderDivisionGrid(statsData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('mainStats').innerHTML = '<div class="loading">ไม่สามารถโหลดข้อมูลได้</div>';
+            }
+        }
+
+        function renderMainStats(data) {
+            const container = document.getElementById('mainStats');
+            const totalBranches = data.total_branches || 69;
+            
+            container.innerHTML = `
+                <div class="stat-card" onclick="showHQBuildings()">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">🏛️</div>
+                        <div>
+                            <div class="stat-title">กองบังคับการ</div>
+                            <div class="stat-sub">มีที่ทำการของหน่วย</div>
+                        </div>
+                    </div>
+                    <div class="stat-number">${data.hq?.total || 0}</div>
+                    <div class="stat-percent">100%</div>
+                </div>
+                
+                <div class="stat-card" onclick="showByOwnership('has_building')">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">🏠</div>
+                        <div>
+                            <div class="stat-title">พฐ.จว.</div>
+                            <div class="stat-sub">มีที่ทำการของหน่วย</div>
+                        </div>
+                    </div>
+                    <div class="stat-number">${data.branch?.has_building || 0}</div>
+                    <div class="stat-sub">ทั้งหมด ${totalBranches}</div>
+                    <div class="stat-percent">${calcPercent(data.branch?.has_building, totalBranches)}%</div>
+                </div>
+                
+                <div class="stat-card" onclick="showByOwnership('use_other')">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">🤝</div>
+                        <div>
+                            <div class="stat-title">พฐ.จว.</div>
+                            <div class="stat-sub">ใช้ที่ทำการของหน่วยอื่น</div>
+                        </div>
+                    </div>
+                    <div class="stat-number">${data.branch?.use_other || 0}</div>
+                    <div class="stat-sub">ทั้งหมด ${totalBranches}</div>
+                    <div class="stat-percent">${calcPercent(data.branch?.use_other, totalBranches)}%</div>
+                </div>
+            `;
+        }
+
+        function renderBranchStats(data) {
+            const container = document.getElementById('branchStats');
+            const totalBranches = data.total_branches || 69;
+            
+            container.innerHTML = `
+                <div class="branch-stat" onclick="showByOwnership('wait_budget')">
+                    <div class="branch-stat-icon">💰</div>
+                    <div class="branch-stat-label">พฐ.จว. มีที่ดินพร้อมรองบประมาณ</div>
+                    <div class="branch-stat-value">${data.branch?.wait_budget || 0}</div>
+                    <div class="branch-stat-total">ทั้งหมด ${totalBranches}</div>
+                    <div class="branch-stat-percent">${calcPercent(data.branch?.wait_budget, totalBranches)}%</div>
+                </div>
+                
+                <div class="branch-stat" onclick="showByOwnership('finding_land')">
+                    <div class="branch-stat-icon">🌱</div>
+                    <div class="branch-stat-label">พฐ.จว. อยู่ระหว่างจัดหาที่ราชพัสดุ</div>
+                    <div class="branch-stat-value">${data.branch?.finding_land || 0}</div>
+                    <div class="branch-stat-total">ทั้งหมด ${totalBranches}</div>
+                    <div class="branch-stat-percent">${calcPercent(data.branch?.finding_land, totalBranches)}%</div>
+                </div>
+            `;
+        }
+
+        function renderDivisionGrid(data) {
+            const container = document.getElementById('divisionGrid');
+            
+            if (!data.byDivision || data.byDivision.length === 0) {
+                container.innerHTML = '<div class="loading">ไม่มีข้อมูลหน่วยงาน</div>';
+                return;
+            }
+            
+            container.innerHTML = data.byDivision.map(div => `
+                <div class="division-card" onclick="showDivisionDetail('${div.division}')">
+                    <div class="division-header">
+                        <span class="division-name">${div.division || 'ไม่ระบุ'}</span>
+                        <span class="division-count">${div.branch_count} พฐ.จว.</span>
+                    </div>
+                    <div class="division-stats">
+                        <div class="division-stat green">
+                            <div class="division-stat-value">${div.has_building || 0}</div>
+                            <div class="division-stat-label">มีที่ทำการ</div>
+                        </div>
+                        <div class="division-stat orange">
+                            <div class="division-stat-value">${div.use_other || 0}</div>
+                            <div class="division-stat-label">ใช้หน่วยอื่น</div>
+                        </div>
+                        <div class="division-stat blue">
+                            <div class="division-stat-value">${div.wait_budget || 0}</div>
+                            <div class="division-stat-label">รองบประมาณ</div>
+                        </div>
+                        <div class="division-stat purple">
+                            <div class="division-stat-value">${div.finding_land || 0}</div>
+                            <div class="division-stat-label">จัดหาที่ดิน</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal Functions
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('detailModal')) closeModal();
+        }
+
+        function getStatusBadge(ownership) {
+            const badges = {
+                'has_building': '<span class="status-badge active">✅ มีที่ทำการ</span>',
+                'use_other': '<span class="status-badge other">🤝 ใช้หน่วยอื่น</span>',
+                'wait_budget': '<span class="status-badge waiting">💰 รองบประมาณ</span>',
+                'finding_land': '<span class="status-badge finding">🌱 จัดหาที่ดิน</span>'
+            };
+            return badges[ownership] || '<span class="status-badge">-</span>';
+        }
+
+        function renderModalList(data) {
+            const container = document.getElementById('modalList');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="loading">ไม่พบข้อมูล</div>';
+                return;
+            }
+
+            container.innerHTML = data.map((item, idx) => `
+                <div class="modal-item">
+                    <div class="modal-item-header">
+                        <div class="modal-item-title">${item.subdivision || item.division || 'ไม่ระบุ'}</div>
+                        ${getStatusBadge(item.ownership_status)}
+                    </div>
+                    <div class="modal-item-details">
+                        ${item.building_name ? `<div>: ${item.building_type || 'อาคาร'}</div>` : ''}
+                        ${item.land_type ? `<div>: ${item.land_type}</div>` : ''}
+                        ${item.province ? `<div>: ที่อยู่ ${item.district || ''} ${item.province}</div>` : ''}
+                        ${item.remarks ? `<div>: ${item.remarks}</div>` : ''}
+                        ${item.master_plan_url ? `<div><a href="${item.master_plan_url}" target="_blank" style="color:#4299e1">Master Plan</a></div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function showHQBuildings() {
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalTitle').innerHTML = '🏛️ กองบังคับการ';
+            document.getElementById('modalSummary').innerHTML = '';
+            document.getElementById('modalList').innerHTML = '<div class="loading">กำลังโหลด...</div>';
+
+            try {
+                const response = await fetch('/api/building/hq');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('modalSummary').innerHTML = `
+                        <div class="modal-summary-item">📊 รวม <strong>${result.data.length}</strong> หน่วย</div>
+                    `;
+                    renderModalList(result.data);
+                }
+            } catch (error) {
+                document.getElementById('modalList').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        async function showByOwnership(ownership) {
+            const titles = {
+                'has_building': '🏠 พฐ.จว. มีที่ทำการของหน่วย',
+                'use_other': '🤝 พฐ.จว. ใช้ที่ทำการของหน่วยอื่น',
+                'wait_budget': '💰 พฐ.จว. มีที่ดินพร้อมรองบประมาณ',
+                'finding_land': '🌱 พฐ.จว. อยู่ระหว่างจัดหาที่ราชพัสดุ'
+            };
+
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalTitle').innerHTML = titles[ownership];
+            document.getElementById('modalSummary').innerHTML = '';
+            document.getElementById('modalList').innerHTML = '<div class="loading">กำลังโหลด...</div>';
+
+            try {
+                const response = await fetch(`/api/building?ownership_status=${ownership}&limit=100`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('modalSummary').innerHTML = `
+                        <div class="modal-summary-item">📊 รวม <strong>${result.data.length}</strong> หน่วย</div>
+                    `;
+                    renderModalList(result.data);
+                }
+            } catch (error) {
+                document.getElementById('modalList').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        async function showDivisionDetail(division) {
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalTitle').innerHTML = `🏛️ ${division}`;
+            document.getElementById('modalSummary').innerHTML = '';
+            document.getElementById('modalList').innerHTML = '<div class="loading">กำลังโหลด...</div>';
+
+            try {
+                const response = await fetch(`/api/building/branches/${encodeURIComponent(division)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    document.getElementById('modalSummary').innerHTML = `
+                        <div class="modal-summary-item">📊 พฐ.จว.ในสังกัด <strong>${result.total}</strong></div>
+                        <div class="modal-summary-item">✅ มีที่ทำการ <strong>${stats.has_building || 0}</strong></div>
+                        <div class="modal-summary-item">🤝 ใช้หน่วยอื่น <strong>${stats.use_other || 0}</strong></div>
+                        <div class="modal-summary-item">💰 รองบประมาณ <strong>${stats.wait_budget || 0}</strong></div>
+                        <div class="modal-summary-item">🌱 จัดหาที่ดิน <strong>${stats.finding_land || 0}</strong></div>
+                    `;
+                    renderModalList(result.data);
+                }
+            } catch (error) {
+                document.getElementById('modalList').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+    </script>
+</body>
+</html>

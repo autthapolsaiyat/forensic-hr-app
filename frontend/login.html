@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - สพฐ.ตร.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a3a5c 0%, #2c5282 50%, #1a3a5c 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 50px;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+        }
+
+        .logo img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: #1a3a5c;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #999;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-login:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .register-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            background: #fee;
+            color: #c0392b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .warning-msg {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: none;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .modal-btn.primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo" id="logoContainer">🏛️</div>
+        
+        <h1 id="systemName">ระบบสารสนเทศ สพฐ.ตร.</h1>
+        <p class="subtitle" id="welcomeMessage">ยินดีต้อนรับเข้าสู่ระบบ</p>
+        
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="warning-msg" id="warningMsg"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label>ชื่อผู้ใช้</label>
+                <div class="input-wrapper">
+                    <span class="icon">👤</span>
+                    <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้" required autocomplete="username">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>รหัสผ่าน</label>
+                <div class="input-wrapper">
+                    <span class="icon">🔒</span>
+                    <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required autocomplete="current-password">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-login" id="btnLogin">
+                เข้าสู่ระบบ
+                <span class="loading" id="loading"></span>
+            </button>
+        </form>
+        
+        <div class="divider"><span>หรือ</span></div>
+        
+        <p>ยังไม่มีบัญชี? <a href="/register.html" class="register-link">สมัครสมาชิก</a></p>
+        
+        <div class="footer" id="footerText">© 2568 สพฐ.ตร. All rights reserved</div>
+    </div>
+    
+    <!-- Expired Modal -->
+    <div class="modal" id="expiredModal">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <h2 class="modal-title">บัญชีหมดอายุ</h2>
+            <p class="modal-text">
+                บัญชีของคุณหมดอายุแล้ว<br>
+                กรุณาติดต่อผู้ดูแลระบบหรือส่งคำขอต่ออายุ
+            </p>
+            <button class="modal-btn primary" onclick="requestRenewal()">🔄 ขอต่ออายุ</button>
+            <button class="modal-btn secondary" onclick="closeModal()">ปิด</button>
+        </div>
+    </div>
+    
+    <!-- Pending Modal -->
+    <div class="modal" id="pendingModal">
+        <div class="modal-content">
+            <div class="modal-icon">⏳</div>
+            <h2 class="modal-title">รอการอนุมัติ</h2>
+            <p class="modal-text">
+                บัญชีของคุณอยู่ระหว่างรอผู้ดูแลระบบอนุมัติ<br>
+                กรุณารอสักครู่
+            </p>
+            <button class="modal-btn secondary" onclick="closeModal()">ปิด</button>
+        </div>
+    </div>
+
+    <script>
+        let settings = {};
+        
+        // Load settings
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/auth/settings');
+                const result = await response.json();
+                
+                if (result.success) {
+                    settings = result.data;
+                    
+                    if (settings.system_name) {
+                        document.getElementById('systemName').textContent = settings.system_name;
+                        document.title = 'เข้าสู่ระบบ - ' + settings.system_name;
+                    }
+                    
+                    if (settings.welcome_message) {
+                        document.getElementById('welcomeMessage').textContent = settings.welcome_message;
+                    }
+                    
+                    if (settings.footer_text) {
+                        document.getElementById('footerText').textContent = settings.footer_text;
+                    }
+                    
+                    if (settings.login_logo) {
+                        document.getElementById('logoContainer').innerHTML = 
+                            `<img src="${settings.login_logo}" alt="Logo" onerror="this.parentElement.innerHTML='🏛️'">`;
+                    }
+                }
+            } catch (error) {
+                console.error('Load settings error:', error);
+            }
+        }
+        
+        // Check existing session
+        async function checkSession() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.ok) {
+                        // Already logged in
+                        const result = await response.json();
+                        if (result.data.role === 'super_admin') {
+                            window.location.href = '/super-admin.html';
+                        } else {
+                            window.location.href = '/intro.html';
+                        }
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                } catch (error) {
+                    localStorage.removeItem('token');
+                }
+            }
+        }
+        
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btnLogin');
+            const loading = document.getElementById('loading');
+            const errorMsg = document.getElementById('errorMsg');
+            const warningMsg = document.getElementById('warningMsg');
+            
+            errorMsg.style.display = 'none';
+            warningMsg.style.display = 'none';
+            btn.disabled = true;
+            loading.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Save token
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    
+                    // Show warning if expire soon
+                    if (result.data.expireWarning) {
+                        warningMsg.textContent = result.data.expireWarning;
+                        warningMsg.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            redirectAfterLogin(result.data.user);
+                        }, 2000);
+                    } else {
+                        redirectAfterLogin(result.data.user);
+                    }
+                } else {
+                    // Handle specific error codes
+                    if (result.code === 'EXPIRED') {
+                        document.getElementById('expiredModal').style.display = 'block';
+                    } else if (result.code === 'PENDING') {
+                        document.getElementById('pendingModal').style.display = 'block';
+                    } else {
+                        errorMsg.textContent = result.error;
+                        errorMsg.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                errorMsg.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+        
+        function redirectAfterLogin(user) {
+            if (user.role === 'super_admin') {
+                window.location.href = '/super-admin.html';
+            } else {
+                window.location.href = '/intro.html';
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('expiredModal').style.display = 'none';
+            document.getElementById('pendingModal').style.display = 'none';
+        }
+        
+        function requestRenewal() {
+            // For expired users, redirect to renewal page
+            window.location.href = '/expired.html';
+        }
+        
+        // Init
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            checkSession();
+        });
+    </script>
+</body>
+</html>

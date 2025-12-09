@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>ค้นหาบุคลากร - สพฐ.ตร.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+            --footer-text: rgba(255,255,255,0.7);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+            --footer-text: rgba(30,60,114,0.7);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+            flex-shrink: 0;
+        }
+        .header-title { flex: 1; text-align: center; min-width: 120px; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 36px); color: var(--text-color); font-weight: bold; }
+        .back-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white; padding: 10px 20px; border-radius: 50px;
+            text-decoration: none; font-size: clamp(14px, 2vw, 18px); font-weight: bold;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+            white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+        }
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-input {
+            padding: 15px 20px;
+            font-size: clamp(16px, 3vw, 18px);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-color);
+            width: 100%;
+        }
+        .search-input::placeholder { color: var(--text-color); opacity: 0.6; }
+        .search-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 30px;
+            font-size: clamp(16px, 3vw, 18px);
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(52,152,219,0.4);
+            min-height: 50px;
+        }
+        .search-btn:active { transform: scale(0.98); }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .filter-select {
+            padding: 12px 15px;
+            font-size: clamp(14px, 2.5vw, 16px);
+            border: 2px solid var(--card-border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-color);
+            min-height: 44px;
+        }
+        .filter-select option { background: #1e3c72; color: white; }
+        
+        .results-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+        .result-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid var(--card-border);
+        }
+        .result-name {
+            font-size: clamp(18px, 3.5vw, 22px);
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+            font-size: clamp(13px, 2.5vw, 15px);
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+        .loading { text-align: center; padding: 30px 20px; color: var(--text-color); font-size: clamp(16px, 3vw, 18px); }
+        
+        /* Footer */
+        .site-footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--footer-text);
+            font-size: clamp(12px, 2vw, 14px);
+            line-height: 1.8;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            margin-top: 30px;
+        }
+        .site-footer div { margin: 5px 0; }
+        .site-footer strong { color: var(--text-color); }
+        
+        @media (min-width: 768px) {
+            body { padding: 20px; padding-bottom: 100px; }
+            .header { padding: 25px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+            .search-card { padding: 30px; }
+            .search-box { flex-direction: row; }
+            .search-input { flex: 1; }
+            .search-btn { padding: 15px 40px; }
+        }
+        
+        @media (min-width: 1024px) {
+            .filters { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ตร.</div>
+            <div class="header-title"><h1>🔍 ค้นหาบุคลากร</h1></div>
+            <a href="/summary.html" class="back-btn">← ย้อนกลับ</a>
+        </div>
+        
+        <div class="search-card">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="ค้นหา ชื่อ, นามสกุล, ตำแหน่ง..." />
+                <button class="search-btn" onclick="search()">ค้นหา</button>
+            </div>
+            <div class="filters">
+                <select class="filter-select" id="filterHQ">
+                    <option value="">ทุกหน่วยงาน</option>
+                </select>
+                <select class="filter-select" id="filterGender">
+                    <option value="">ทุกเพศ</option>
+                    <option value="ชาย">ชาย</option>
+                    <option value="หญิง">หญิง</option>
+                </select>
+                <select class="filter-select" id="filterVacancy">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="คนครอง">คนครอง</option>
+                    <option value="ตำแหน่งว่าง">ตำแหน่งว่าง</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="results-card">
+            <div id="results" class="loading">กรุณากรอกคำค้นหา</div>
+        </div>
+        
+        <footer class="site-footer">
+            <div>Developed by "QXV0dGhhcG9sIFNhaXlhdA=="(AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </footer>
+    </div>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        async function loadFilters() {
+            const res = await fetch('/api/statistics/departments');
+            const data = await res.json();
+            if (data.success) {
+                const select = document.getElementById('filterHQ');
+                data.data.forEach(dept => {
+                    const opt = document.createElement('option');
+                    opt.value = dept.dept;
+                    opt.textContent = dept.dept;
+                    select.appendChild(opt);
+                });
+            }
+        }
+        
+        async function search() {
+            const query = document.getElementById('searchInput').value;
+            const hq = document.getElementById('filterHQ').value;
+            const gender = document.getElementById('filterGender').value;
+            const vacancy = document.getElementById('filterVacancy').value;
+            
+            if (!query && !hq && !gender && !vacancy) {
+                document.getElementById('results').innerHTML = '<div class="loading">กรุณากรอกคำค้นหา</div>';
+                return;
+            }
+            
+            document.getElementById('results').innerHTML = '<div class="loading">กำลังค้นหา...</div>';
+            
+            const params = new URLSearchParams();
+            if (query) params.append('q', query);
+            if (hq) params.append('headquarters', hq);
+            if (gender) params.append('gender', gender);
+            if (vacancy) params.append('vacancy_status', vacancy);
+            
+            try {
+                const res = await fetch(`/api/search?${params}`);
+                const data = await res.json();
+                
+                if (data.success && data.data.length > 0) {
+                    renderResults(data.data);
+                } else {
+                    document.getElementById('results').innerHTML = '<div class="loading">ไม่พบข้อมูล</div>';
+                }
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+        
+        function renderResults(results) {
+            const html = results.map(r => `
+                <div class="result-item">
+                    <div class="result-name">${r.rank || ''} ${r.full_name || 'ไม่ระบุ'}</div>
+                    <div class="result-details">
+                        <div>💼 ${r.position || '-'}</div>
+                        <div>🏢 ${r.headquarters || '-'}</div>
+                        <div>📍 ${r.department || '-'}</div>
+                        <div>👤 ${r.gender || '-'}</div>
+                        <div>📊 ${r.vacancy_status || '-'}</div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('results').innerHTML = html;
+        }
+        
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') search();
+        });
+        
+        loadFilters();
+    </script>
+</body>
+</html>

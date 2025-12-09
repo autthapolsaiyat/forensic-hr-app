@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>Management | 4M – สพฐ.ตร.</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="4M สพฐ.ตร.">
+    <meta name="apple-mobile-web-app-title" content="4M สพฐ.ตร.">
+    <meta name="description" content="ระบบจัดการข้อมูลกำลังพล สำนักงานนิติวิทยาศาสตร์ตำรวจ">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    
+    <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --hover-shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a202c;
+            --bg-gradient-end: #2d3748;
+            --card-bg: rgba(45, 55, 72, 0.95);
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --hover-shadow: rgba(0, 0, 0, 0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            overscroll-behavior: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            animation: fadeIn 0.8s ease-out;
+            padding: 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: max(20px, env(safe-area-inset-top, 20px));
+            right: max(20px, env(safe-area-inset-right, 20px));
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-toggle:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px var(--hover-shadow);
+        }
+        
+        .theme-toggle:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            margin: 0 auto 25px;
+            box-shadow: 0 15px 50px rgba(231, 76, 60, 0.4);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        h1 {
+            font-size: clamp(28px, 6vw, 42px);
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+        
+        .concept {
+            font-size: clamp(32px, 7vw, 56px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 20px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .menu-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 50px var(--shadow);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .menu-card:hover::before {
+            opacity: 1;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 70px var(--hover-shadow);
+        }
+        
+        .menu-card:active {
+            transform: translateY(-10px) scale(0.98);
+        }
+        
+        /* Man Card */
+        .menu-card.man-card {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.95) 0%, rgba(41, 128, 185, 0.95) 100%);
+        }
+        
+        .menu-card.man-card .icon {
+            color: white;
+        }
+        
+        .menu-card.man-card h2,
+        .menu-card.man-card p {
+            color: white;
+        }
+        
+        .menu-card.man-card::after {
+            content: '→';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-card.man-card:hover::after {
+            opacity: 1;
+            right: 15px;
+        }
+        
+        /* Money Card */
+        .menu-card.money-card {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.95) 0%, rgba(39, 174, 96, 0.95) 100%);
+        }
+        
+        .menu-card.money-card .icon {
+            color: white;
+        }
+        
+        .menu-card.money-card h2,
+        .menu-card.money-card p {
+            color: white;
+        }
+        
+        /* Material Card */
+        .menu-card.material-card {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.95) 0%, rgba(142, 68, 173, 0.95) 100%);
+        }
+        
+        .menu-card.material-card .icon {
+            color: white;
+        }
+        
+        .menu-card.material-card h2,
+        .menu-card.material-card p {
+            color: white;
+        }
+        
+        /* Management Card */
+        .menu-card.management-card {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.95) 0%, rgba(211, 84, 0, 0.95) 100%);
+        }
+        
+        .menu-card.management-card .icon {
+            color: white;
+        }
+        
+        .menu-card.management-card h2,
+        .menu-card.management-card p {
+            color: white;
+        }
+        
+        .icon {
+            font-size: clamp(50px, 10vw, 80px);
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .menu-card:hover .icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        h2 {
+            font-size: clamp(22px, 5vw, 32px);
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .menu-card p {
+            font-size: clamp(14px, 3vw, 18px);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .continue-section {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 20px;
+        }
+        
+        .btn-continue {
+            background: white;
+            color: #667eea;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(16px, 4vw, 20px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        [data-theme="dark"] .btn-continue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-continue:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-continue:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+        
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: clamp(12px, 2.5vw, 14px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-line {
+            margin: 8px 0;
+        }
+        
+        .developer {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .copyright {
+            opacity: 0.8;
+            font-size: clamp(11px, 2vw, 13px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .menu-card {
+                padding: 30px 20px;
+            }
+            
+            .theme-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .main-content {
+                padding-bottom: 100px;
+            }
+        }
+        
+        /* iPad Pro 12.9" */
+        @media only screen 
+        and (min-width: 1024px) 
+        and (max-width: 1366px) 
+        and (orientation: landscape) {
+            .menu-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 25px;
+            }
+            
+            .container {
+                max-width: 1200px;
+            }
+        }
+        
+        /* iPad */
+        @media only screen 
+        and (min-width: 768px) 
+        and (max-width: 1024px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+        }
+        
+        /* Background Shapes */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.05;
+            animation: float 25s infinite ease-in-out;
+        }
+        
+        [data-theme="dark"] .shape {
+            opacity: 0.03;
+        }
+        
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            top: 50%;
+            right: 10%;
+            width: 200px;
+            height: 200px;
+            animation-delay: 8s;
+        }
+        
+        .shape:nth-child(3) {
+            bottom: 15%;
+            left: 25%;
+            width: 120px;
+            height: 120px;
+            animation-delay: 16s;
+        }
+        
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg); 
+            }
+            25% { 
+                transform: translateY(-30px) rotate(90deg); 
+            }
+            50% { 
+                transform: translateY(-60px) rotate(180deg); 
+            }
+            75% { 
+                transform: translateY(-30px) rotate(270deg); 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <svg class="shape" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="80" fill="white"/>
+        </svg>
+        <svg class="shape" viewBox="0 0 200 200">
+            <rect x="50" y="50" width="100" height="100" fill="white"/>
+        </svg>
+        <svg class="shape" viewBox="0 0 200 200">
+            <polygon points="100,20 180,180 20,180" fill="white"/>
+        </svg>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span id="themeIcon">🌙</span>
+    </button>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="logo">ตร.</div>
+                <h1>🏛️ Management | 4M – สพฐ.ตร.</h1>
+            </div>
+
+            <div class="menu-grid">
+                <!-- Man Card -->
+                <a href="/summary.html" class="menu-card man-card">
+                    <div class="icon">👥</div>
+                    <h2>Man | คน</h2>
+                    <p>จัดการข้อมูลกำลังพล<br>บุคลากร และทรัพยากรมนุษย์</p>
+                </a>
+
+                <!-- Money Card -->
+                <div class="menu-card money-card">
+                    <div class="icon">💰</div>
+                    <h2>Money | เงิน</h2>
+                    <p>บริหารงบประมาณ<br>การเงิน และทรัพยากร</p>
+                </div>
+
+                <!-- Material Card -->
+                <div class="menu-card material-card">
+                    <div class="icon">🔬</div>
+                    <h2>Material | วัสดุ</h2>
+                    <p>จัดการวัสดุอุปกรณ์<br>เครื่องมือนิติวิทยาศาสตร์</p>
+                </div>
+
+                <!-- Management Card -->
+                <div class="menu-card management-card">
+                    <div class="icon">📊</div>
+                    <h2>Management | การจัดการ</h2>
+                    <p>ระบบบริหารจัดการ<br>และติดตามผลการดำเนินงาน</p>
+                </div>
+            </div>
+
+            <div class="continue-section">
+                <a href="/summary.html" class="btn-continue">
+                    <span>เข้าสู่ระบบ Dashboard</span>
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-line developer">
+                Developed by: QXV0dGhhcG9sIFNhaXlhdA== (AS)
+            </div>
+            <div class="footer-line copyright">
+                Copyright © 2025 All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- PWA Register Script -->
+    <script src="/pwa-register.js">// ===== AUTH CHECK =====
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "/login.html";
+        }
+        
+        // Check session validity
+        async function checkSession() {
+            try {
+                const response = await fetch("/api/auth/me", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                if (response.status === 401) {
+                    const result = await response.json();
+                    if (result.code === "SESSION_KICKED") {
+                        showKickedModal();
+                    } else {
+                        localStorage.removeItem("token");
+                        window.location.href = "/login.html";
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+        
+        function showKickedModal() {
+            const modal = document.createElement("div");
+            modal.innerHTML = `
+                <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;">
+                    <div style="background:#2d2d44;padding:40px;border-radius:20px;text-align:center;max-width:400px;">
+                        <div style="font-size:80px;margin-bottom:20px;">⚠️</div>
+                        <h2 style="color:#e74c3c;margin-bottom:15px;">ถูกเตะออกจากระบบ</h2>
+                        <p style="color:#888;margin-bottom:25px;">บัญชีนี้มีการล็อกอินเข้าใช้งานจากอุปกรณ์อื่น<br>คุณถูกออกจากระบบอัตโนมัติ</p>
+                        <button onclick="localStorage.removeItem('token');window.location.href='/login.html'" style="background:#667eea;color:white;border:none;padding:15px 30px;border-radius:10px;cursor:pointer;font-size:16px;width:100%;">🔐 ไปหน้าเข้าสู่ระบบ</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        checkSession();
+        setInterval(checkSession, 30000);
+    </script>
+    
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Animate button
+            themeToggle.style.transform = 'rotate(360deg) scale(1.1)';
+            setTimeout(() => {
+                themeToggle.style.transform = '';
+            }, 300);
+        });
+        
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' || e.key === 'T') {
+                themeToggle.click();
+            }
+        });
+        
+        // Prevent zoom on double tap (iOS)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    // ===== AUTH CHECK =====
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "/login.html";
+        }
+        
+        // Check session validity
+        async function checkSession() {
+            try {
+                const response = await fetch("/api/auth/me", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                if (response.status === 401) {
+                    const result = await response.json();
+                    if (result.code === "SESSION_KICKED") {
+                        showKickedModal();
+                    } else {
+                        localStorage.removeItem("token");
+                        window.location.href = "/login.html";
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+        
+        function showKickedModal() {
+            const modal = document.createElement("div");
+            modal.innerHTML = `
+                <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;">
+                    <div style="background:#2d2d44;padding:40px;border-radius:20px;text-align:center;max-width:400px;">
+                        <div style="font-size:80px;margin-bottom:20px;">⚠️</div>
+                        <h2 style="color:#e74c3c;margin-bottom:15px;">ถูกเตะออกจากระบบ</h2>
+                        <p style="color:#888;margin-bottom:25px;">บัญชีนี้มีการล็อกอินเข้าใช้งานจากอุปกรณ์อื่น<br>คุณถูกออกจากระบบอัตโนมัติ</p>
+                        <button onclick="localStorage.removeItem('token');window.location.href='/login.html'" style="background:#667eea;color:white;border:none;padding:15px 30px;border-radius:10px;cursor:pointer;font-size:16px;width:100%;">🔐 ไปหน้าเข้าสู่ระบบ</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        checkSession();
+        setInterval(checkSession, 30000);
+    </script>
+</body>
+</html>

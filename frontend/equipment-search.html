@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาครุภัณฑ์ - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-gradient-start: #e8f4fc;
+            --bg-gradient-end: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1e3a5f;
+            --text-secondary: #5a7a9a;
+            --border-color: #d0e3f0;
+            --hover-bg: #f0f7fc;
+            --accent-color: #2196F3;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0d1b2a;
+            --bg-gradient-end: #1b2838;
+            --card-bg: #1e3a5f;
+            --text-primary: #e8f4fc;
+            --text-secondary: #a8c5db;
+            --border-color: #2d4a6a;
+            --hover-bg: #2d4a6a;
+            --accent-color: #64b5f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle span { font-size: 24px; }
+        .theme-toggle-text { color: var(--text-primary); font-weight: bold; }
+
+        .header {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--accent-color), #1976D2);
+        }
+
+        .header-text h1 { color: var(--text-primary); font-size: 28px; }
+        .header-text p { color: var(--text-secondary); font-size: 16px; }
+
+        .header-buttons { margin-left: auto; display: flex; gap: 10px; }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, var(--accent-color), #1976D2); color: white; }
+        .btn-secondary { background: var(--hover-bg); color: var(--text-primary); border: 2px solid var(--border-color); }
+        .btn-success { background: linear-gradient(135deg, #4caf50, #388e3c); color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+
+        /* Export button - hidden until permission system is ready */
+        .hidden-feature { display: none; }
+
+        .search-section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-section h2 { color: var(--text-primary); margin-bottom: 20px; font-size: 24px; }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label { display: block; color: var(--text-secondary); margin-bottom: 8px; font-weight: bold; }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+        }
+
+        .search-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+
+        .results-section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-header h2 { color: var(--text-primary); }
+        .results-count { color: var(--text-secondary); font-size: 18px; }
+
+        .table-container { overflow-x: auto; }
+
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; min-width: 800px; }
+
+        .results-table th, .results-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, var(--accent-color), #1976D2);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .results-table tr:hover { background: var(--hover-bg); }
+        .results-table td { color: var(--text-primary); }
+
+        .status-badge { padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; white-space: nowrap; }
+        .status-available { background: #4caf50; color: white; }
+        .status-damaged { background: #f44336; color: white; }
+        .status-pending { background: #ff9800; color: white; }
+
+        .category-icon { display: inline-flex; align-items: center; gap: 8px; }
+
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+
+        .pagination button {
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover, .pagination button.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .no-results { text-align: center; padding: 50px; color: var(--text-secondary); }
+        .no-results span { font-size: 60px; display: block; margin-bottom: 20px; }
+
+        .loading { text-align: center; padding: 50px; color: var(--text-secondary); }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 15px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .header-buttons { margin-left: 0; }
+            .theme-toggle { top: auto; bottom: 20px; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span>
+        <span class="theme-toggle-text" id="themeText">โหมดสว่าง</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-logo">📦</div>
+            <div class="header-text">
+                <h1>🔍 ค้นหาครุภัณฑ์</h1>
+                <p>สำนักงานพิสูจน์หลักฐานตำรวจ (สพฐ.ตร.)</p>
+            </div>
+            <div class="header-buttons">
+                <a href="equipment.html" class="btn btn-primary">📊 Dashboard</a>
+                <a href="index.html" class="btn btn-secondary">🏠 หน้าหลัก</a>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2>🔎 ค้นหาครุภัณฑ์</h2>
+            <div class="search-form">
+                <div class="form-group">
+                    <label>🔤 คำค้นหา</label>
+                    <input type="text" id="searchText" placeholder="ชื่อครุภัณฑ์, เลขครุภัณฑ์...">
+                </div>
+                <div class="form-group">
+                    <label>📁 หมวดหมู่</label>
+                    <select id="categoryFilter"><option value="">ทั้งหมด</option></select>
+                </div>
+                <div class="form-group">
+                    <label>🏛️ หน่วยงาน</label>
+                    <select id="unitFilter"><option value="">ทั้งหมด</option></select>
+                </div>
+                <div class="form-group">
+                    <label>📋 สถานะ</label>
+                    <select id="statusFilter">
+                        <option value="">ทั้งหมด</option>
+                        <option value="ใช้งานได้">ใช้งานได้</option>
+                        <option value="ชำรุด">ชำรุด</option>
+                        <option value="รอจำหน่าย">รอจำหน่าย</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📅 ปีที่ได้รับ (เริ่มต้น)</label>
+                    <select id="yearStart"><option value="">ทุกปี</option></select>
+                </div>
+                <div class="form-group">
+                    <label>📅 ปีที่ได้รับ (สิ้นสุด)</label>
+                    <select id="yearEnd"><option value="">ทุกปี</option></select>
+                </div>
+            </div>
+            <div class="search-buttons">
+                <button class="btn btn-primary" onclick="searchEquipment()">🔍 ค้นหา</button>
+                <button class="btn btn-secondary" onclick="clearSearch()">🗑️ ล้างการค้นหา</button>
+                <button class="btn btn-success hidden-feature" onclick="exportToExcel()">📥 Export Excel</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2>📋 ผลการค้นหา</h2>
+                <span class="results-count" id="resultsCount">พบ 0 รายการ</span>
+            </div>
+            <div class="table-container">
+                <div id="resultsContent">
+                    <div class="no-results">
+                        <span>🔍</span>
+                        <p>กรุณาใส่เงื่อนไขการค้นหา หรือกดปุ่มค้นหาเพื่อแสดงข้อมูลทั้งหมด</p>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        const typeIcons = {
+            'โต๊ะ': '🪑', 'เก้าอี้': '💺', 'ตู้': '🗄️',
+            'เครื่องคอมพิวเตอร์': '💻', 'คอมพิวเตอร์': '💻',
+            'เครื่องพิมพ์': '🖨️', 'Printer': '🖨️',
+            'เครื่องปรับอากาศ': '❄️', 'เครื่องสำรองไฟ': '🔋',
+            'เครื่องฟอกอากาศ': '🌬️', 'โทรทัศน์': '📺',
+            'กล้อง': '📷', 'โทรศัพท์': '📞', 'พัดลม': '🌀',
+            'จอภาพ': '🖥️', 'Note': '💻', 'ฐานวางเคส': '🖥️',
+            'ชั้น': '📚', 'นาฬิกา': '⏱️', 'อุปกรณ์': '🔧',
+            'รถ': '🚗', 'เครื่อง': '⚙️'
+        };
+
+        function getTypeIcon(type) {
+            if (!type) return '📦';
+            for (const key in typeIcons) {
+                if (type.includes(key)) return typeIcons[key];
+            }
+            return '📦';
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
+            document.getElementById('themeText').textContent = isDark ? 'โหมดมืด' : 'โหมดสว่าง';
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        document.getElementById('themeText').textContent = savedTheme === 'dark' ? 'โหมดสว่าง' : 'โหมดมืด';
+
+        let currentPage = 1;
+        const pageSize = 20;
+        let totalResults = 0;
+        let allResults = [];
+
+        async function loadFilterOptions() {
+            try {
+                const response = await fetch('/api/equipment/stats');
+                const result = await response.json();
+                if (result.success) {
+                    const categorySelect = document.getElementById('categoryFilter');
+                    result.data.byCategory.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.category;
+                        option.textContent = `${getTypeIcon(cat.category)} ${cat.category} (${cat.count})`;
+                        categorySelect.appendChild(option);
+                    });
+                    const unitSelect = document.getElementById('unitFilter');
+                    result.data.byUnit.forEach(unit => {
+                        const option = document.createElement('option');
+                        option.value = unit.unit;
+                        option.textContent = `${unit.unit} (${unit.count})`;
+                        unitSelect.appendChild(option);
+                    });
+                }
+                const yearsResponse = await fetch('/api/equipment/years');
+                const yearsResult = await yearsResponse.json();
+                if (yearsResult.success) {
+                    const yearStartSelect = document.getElementById('yearStart');
+                    const yearEndSelect = document.getElementById('yearEnd');
+                    yearsResult.data.forEach(year => {
+                        yearStartSelect.appendChild(new Option(year, year));
+                        yearEndSelect.appendChild(new Option(year, year));
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading filter options:', error);
+            }
+        }
+
+        async function searchEquipment() {
+            const searchText = document.getElementById('searchText').value;
+            const category = document.getElementById('categoryFilter').value;
+            const unit = document.getElementById('unitFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const yearStart = document.getElementById('yearStart').value;
+            const yearEnd = document.getElementById('yearEnd').value;
+
+            const params = new URLSearchParams();
+            if (searchText) params.append('search', searchText);
+            if (category) params.append('category', category);
+            if (unit) params.append('unit', unit);
+            if (status) params.append('status', status);
+            if (yearStart) params.append('yearStart', yearStart);
+            if (yearEnd) params.append('yearEnd', yearEnd);
+            params.append('limit', 1000);
+
+            document.getElementById('resultsContent').innerHTML = '<div class="loading">กำลังค้นหา...</div>';
+
+            try {
+                const response = await fetch(`/api/equipment?${params.toString()}`);
+                const result = await response.json();
+                if (result.success) {
+                    allResults = result.data;
+                    totalResults = allResults.length;
+                    currentPage = 1;
+                    displayResults();
+                } else {
+                    document.getElementById('resultsContent').innerHTML = `<div class="no-results"><span>❌</span><p>${result.message || 'เกิดข้อผิดพลาด'}</p></div>`;
+                }
+            } catch (error) {
+                console.error('Error searching:', error);
+                document.getElementById('resultsContent').innerHTML = '<div class="no-results"><span>❌</span><p>เกิดข้อผิดพลาดในการค้นหา</p></div>';
+            }
+        }
+
+        function displayResults() {
+            document.getElementById('resultsCount').textContent = `พบ ${totalResults.toLocaleString('th-TH')} รายการ`;
+            if (totalResults === 0) {
+                document.getElementById('resultsContent').innerHTML = '<div class="no-results"><span>📭</span><p>ไม่พบครุภัณฑ์ที่ตรงตามเงื่อนไข</p></div>';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalResults);
+            const pageResults = allResults.slice(startIndex, endIndex);
+
+            let html = `<table class="results-table"><thead><tr>
+                <th>#</th><th>หมวดหมู่</th><th>ชื่อครุภัณฑ์</th><th>เลขครุภัณฑ์</th>
+                <th>หน่วยงาน</th><th>ปีที่ได้รับ</th><th>จำนวน</th><th>สถานะ</th>
+            </tr></thead><tbody>`;
+
+            pageResults.forEach((item, index) => {
+                const icon = getTypeIcon(item.category);
+                const statusClass = item.status === 'ใช้งานได้' ? 'status-available' : 
+                                   item.status === 'ชำรุด' ? 'status-damaged' : 'status-pending';
+                html += `<tr>
+                    <td>${startIndex + index + 1}</td>
+                    <td><span class="category-icon">${icon} ${item.category || '-'}</span></td>
+                    <td>${item.item_name || '-'}</td>
+                    <td>${item.equipment_code || '-'}</td>
+                    <td>${item.unit || '-'}</td>
+                    <td>${item.acquired_year || '-'}</td>
+                    <td>${item.quantity || 1}</td>
+                    <td><span class="status-badge ${statusClass}">${item.status || 'ใช้งานได้'}</span></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('resultsContent').innerHTML = html;
+
+            const totalPages = Math.ceil(totalResults / pageSize);
+            let paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀ ก่อนหน้า</button>`;
+                const maxButtons = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                if (endPage - startPage + 1 < maxButtons) startPage = Math.max(1, endPage - maxButtons + 1);
+                if (startPage > 1) {
+                    paginationHtml += `<button onclick="goToPage(1)">1</button>`;
+                    if (startPage > 2) paginationHtml += `<button disabled>...</button>`;
+                }
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHtml += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+                }
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) paginationHtml += `<button disabled>...</button>`;
+                    paginationHtml += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+                }
+                paginationHtml += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>ถัดไป ▶</button>`;
+            }
+            document.getElementById('pagination').innerHTML = paginationHtml;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(totalResults / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            displayResults();
+            window.scrollTo({ top: document.querySelector('.results-section').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchText').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('unitFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('yearStart').value = '';
+            document.getElementById('yearEnd').value = '';
+            document.getElementById('resultsContent').innerHTML = '<div class="no-results"><span>🔍</span><p>กรุณาใส่เงื่อนไขการค้นหา หรือกดปุ่มค้นหาเพื่อแสดงข้อมูลทั้งหมด</p></div>';
+            document.getElementById('resultsCount').textContent = 'พบ 0 รายการ';
+            document.getElementById('pagination').innerHTML = '';
+            allResults = [];
+            totalResults = 0;
+        }
+
+        function exportToExcel() {
+            if (allResults.length === 0) {
+                alert('ไม่มีข้อมูลให้ Export กรุณาค้นหาข้อมูลก่อน');
+                return;
+            }
+            let csv = '\uFEFF';
+            csv += 'ลำดับ,หมวดหมู่,ชื่อครุภัณฑ์,เลขครุภัณฑ์,หน่วยงาน,ปีที่ได้รับ,จำนวน,สถานะ\n';
+            allResults.forEach((item, index) => {
+                csv += `${index + 1},"${(item.category || '').replace(/"/g, '""')}","${(item.item_name || '').replace(/"/g, '""')}","${(item.equipment_code || '').replace(/"/g, '""')}","${(item.unit || '').replace(/"/g, '""')}",${item.acquired_year || ''},${item.quantity || 1},"${(item.status || 'ใช้งานได้').replace(/"/g, '""')}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `equipment_export_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+
+        document.getElementById('searchText').addEventListener('keypress', e => { if (e.key === 'Enter') searchEquipment(); });
+
+        // Init
+        loadFilterOptions();
+    </script>
+</body>
+</html>

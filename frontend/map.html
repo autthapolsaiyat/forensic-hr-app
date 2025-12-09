@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>แผนที่หน่วยงาน - สพฐ.ตร.</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+            --footer-text: rgba(255,255,255,0.7);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+            --footer-text: rgba(30,60,114,0.7);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1800px; margin: 0 auto; }
+        
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+            flex-shrink: 0;
+        }
+        .header-title { flex: 1; text-align: center; min-width: 120px; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 42px); color: var(--text-color); font-weight: bold; }
+        .back-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white; padding: 10px 20px; border-radius: 50px;
+            text-decoration: none; font-size: clamp(14px, 2vw, 18px); font-weight: bold;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+            white-space: nowrap;
+            min-height: 44px;
+        }
+        .back-btn:active { transform: scale(0.95); }
+        
+        .main-content { 
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .map-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            height: 50vh;
+            min-height: 300px;
+        }
+        #map { height: 100%; border-radius: 15px; box-shadow: 0 5px 15px var(--shadow-color); }
+        
+        .info-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .info-card h2 { 
+            font-size: clamp(24px, 4vw, 36px);
+            color: var(--text-color); 
+            margin-bottom: 15px; 
+            text-align: center; 
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .stat-label { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-color); }
+        .stat-value { font-size: clamp(20px, 4vw, 28px); font-weight: bold; color: var(--text-color); }
+        .placeholder { text-align: center; padding: 40px 20px; color: var(--text-color); opacity: 0.7; font-size: clamp(16px, 3vw, 20px); }
+        
+        .vacancy-section { margin-top: 20px; }
+        .vacancy-section h3 { 
+            font-size: clamp(20px, 3.5vw, 28px);
+            color: var(--text-color); 
+            margin-bottom: 15px; 
+            text-align: center;
+            padding: 12px;
+            background: rgba(231,76,60,0.2);
+            border-radius: 12px;
+        }
+        
+        .dept-group { margin-bottom: 15px; }
+        .dept-header {
+            background: linear-gradient(135deg, rgba(231,76,60,0.4) 0%, rgba(192,57,43,0.4) 100%);
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid rgba(231,76,60,0.6);
+            transition: all 0.3s ease;
+            gap: 10px;
+            min-height: 44px;
+        }
+        .dept-header:active { transform: scale(0.98); }
+        .dept-header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+        .expand-icon { font-size: 14px; color: var(--text-color); transition: transform 0.3s ease; flex-shrink: 0; }
+        .expand-icon.expanded { transform: rotate(90deg); }
+        .dept-name { 
+            font-size: clamp(16px, 3vw, 20px);
+            font-weight: bold; 
+            color: var(--text-color);
+            word-break: break-word;
+        }
+        .dept-count {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: var(--text-color);
+            background: rgba(231,76,60,0.8);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .dept-items {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 15px;
+        }
+        .dept-items.expanded {
+            max-height: 2000px;
+            margin-top: 10px;
+        }
+        
+        .vacancy-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #e74c3c;
+            color: var(--text-color);
+            font-size: clamp(14px, 2.5vw, 16px);
+            word-break: break-word;
+        }
+        
+        /* Footer */
+        .site-footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--footer-text);
+            font-size: clamp(12px, 2vw, 14px);
+            line-height: 1.8;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            margin-top: 30px;
+        }
+        .site-footer div { margin: 5px 0; }
+        .site-footer strong { color: var(--text-color); }
+        
+        @media (min-width: 768px) {
+            body { padding: 20px; padding-bottom: 100px; }
+            .header { padding: 25px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+            .main-content { 
+                flex-direction: row;
+                height: calc(100vh - 200px);
+            }
+            .map-container {
+                flex: 1.5;
+                height: auto;
+                padding: 20px;
+            }
+            .info-card {
+                flex: 1;
+                max-height: none;
+                height: auto;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .main-content { height: calc(100vh - 220px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ตร.</div>
+            <div class="header-title"><h1>🗺️ แผนที่หน่วยงาน</h1></div>
+            <a href="/summary.html" class="back-btn">← ย้อนกลับ</a>
+        </div>
+        <div class="main-content">
+            <div class="map-container"><div id="map"></div></div>
+            <div class="info-card"><div id="infoContent" class="placeholder">📍 กดหมุดบนแผนที่</div></div>
+        </div>
+        
+        <footer class="site-footer">
+            <div>Developed by "QXV0dGhhcG9sIFNhaXlhdA=="(AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </footer>
+    </div>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        const map = L.map('map').setView([13.7563, 100.5018], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 18
+        }).addTo(map);
+        
+        const customIcon = L.divIcon({
+            className: 'custom-marker',
+            iconSize: [40, 40],
+            iconAnchor: [20, 40],
+            popupAnchor: [0, -40],
+            html: '<div style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); width: 40px; height: 40px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"><span style="transform: rotate(45deg); font-size: 20px;">📍</span></div>'
+        });
+        
+        function toggleDept(deptKey) {
+            const items = document.getElementById('items-' + deptKey);
+            const icon = document.getElementById('icon-' + deptKey);
+            if (items.classList.contains('expanded')) {
+                items.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                items.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
+        }
+        
+        async function loadMap() {
+            try {
+                const response = await fetch('/api/statistics/map');
+                const result = await response.json();
+                if (result.success) {
+                    result.data.forEach(dept => {
+                        if (dept.lat && dept.lng) {
+                            const marker = L.marker([dept.lat, dept.lng], { icon: customIcon }).addTo(map);
+                            marker.bindPopup(`<b>${dept.name}</b><br>จำนวน: ${dept.total}<br>ว่าง: ${dept.vacant || 0}`);
+                            marker.on('click', () => { showInfo(dept); });
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function showInfo(dept) {
+            const statsHtml = `
+                <h2>🏢 ${dept.name}</h2>
+                <div class="stat-item"><div class="stat-label">👥 ทั้งหมด</div><div class="stat-value">${dept.total}</div></div>
+                <div class="stat-item"><div class="stat-label">✅ คนครอง</div><div class="stat-value">${dept.occupied || 0}</div></div>
+                <div class="stat-item"><div class="stat-label">⚠️ ว่าง</div><div class="stat-value">${dept.vacant || 0}</div></div>
+                <div class="stat-item"><div class="stat-label">🎖️ สัญญาบัตร</div><div class="stat-value">${dept.sanyabat || 0}</div></div>
+                <div class="stat-item"><div class="stat-label">🔰 ประทวน</div><div class="stat-value">${dept.pratawan || 0}</div></div>
+                <div class="stat-item"><div class="stat-label">👨 ชาย</div><div class="stat-value">${dept.male || 0}</div></div>
+                <div class="stat-item"><div class="stat-label">👩 หญิง</div><div class="stat-value">${dept.female || 0}</div></div>
+            `;
+            
+            try {
+                const vacRes = await fetch(`/api/statistics/vacancies/${encodeURIComponent(dept.name)}`);
+                const vacResult = await vacRes.json();
+                let vacanciesHtml = '';
+                
+                if (vacResult.success && vacResult.data.length > 0) {
+                    const grouped = {};
+                    vacResult.data.forEach(vac => {
+                        const deptKey = vac.department || 'อื่นๆ';
+                        if (!grouped[deptKey]) grouped[deptKey] = [];
+                        grouped[deptKey].push(vac);
+                    });
+                    
+                    vacanciesHtml = '<div class="vacancy-section"><h3>⚠️ ตำแหน่งว่าง (' + vacResult.data.length + ')</h3>';
+                    
+                    let deptIndex = 0;
+                    Object.keys(grouped).sort().forEach(deptKey => {
+                        const items = grouped[deptKey];
+                        const safeDeptKey = 'dept' + deptIndex++;
+                        
+                        vacanciesHtml += `
+                            <div class="dept-group">
+                                <div class="dept-header" onclick="toggleDept('${safeDeptKey}')">
+                                    <div class="dept-header-left">
+                                        <span class="expand-icon" id="icon-${safeDeptKey}">▶</span>
+                                        <div class="dept-name">🏢 ${deptKey}</div>
+                                    </div>
+                                    <div class="dept-count">${items.length}</div>
+                                </div>
+                                <div class="dept-items" id="items-${safeDeptKey}">
+                        `;
+                        
+                        items.forEach(vac => {
+                            vacanciesHtml += `<div class="vacancy-item">💼 ${vac.position || 'ไม่ระบุ'}</div>`;
+                        });
+                        
+                        vacanciesHtml += `</div></div>`;
+                    });
+                    
+                    vacanciesHtml += '</div>';
+                }
+                
+                document.getElementById('infoContent').innerHTML = statsHtml + vacanciesHtml;
+            } catch (error) {
+                document.getElementById('infoContent').innerHTML = statsHtml;
+            }
+        }
+        
+        loadMap();
+        
+        window.addEventListener('resize', () => {
+            setTimeout(() => { map.invalidateSize(); }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหายุทธภัณฑ์ - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-primary: #1a3a5c;
+            --bg-secondary: #2c5282;
+            --bg-card: #2b4a6f;
+            --bg-stat: #3d6a99;
+            --text-primary: #ffffff;
+            --text-secondary: #a0c4e8;
+            --accent-green: #48bb78;
+            --accent-blue: #4299e1;
+            --accent-red: #e53e3e;
+            --border-color: #4a7ab0;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8f0f5;
+            --bg-secondary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-stat: #d6eaf8;
+            --text-primary: #1a5276;
+            --text-secondary: #5a7a9a;
+            --border-color: #c5d9e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        [data-theme="light"] .header {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid #3498db;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .logo {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px;
+        }
+
+        .header-title h1 { font-size: 26px; font-weight: bold; }
+        .header-title p { font-size: 14px; color: var(--text-secondary); }
+
+        .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn.primary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .nav-btn.secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .nav-btn:hover { transform: translateY(-2px); }
+
+        [data-theme="light"] .nav-btn.secondary { background: var(--bg-stat); }
+
+        .search-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        [data-theme="light"] .search-section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        [data-theme="light"] .form-group select,
+        [data-theme="light"] .form-group input {
+            background: var(--bg-stat);
+            border-color: var(--border-color);
+        }
+
+        .form-group select option { background: var(--bg-card); color: var(--text-primary); }
+
+        .search-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+
+        .results-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        [data-theme="light"] .results-section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-title { font-size: 18px; font-weight: bold; }
+        .results-count { color: var(--text-secondary); font-size: 14px; }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .result-card {
+            background: var(--bg-stat);
+        }
+
+        .result-card:hover { transform: translateY(-2px); }
+
+        .result-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .result-card-title { font-size: 15px; font-weight: bold; line-height: 1.4; }
+        .result-card-count { font-size: 20px; font-weight: bold; color: var(--accent-blue); }
+
+        .result-card-meta { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+
+        .result-card-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .result-stat { display: flex; align-items: center; gap: 5px; }
+        .result-stat.green { color: var(--accent-green); }
+        .result-stat.red { color: var(--accent-red); }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        [data-theme="light"] .page-btn { background: var(--bg-stat); }
+        .page-btn.active { background: var(--accent-blue); color: white; }
+
+        .loading { text-align: center; padding: 60px; color: var(--text-secondary); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .search-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🎯</div>
+                <div class="header-title">
+                    <h1>ค้นหายุทธภัณฑ์และอุปกรณ์</h1>
+                    <p>ค้นหาและดูรายละเอียด</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="/weapons.html" class="nav-btn primary">📊 Dashboard</a>
+                <a href="/" class="nav-btn secondary">← กลับ</a>
+                <button class="nav-btn secondary" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label>📋 ประเภท</label>
+                    <select id="filterSubcategory">
+                        <option value="">ทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏛️ หน่วยงาน</label>
+                    <select id="filterDivision">
+                        <option value="">ทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🔎 ค้นหา</label>
+                    <input type="text" id="filterSearch" placeholder="ชื่อ, ยี่ห้อ, รุ่น..." onkeyup="if(event.keyCode===13) search()">
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="btn btn-secondary" onclick="resetFilters()">🔄 ล้าง</button>
+                <button class="btn btn-primary" onclick="search()">🔍 ค้นหา</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <span class="results-title">📋 ผลการค้นหา</span>
+                <span class="results-count" id="resultsCount">-</span>
+            </div>
+            <div class="results-grid" id="resultsGrid">
+                <div class="loading">กำลังโหลด...</div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const limit = 15;
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('weaponsTheme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('weaponsTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '🌙';
+            }
+            loadFilters();
+            search();
+        });
+
+        async function loadFilters() {
+            try {
+                // Load subcategories
+                const subRes = await fetch('/api/weapons/subcategories');
+                const subData = await subRes.json();
+                const subSelect = document.getElementById('filterSubcategory');
+                if (subData.success) {
+                    const unique = [...new Set(subData.data.map(d => d.subcategory))];
+                    unique.forEach(s => {
+                        if (s) subSelect.innerHTML += `<option value="${s}">${s}</option>`;
+                    });
+                }
+
+                // Load divisions
+                const divRes = await fetch('/api/weapons/divisions');
+                const divData = await divRes.json();
+                const divSelect = document.getElementById('filterDivision');
+                if (divData.success) {
+                    divData.data.forEach(d => {
+                        divSelect.innerHTML += `<option value="${d}">${d}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading filters:', error);
+            }
+        }
+
+        async function search(page = 1) {
+            currentPage = page;
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = '<div class="loading">กำลังค้นหา...</div>';
+
+            const params = new URLSearchParams();
+            const subcategory = document.getElementById('filterSubcategory').value;
+            const division = document.getElementById('filterDivision').value;
+            const searchText = document.getElementById('filterSearch').value;
+
+            if (subcategory) params.append('subcategory', subcategory);
+            if (division) params.append('division', division);
+            if (searchText) params.append('search', searchText);
+            params.append('page', page);
+            params.append('limit', limit);
+
+            try {
+                const response = await fetch(`/api/weapons?${params.toString()}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('resultsCount').textContent = `พบ ${result.pagination.total} รายการ`;
+                    renderResults(result.data);
+                    renderPagination(result.pagination);
+                }
+            } catch (error) {
+                grid.innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('filterSubcategory').value = '';
+            document.getElementById('filterDivision').value = '';
+            document.getElementById('filterSearch').value = '';
+            search();
+        }
+
+        function formatNumber(num) {
+            return Number(num || 0).toLocaleString('th-TH');
+        }
+
+        function renderResults(data) {
+            const grid = document.getElementById('resultsGrid');
+            
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="loading">ไม่พบข้อมูล</div>';
+                return;
+            }
+
+            grid.innerHTML = data.map(item => `
+                <div class="result-card">
+                    <div class="result-card-header">
+                        <div>
+                            <div class="result-card-title">${item.item_name || item.subcategory}</div>
+                            <div class="result-card-meta">${item.division || '-'} | ${item.subcategory || '-'}</div>
+                        </div>
+                        <div class="result-card-count">${formatNumber(item.total_quantity)} <small>${item.unit || ''}</small></div>
+                    </div>
+                    <div class="result-card-stats">
+                        <span class="result-stat green">✅ ใช้งาน ${formatNumber(item.usable_quantity)}</span>
+                        <span class="result-stat red">❌ ชำรุด ${formatNumber(item.damaged_quantity)}</span>
+                        ${item.disposed_quantity > 0 ? `<span class="result-stat">📤 จำหน่าย ${formatNumber(item.disposed_quantity)}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+            const { page, totalPages } = pagination;
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            if (page > 1) html += `<button class="page-btn" onclick="search(${page - 1})">← ก่อนหน้า</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= page - 2 && i <= page + 2)) {
+                    html += `<button class="page-btn ${i === page ? 'active' : ''}" onclick="search(${i})">${i}</button>`;
+                } else if (i === page - 3 || i === page + 3) {
+                    html += '<span style="padding:10px">...</span>';
+                }
+            }
+            
+            if (page < totalPages) html += `<button class="page-btn" onclick="search(${page + 1})">ถัดไป →</button>`;
+            
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

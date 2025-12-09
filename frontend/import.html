@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Excel - ระบบจัดการกำลังพล</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+        
+        .upload-area {
+            border: 3px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area.dragover {
+            border-color: #667eea;
+            background-color: #f7fafc;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white font-bold">
+                        ตร.
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">นำเข้าข้อมูล Excel</h1>
+                        <p class="text-sm text-gray-600">สำนักงานนิติวิทยาศาสตร์</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                        ← กลับหน้าหลัก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 py-8">
+        
+        <div class="max-w-3xl mx-auto">
+            
+            <!-- Info Card -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-bold text-blue-900 mb-3">📋 คำแนะนำการนำเข้าข้อมูล</h3>
+                <ul class="text-blue-800 space-y-2">
+                    <li>✅ รองรับไฟล์ Excel (.xlsx, .xls)</li>
+                    <li>✅ ไฟล์ต้องมีคอลัมน์ตามรูปแบบที่กำหนด</li>
+                    <li>✅ ขนาดไฟล์ไม่เกิน 50 MB</li>
+                    <li>⚠️ การ Import จะเพิ่มข้อมูลใหม่เข้าไปในระบบ</li>
+                </ul>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    
+                    <div id="uploadArea" class="upload-area rounded-lg p-12 text-center cursor-pointer">
+                        <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden">
+                        
+                        <div id="uploadPlaceholder">
+                            <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-xl font-semibold text-gray-700 mb-2">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
+                            <p class="text-gray-500">รองรับ .xlsx, .xls (ไฟล์ Excel)</p>
+                        </div>
+
+                        <div id="fileInfo" class="hidden">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-lg font-semibold text-gray-700 mb-2" id="fileName">ไฟล์ที่เลือก</p>
+                            <p class="text-gray-500" id="fileSize">ขนาดไฟล์</p>
+                            <button type="button" onclick="clearFile()" class="mt-4 text-red-600 hover:text-red-800">
+                                ❌ ลบไฟล์
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div id="progressBar" class="hidden mt-6">
+                        <div class="bg-gray-200 rounded-full h-4">
+                            <div id="progressBarFill" class="bg-gradient-to-r from-blue-600 to-purple-600 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p class="text-center mt-2 text-gray-600" id="progressText">กำลังอัปโหลด...</p>
+                    </div>
+
+                    <!-- Messages -->
+                    <div id="errorMessage" class="hidden mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg"></div>
+                    <div id="successMessage" class="hidden mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg"></div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit"
+                        id="submitBtn"
+                        class="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        📤 อัปโหลดและนำเข้าข้อมูล
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let selectedFile = null;
+
+        // ตรวจสอบ Auth
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+
+        checkAuth();
+
+        // Upload Area Events
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            // ตรวจสอบนามสกุล
+            const allowedExtensions = ['xlsx', 'xls'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedExtensions.includes(fileExtension)) {
+                showError('กรุณาเลือกไฟล์ Excel (.xlsx, .xls)');
+                return;
+            }
+
+            // ตรวจสอบขนาด
+            if (file.size > 50 * 1024 * 1024) {
+                showError('ขนาดไฟล์เกิน 50 MB');
+                return;
+            }
+
+            selectedFile = file;
+
+            // แสดงข้อมูลไฟล์
+            document.getElementById('uploadPlaceholder').classList.add('hidden');
+            document.getElementById('fileInfo').classList.remove('hidden');
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            fileInput.value = '';
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('submitBtn').disabled = true;
+            hideMessages();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        // Form Submit
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!selectedFile) {
+                showError('กรุณาเลือกไฟล์');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            // แสดง progress
+            document.getElementById('progressBar').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = true;
+            hideMessages();
+
+            try {
+                const xhr = new XMLHttpRequest();
+
+                // Progress
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        document.getElementById('progressBarFill').style.width = percent + '%';
+                        document.getElementById('progressText').textContent = `กำลังอัปโหลด... ${percent}%`;
+                    }
+                });
+
+                // Complete
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            showSuccess('นำเข้าข้อมูลสำเร็จ! กำลังกลับหน้าหลัก...');
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 2000);
+                        } else {
+                            showError(response.message);
+                        }
+                    } else {
+                        showError('เกิดข้อผิดพลาดในการอัปโหลด');
+                    }
+                    document.getElementById('progressBar').classList.add('hidden');
+                    document.getElementById('submitBtn').disabled = false;
+                });
+
+                // Error
+                xhr.addEventListener('error', () => {
+                    showError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                    document.getElementById('progressBar').classList.add('hidden');
+                    document.getElementById('submitBtn').disabled = false;
+                });
+
+                // Send
+                xhr.open('POST', `${API_URL}/import`);
+                xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('token')}`);
+                xhr.send(formData);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                showError('เกิดข้อผิดพลาดในการอัปโหลด');
+                document.getElementById('progressBar').classList.add('hidden');
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาอาคารที่ทำการ - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-primary: #1a3a5c;
+            --bg-secondary: #2c5282;
+            --bg-card: #2b4a6f;
+            --bg-stat: #3d6a99;
+            --text-primary: #ffffff;
+            --text-secondary: #a0c4e8;
+            --accent-green: #48bb78;
+            --accent-blue: #4299e1;
+            --accent-orange: #ed8936;
+            --accent-purple: #9f7aea;
+            --border-color: #4a7ab0;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8f0f5;
+            --bg-secondary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-stat: #d6eaf8;
+            --text-primary: #1a5276;
+            --text-secondary: #5a7a9a;
+            --border-color: #c5d9e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        [data-theme="light"] .header {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid #3498db;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .logo {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px;
+        }
+
+        .header-title h1 { font-size: 26px; font-weight: bold; }
+        .header-title p { font-size: 14px; color: var(--text-secondary); }
+
+        .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn.primary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .nav-btn.secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .nav-btn:hover { transform: translateY(-2px); }
+
+        [data-theme="light"] .nav-btn.secondary {
+            background: var(--bg-stat);
+        }
+
+        .search-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        [data-theme="light"] .search-section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        [data-theme="light"] .form-group select,
+        [data-theme="light"] .form-group input {
+            background: var(--bg-stat);
+            border-color: var(--border-color);
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-group select option { background: var(--bg-card); color: var(--text-primary); }
+
+        .search-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .btn:hover { transform: translateY(-2px); }
+
+        .results-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        [data-theme="light"] .results-section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .results-title { font-size: 18px; font-weight: bold; }
+        .results-count { color: var(--text-secondary); font-size: 14px; }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .result-card {
+            background: var(--bg-stat);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .result-card:hover { transform: translateY(-2px); }
+
+        .result-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .result-card-title { font-size: 16px; font-weight: bold; }
+        .result-card-division { font-size: 13px; color: var(--text-secondary); }
+
+        .result-card-details { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-badge.active { background: var(--accent-green); color: white; }
+        .status-badge.other { background: var(--accent-orange); color: white; }
+        .status-badge.waiting { background: var(--accent-blue); color: white; }
+        .status-badge.finding { background: var(--accent-purple); color: white; }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        [data-theme="light"] .page-btn {
+            background: var(--bg-stat);
+        }
+
+        .page-btn.active { background: var(--accent-blue); color: white; }
+        .page-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 700px;
+        }
+
+        [data-theme="light"] .modal-content {
+            background: var(--bg-secondary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        [data-theme="light"] .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .modal-header h2 { font-size: 22px; }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        [data-theme="light"] .detail-item {
+            background: var(--bg-stat);
+        }
+
+        .detail-item.full { grid-column: 1 / -1; }
+        .detail-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
+        .detail-value { font-size: 15px; font-weight: bold; }
+
+        .loading { text-align: center; padding: 60px; color: var(--text-secondary); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .search-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🏢</div>
+                <div class="header-title">
+                    <h1>ค้นหาอาคารที่ทำการ</h1>
+                    <p>ค้นหาและดูรายละเอียดอาคาร</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="/building.html" class="nav-btn primary">📊 Dashboard</a>
+                <a href="/" class="nav-btn secondary">← กลับ</a>
+                <button class="nav-btn secondary" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label>🏛️ หน่วยงาน (บก.)</label>
+                    <select id="filterDivision" onchange="loadSubdivisions()">
+                        <option value="">ทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📍 พฐ.จว.</label>
+                    <select id="filterSubdivision">
+                        <option value="">ทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🗺️ จังหวัด</label>
+                    <select id="filterProvince">
+                        <option value="">ทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📋 สถานะกรรมสิทธิ์</label>
+                    <select id="filterOwnership">
+                        <option value="">ทั้งหมด</option>
+                        <option value="has_building">มีที่ทำการ</option>
+                        <option value="use_other">ใช้หน่วยอื่น</option>
+                        <option value="wait_budget">รองบประมาณ</option>
+                        <option value="finding_land">จัดหาที่ดิน</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🔎 ค้นหา</label>
+                    <input type="text" id="filterSearch" placeholder="ชื่ออาคาร, จังหวัด..." onkeyup="if(event.keyCode===13) search()">
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="btn btn-secondary" onclick="resetFilters()">🔄 ล้าง</button>
+                <button class="btn btn-primary" onclick="search()">🔍 ค้นหา</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <span class="results-title">📋 ผลการค้นหา</span>
+                <span class="results-count" id="resultsCount">-</span>
+            </div>
+            <div class="results-grid" id="resultsGrid">
+                <div class="loading">กำลังโหลด...</div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">รายละเอียด</h2>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="detail-grid" id="modalDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const limit = 15;
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('buildingTheme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('buildingTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '🌙';
+            }
+            loadFilters();
+            
+            // Check URL params
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('division')) {
+                document.getElementById('filterDivision').value = params.get('division');
+            }
+            if (params.get('ownership_status')) {
+                document.getElementById('filterOwnership').value = params.get('ownership_status');
+            }
+            
+            search();
+        });
+
+        async function loadFilters() {
+            try {
+                // Load divisions
+                const divRes = await fetch('/api/building/divisions');
+                const divData = await divRes.json();
+                const divSelect = document.getElementById('filterDivision');
+                if (divData.success) {
+                    divData.data.forEach(d => {
+                        divSelect.innerHTML += `<option value="${d}">${d}</option>`;
+                    });
+                }
+
+                // Load provinces
+                const provRes = await fetch('/api/building/provinces');
+                const provData = await provRes.json();
+                const provSelect = document.getElementById('filterProvince');
+                if (provData.success) {
+                    provData.data.forEach(p => {
+                        provSelect.innerHTML += `<option value="${p}">${p}</option>`;
+                    });
+                }
+
+                // Load subdivisions
+                loadSubdivisions();
+            } catch (error) {
+                console.error('Error loading filters:', error);
+            }
+        }
+
+        async function loadSubdivisions() {
+            const division = document.getElementById('filterDivision').value;
+            const subSelect = document.getElementById('filterSubdivision');
+            subSelect.innerHTML = '<option value="">ทั้งหมด</option>';
+            
+            try {
+                let url = '/api/building/subdivisions';
+                if (division) url += `?division=${encodeURIComponent(division)}`;
+                
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data.success) {
+                    data.data.forEach(s => {
+                        subSelect.innerHTML += `<option value="${s}">${s}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading subdivisions:', error);
+            }
+        }
+
+        async function search(page = 1) {
+            currentPage = page;
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = '<div class="loading">กำลังค้นหา...</div>';
+
+            const params = new URLSearchParams();
+            const division = document.getElementById('filterDivision').value;
+            const subdivision = document.getElementById('filterSubdivision').value;
+            const province = document.getElementById('filterProvince').value;
+            const ownership = document.getElementById('filterOwnership').value;
+            const search = document.getElementById('filterSearch').value;
+
+            if (division) params.append('division', division);
+            if (subdivision) params.append('subdivision', subdivision);
+            if (province) params.append('province', province);
+            if (ownership) params.append('ownership_status', ownership);
+            if (search) params.append('search', search);
+            params.append('page', page);
+            params.append('limit', limit);
+
+            try {
+                const response = await fetch(`/api/building?${params.toString()}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('resultsCount').textContent = `พบ ${result.pagination.total} รายการ`;
+                    renderResults(result.data);
+                    renderPagination(result.pagination);
+                }
+            } catch (error) {
+                grid.innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('filterDivision').value = '';
+            document.getElementById('filterSubdivision').value = '';
+            document.getElementById('filterProvince').value = '';
+            document.getElementById('filterOwnership').value = '';
+            document.getElementById('filterSearch').value = '';
+            loadSubdivisions();
+            search();
+        }
+
+        function getStatusBadge(ownership) {
+            const badges = {
+                'has_building': '<span class="status-badge active">มีที่ทำการ</span>',
+                'use_other': '<span class="status-badge other">ใช้หน่วยอื่น</span>',
+                'wait_budget': '<span class="status-badge waiting">รองบประมาณ</span>',
+                'finding_land': '<span class="status-badge finding">จัดหาที่ดิน</span>'
+            };
+            return badges[ownership] || '<span class="status-badge">-</span>';
+        }
+
+        function renderResults(data) {
+            const grid = document.getElementById('resultsGrid');
+            
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="loading">ไม่พบข้อมูล</div>';
+                return;
+            }
+
+            grid.innerHTML = data.map(item => `
+                <div class="result-card" onclick="showDetail(${item.id})">
+                    <div class="result-card-header">
+                        <div>
+                            <div class="result-card-title">${item.subdivision || item.building_name || item.division}</div>
+                            <div class="result-card-division">${item.division || ''}</div>
+                        </div>
+                        ${getStatusBadge(item.ownership_status)}
+                    </div>
+                    <div class="result-card-details">
+                        ${item.building_type ? `<div>: ${item.building_type.substring(0, 50)}${item.building_type.length > 50 ? '...' : ''}</div>` : ''}
+                        ${item.land_type ? `<div>: ${item.land_type.substring(0, 50)}${item.land_type.length > 50 ? '...' : ''}</div>` : ''}
+                        ${item.province ? `<div>: ที่อยู่ ${item.district || ''} ${item.province}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+            const { page, totalPages } = pagination;
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            if (page > 1) {
+                html += `<button class="page-btn" onclick="search(${page - 1})">← ก่อนหน้า</button>`;
+            }
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= page - 2 && i <= page + 2)) {
+                    html += `<button class="page-btn ${i === page ? 'active' : ''}" onclick="search(${i})">${i}</button>`;
+                } else if (i === page - 3 || i === page + 3) {
+                    html += '<span style="padding: 10px;">...</span>';
+                }
+            }
+            
+            if (page < totalPages) {
+                html += `<button class="page-btn" onclick="search(${page + 1})">ถัดไป →</button>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        async function showDetail(id) {
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalDetails').innerHTML = '<div class="loading">กำลังโหลด...</div>';
+
+            try {
+                const response = await fetch(`/api/building/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const item = result.data;
+                    document.getElementById('modalTitle').textContent = item.subdivision || item.building_name || item.division;
+                    
+                    document.getElementById('modalDetails').innerHTML = `
+                        <div class="detail-item">
+                            <div class="detail-label">หน่วยงาน (บก.)</div>
+                            <div class="detail-value">${item.division || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">พฐ.จว.</div>
+                            <div class="detail-value">${item.subdivision || '-'}</div>
+                        </div>
+                        <div class="detail-item full">
+                            <div class="detail-label">ชื่ออาคาร</div>
+                            <div class="detail-value">${item.building_name || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">ประเภทอาคาร</div>
+                            <div class="detail-value">${item.building_type || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">สถานะ</div>
+                            <div class="detail-value">${item.status || '-'}</div>
+                        </div>
+                        <div class="detail-item full">
+                            <div class="detail-label">ประเภทที่ดิน</div>
+                            <div class="detail-value">${item.land_type || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">เนื้อที่</div>
+                            <div class="detail-value">${item.land_area || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">ปี พ.ศ.ที่ได้รับงบ</div>
+                            <div class="detail-value">${item.budget_year || '-'}</div>
+                        </div>
+                        <div class="detail-item full">
+                            <div class="detail-label">ที่อยู่</div>
+                            <div class="detail-value">${[item.subdistrict, item.district, item.province].filter(x=>x).join(' ') || '-'}</div>
+                        </div>
+                        ${item.remarks ? `
+                        <div class="detail-item full">
+                            <div class="detail-label">หมายเหตุ</div>
+                            <div class="detail-value">${item.remarks}</div>
+                        </div>
+                        ` : ''}
+                        ${item.master_plan_url ? `
+                        <div class="detail-item full">
+                            <div class="detail-label">Master Plan</div>
+                            <div class="detail-value"><a href="${item.master_plan_url}" target="_blank" style="color:#4299e1">${item.master_plan_url}</a></div>
+                        </div>
+                        ` : ''}
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('modalDetails').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('detailModal')) closeModal();
+        }
+    </script>
+</body>
+</html>

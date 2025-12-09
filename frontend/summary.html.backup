@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Management | 4M – สพฐ.ตร.</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+            --footer-text: rgba(255,255,255,0.7);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+            --footer-text: rgba(30,60,114,0.7);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+            transition: all 0.3s ease;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+            flex-shrink: 0;
+        }
+        .header-title { flex: 1; text-align: center; min-width: 150px; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 42px); color: var(--text-color); font-weight: bold; line-height: 1.2; }
+        .header-title p { font-size: clamp(12px, 2vw, 16px); color: var(--text-color); opacity: 0.9; margin-top: 5px; display: none; }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:active { transform: scale(0.95); }
+        .map-btn, .search-btn {
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-height: 44px;
+        }
+        .map-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+        }
+        .search-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            box-shadow: 0 5px 20px rgba(52,152,219,0.4);
+        }
+        .map-btn:active, .search-btn:active { transform: scale(0.95); }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:active { transform: scale(0.98); }
+        .stat-icon { font-size: clamp(28px, 5vw, 42px); margin-bottom: 8px; }
+        .stat-label { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-color); opacity: 0.9; margin-bottom: 8px; }
+        .stat-value { font-size: clamp(24px, 5vw, 48px); font-weight: bold; color: var(--text-color); text-shadow: 0 2px 10px var(--shadow-color); }
+        .stat-percentage { font-size: clamp(12px, 2vw, 14px); color: var(--text-color); opacity: 0.8; margin-top: 5px; }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .chart-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+        .chart-card h3 {
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .chart-card canvas { max-height: 300px; }
+        
+        .departments-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+        .departments-section h2 {
+            font-size: clamp(24px, 4vw, 32px);
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .dept-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 120px;
+        }
+        .dept-card:active { transform: scale(0.98); }
+        .dept-name {
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+        .dept-vacancy {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .dept-vacancy-label {
+            font-size: clamp(14px, 2.5vw, 16px);
+            color: var(--text-color);
+        }
+        .dept-vacancy-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: clamp(13px, 2vw, 14px);
+        }
+        .dept-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(13px, 2vw, 15px);
+            color: var(--text-color);
+            opacity: 0.9;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        .site-footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--footer-text);
+            font-size: clamp(12px, 2vw, 14px);
+            line-height: 1.8;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            margin-top: 30px;
+        }
+        .site-footer div { margin: 5px 0; }
+        .site-footer strong { color: var(--text-color); }
+        
+        @media (min-width: 768px) {
+            body { padding: 20px; padding-bottom: 100px; }
+            .header { padding: 25px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+            .header-title p { display: block; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+            .stat-card { padding: 25px; }
+            .charts-section { gap: 20px; }
+            .chart-card { padding: 25px; }
+            .dept-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+        }
+        
+        @media (min-width: 1024px) {
+            .header-actions { flex-wrap: nowrap; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .charts-section { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (min-width: 1440px) {
+            .stats-grid { grid-template-columns: repeat(7, 1fr); }
+        }
+        
+        @media (max-width: 374px) {
+            .header-actions { width: 100%; }
+            .theme-toggle, .map-btn, .search-btn { flex: 1; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ตร.</div>
+            <div class="header-title">
+                <h1>🏛️ Management | 4M – สพฐ.ตร.</h1>
+                <p>สพฐ.ตร.</p>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+                <a href="/search.html" class="search-btn">🔍 <span class="btn-text">ค้นหา</span></a>
+                <a href="/map.html" class="map-btn">🗺️ <span class="btn-text">แผนที่</span></a>
+            </div>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">ทั้งหมด</div>
+                <div class="stat-value" id="totalStat">-</div>
+                <div class="stat-percentage">100%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">คนครอง</div>
+                <div class="stat-value" id="occupiedStat">-</div>
+                <div class="stat-percentage" id="occupiedPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-label">ว่าง</div>
+                <div class="stat-value" id="vacantStat">-</div>
+                <div class="stat-percentage" id="vacantPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎖️</div>
+                <div class="stat-label">สัญญาบัตร</div>
+                <div class="stat-value" id="sanyabatStat">-</div>
+                <div class="stat-percentage" id="sanyabatPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔰</div>
+                <div class="stat-label">ประทวน</div>
+                <div class="stat-value" id="pratawanStat">-</div>
+                <div class="stat-percentage" id="pratawanPct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👨</div>
+                <div class="stat-label">ชาย</div>
+                <div class="stat-value" id="maleStat">-</div>
+                <div class="stat-percentage" id="malePct">-%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👩</div>
+                <div class="stat-label">หญิง</div>
+                <div class="stat-value" id="femaleStat">-</div>
+                <div class="stat-percentage" id="femalePct">-%</div>
+            </div>
+        </div>
+        
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3>📊 คนครอง/ว่าง</h3>
+                <canvas id="vacancyChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>👥 เพศ</h3>
+                <canvas id="genderChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>🎖️ ยศ</h3>
+                <canvas id="rankChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>🏢 Top 10</h3>
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="departments-section">
+            <h2>🏢 หน่วยงานทั้งหมด</h2>
+            <div class="dept-grid" id="deptGrid"></div>
+        </div>
+        
+        <footer class="site-footer">
+            <div>Developed by "QXV0dGhhcG9sIFNhaXlhdA=="(AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </footer>
+    </div>
+    
+    <script>
+        let charts = {};
+        
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            Object.values(charts).forEach(chart => {
+                const textColor = newTheme === 'light' ? '#1e3c72' : 'white';
+                if (chart.options.plugins?.legend?.labels) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+                if (chart.options.scales?.x?.ticks) {
+                    chart.options.scales.x.ticks.color = textColor;
+                }
+                if (chart.options.scales?.y?.ticks) {
+                    chart.options.scales.y.ticks.color = textColor;
+                }
+                chart.update();
+            });
+        }
+        
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        async function loadData() {
+            try {
+                const [summaryRes, deptsRes] = await Promise.all([
+                    fetch('/api/statistics/summary'),
+                    fetch('/api/statistics/departments')
+                ]);
+                
+                const summary = await summaryRes.json();
+                const depts = await deptsRes.json();
+                
+                if (summary.success) {
+                    const data = summary.data;
+                    const total = parseInt(data.total);
+                    
+                    document.getElementById('totalStat').textContent = total.toLocaleString();
+                    document.getElementById('occupiedStat').textContent = parseInt(data.occupied).toLocaleString();
+                    document.getElementById('vacantStat').textContent = parseInt(data.vacant).toLocaleString();
+                    document.getElementById('sanyabatStat').textContent = parseInt(data.sanyabat).toLocaleString();
+                    document.getElementById('pratawanStat').textContent = parseInt(data.pratawan).toLocaleString();
+                    document.getElementById('maleStat').textContent = parseInt(data.male).toLocaleString();
+                    document.getElementById('femaleStat').textContent = parseInt(data.female).toLocaleString();
+                    
+                    document.getElementById('occupiedPct').textContent = ((data.occupied/total)*100).toFixed(1) + '%';
+                    document.getElementById('vacantPct').textContent = ((data.vacant/total)*100).toFixed(1) + '%';
+                    document.getElementById('sanyabatPct').textContent = ((data.sanyabat/total)*100).toFixed(1) + '%';
+                    document.getElementById('pratawanPct').textContent = ((data.pratawan/total)*100).toFixed(1) + '%';
+                    document.getElementById('malePct').textContent = ((data.male/total)*100).toFixed(1) + '%';
+                    document.getElementById('femalePct').textContent = ((data.female/total)*100).toFixed(1) + '%';
+                    
+                    createCharts(data, depts.data);
+                }
+                
+                if (depts.success) {
+                    renderDepartments(depts.data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function createCharts(summary, departments) {
+            const textColor = document.documentElement.getAttribute('data-theme') === 'light' ? '#1e3c72' : 'white';
+            
+            charts.vacancy = new Chart(document.getElementById('vacancyChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['คนครอง', 'ว่าง'],
+                    datasets: [{
+                        data: [summary.occupied, summary.vacant],
+                        backgroundColor: ['#2ecc71', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: textColor, font: { size: 12 } } }
+                    }
+                }
+            });
+            
+            charts.gender = new Chart(document.getElementById('genderChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['ชาย', 'หญิง'],
+                    datasets: [{
+                        data: [summary.male, summary.female],
+                        backgroundColor: ['#3498db', '#e91e63']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: textColor, font: { size: 12 } } }
+                    }
+                }
+            });
+            
+            charts.rank = new Chart(document.getElementById('rankChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['สัญญาบัตร', 'ประทวน'],
+                    datasets: [{
+                        label: 'จำนวน',
+                        data: [summary.sanyabat, summary.pratawan],
+                        backgroundColor: ['#f39c12', '#9b59b6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: textColor, font: { size: 12 } } }
+                    },
+                    scales: {
+                        y: { ticks: { color: textColor } },
+                        x: { ticks: { color: textColor } }
+                    }
+                }
+            });
+            
+            const topDepts = departments.sort((a,b) => b.total - a.total).slice(0, 10);
+            charts.dept = new Chart(document.getElementById('deptChart'), {
+                type: 'bar',
+                data: {
+                    labels: topDepts.map(d => d.dept),
+                    datasets: [{
+                        label: 'จำนวน',
+                        data: topDepts.map(d => d.total),
+                        backgroundColor: '#3498db'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: textColor, font: { size: 12 } } }
+                    },
+                    scales: {
+                        y: { ticks: { color: textColor } },
+                        x: { ticks: { color: textColor, font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+        
+        function renderDepartments(departments) {
+            const grid = document.getElementById('deptGrid');
+            grid.innerHTML = departments.map(dept => `
+                <div class="dept-card" onclick="window.location.href='/department.html?name=${encodeURIComponent(dept.dept)}'">
+                    <div class="dept-name">${dept.dept}</div>
+                    ${parseInt(dept.vacant) > 0 ? `
+                        <div class="dept-vacancy">
+                            <span style="font-size: 18px;">⚠️</span>
+                            <span class="dept-vacancy-label">ตำแหน่งว่าง</span>
+                            <span class="dept-vacancy-badge">${dept.vacant}</span>
+                        </div>
+                    ` : ''}
+                    <div class="dept-stats">
+                        <span>👥 ${dept.total}</span>
+                        <span>🎖️ ${dept.sanyabat}</span>
+                        <span>🔰 ${dept.pratawan}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหางบลงทุน - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-primary: #1a5276;
+            --bg-secondary: #2980b9;
+            --bg-card: #2471a3;
+            --text-primary: #ffffff;
+            --text-secondary: #d4e6f1;
+            --accent-green: #27ae60;
+            --accent-orange: #f39c12;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8f0f5;
+            --bg-secondary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-stat: #d6eaf8;
+            --text-primary: #1a5276;
+            --text-secondary: #5a7a9a;
+            --border-color: #c5d9e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        [data-theme="light"] .header {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid #3498db;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-icon { font-size: 40px; }
+        .header h1 { font-size: 28px; }
+
+        .header-nav { display: flex; gap: 10px; }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+        }
+
+        .nav-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.3); }
+
+        .search-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        [data-theme="light"] .search-section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .form-group select option { background: var(--bg-primary); color: var(--text-primary); }
+
+        .search-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+
+        .results-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        [data-theme="light"] .results-section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-count { font-size: 18px; color: var(--text-secondary); }
+        .results-count strong { color: var(--accent-green); font-size: 22px; }
+        .results-amount { font-size: 16px; color: var(--accent-orange); }
+
+        .results-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .result-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .result-card {
+            background: var(--bg-stat);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .result-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.15); }
+        [data-theme="light"] .result-card:hover { background: #c9e2f5; }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 15px;
+        }
+
+        .result-title { flex: 1; }
+        .result-title h3 { font-size: 16px; margin-bottom: 5px; line-height: 1.4; }
+        .result-title p { font-size: 13px; color: var(--text-secondary); }
+
+        .result-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .badge-signed { background: #27ae60; }
+        .badge-pending { background: #f39c12; }
+        .badge-progress { background: #3498db; }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-detail { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .result-detail-icon { font-size: 18px; }
+        .result-detail-label { color: var(--text-secondary); }
+        .result-detail-value { font-weight: bold; }
+
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 30px; }
+
+        .page-btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.2); }
+        .page-btn.active { background: #3498db; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .loading, .no-results { text-align: center; padding: 60px; font-size: 20px; color: var(--text-secondary); }
+        .no-results-icon { font-size: 60px; margin-bottom: 20px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .modal-header h2 { font-size: 22px; line-height: 1.4; flex: 1; }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .detail-item-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .detail-item-value { font-size: 20px; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .search-grid { grid-template-columns: 1fr; }
+            .result-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <span class="header-icon">🔍</span>
+                <h1>ค้นหางบลงทุน</h1>
+            </div>
+            <div class="header-nav">
+                <a href="/budget.html" class="nav-btn">📊 Dashboard</a>
+                <a href="/" class="nav-btn">🏠 หน้าหลัก</a>
+                <button class="nav-btn" onclick="toggleTheme()"><span id="themeIcon">☀️</span></button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label>🏛️ หน่วยงาน</label>
+                    <select id="filterDivision"><option value="">ทั้งหมด</option></select>
+                </div>
+                <div class="form-group">
+                    <label>📋 ลักษณะ</label>
+                    <select id="filterProjectType">
+                        <option value="">ทั้งหมด</option>
+                        <option value="โครงการ">โครงการ</option>
+                        <option value="รายการ">รายการ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📅 ปีงบประมาณ</label>
+                    <select id="filterYear"><option value="">ทั้งหมด</option></select>
+                </div>
+                <div class="form-group">
+                    <label>💵 ประเภทงบ</label>
+                    <select id="filterBudgetType">
+                        <option value="">ทั้งหมด</option>
+                        <option value="งบปีเดียว">งบปีเดียว</option>
+                        <option value="งบผูกพัน">งบผูกพัน</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📈 สถานะ</label>
+                    <select id="filterStatusGroup">
+                        <option value="">ทั้งหมด</option>
+                        <option value="signed">ลงนามแล้ว</option>
+                        <option value="pending">รอดำเนินการ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🔎 ค้นหา</label>
+                    <input type="text" id="filterSearch" placeholder="ชื่อโครงการ, คู่สัญญา...">
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="btn btn-primary" onclick="search()">🔍 ค้นหา</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">🔄 ล้างตัวกรอง</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <div>
+                    <div class="results-count">พบ <strong id="totalResults">0</strong> รายการ</div>
+                    <div class="results-amount" id="totalAmount"></div>
+                </div>
+            </div>
+            <div id="resultsContainer" class="results-list">
+                <div class="loading">กำลังโหลดข้อมูล...</div>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">-</h2>
+                <button class="close-btn" onclick="closeModal()">✕ ปิด</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const pageSize = 15;
+
+        function formatNumber(num) {
+            if (!num) return '-';
+            return Number(num).toLocaleString('th-TH');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        }
+
+        function getStatusBadge(statusGroup) {
+            if (statusGroup === 'signed') return 'badge-signed';
+            if (statusGroup === 'winner_announced' || statusGroup === 'appeal_period') return 'badge-progress';
+            return 'badge-pending';
+        }
+
+        function getStatusText(statusGroup, status) {
+            if (statusGroup === 'signed') return '✅ ลงนามแล้ว';
+            if (!status) return '⏳ รอดำเนินการ';
+            let text = status.replace(/\n/g, ' ');
+            if (text.length > 25) text = text.substring(0, 25) + '...';
+            return '⏳ ' + text;
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('budgetTheme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('budgetTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '🌙';
+            }
+            
+            // Check URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const division = urlParams.get('division');
+            if (division) {
+                document.getElementById('filterDivision').value = division;
+            }
+            
+            loadFilters();
+            search();
+        });
+
+        async function loadFilters() {
+            try {
+                const divRes = await fetch('/api/budget/divisions');
+                const divData = await divRes.json();
+                if (divData.success) {
+                    const select = document.getElementById('filterDivision');
+                    const currentVal = select.value;
+                    select.innerHTML = '<option value="">ทั้งหมด</option>';
+                    divData.data.forEach(d => {
+                        select.innerHTML += `<option value="${d}" ${d === currentVal ? 'selected' : ''}>${d}</option>`;
+                    });
+                }
+
+                const yearRes = await fetch('/api/budget/years');
+                const yearData = await yearRes.json();
+                if (yearData.success) {
+                    const select = document.getElementById('filterYear');
+                    yearData.data.forEach(y => {
+                        select.innerHTML += `<option value="${y}">${y}</option>`;
+                    });
+                }
+            } catch (error) { console.error('Error loading filters:', error); }
+        }
+
+        async function search(page = 1) {
+            currentPage = page;
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '<div class="loading">🔍 กำลังค้นหา...</div>';
+
+            const params = new URLSearchParams();
+            
+            const division = document.getElementById('filterDivision').value;
+            const projectType = document.getElementById('filterProjectType').value;
+            const year = document.getElementById('filterYear').value;
+            const budgetType = document.getElementById('filterBudgetType').value;
+            const statusGroup = document.getElementById('filterStatusGroup').value;
+            const search = document.getElementById('filterSearch').value;
+
+            if (division) params.append('division', division);
+            if (projectType) params.append('project_type', projectType);
+            if (year) params.append('yearStart', year);
+            if (year) params.append('yearEnd', year);
+            if (budgetType) params.append('budget_type', budgetType);
+            if (statusGroup) params.append('status_group', statusGroup);
+            if (search) params.append('search', search);
+            params.append('page', page);
+            params.append('limit', pageSize);
+
+            try {
+                const response = await fetch(`/api/budget?${params.toString()}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('totalResults').textContent = result.pagination.total.toLocaleString();
+                    document.getElementById('totalAmount').textContent = result.pagination.totalAmount > 0 
+                        ? `💰 วงเงินรวม: ${formatNumber(result.pagination.totalAmount)} บาท` : '';
+                    renderResults(result.data);
+                    renderPagination(result.pagination);
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="no-results"><div class="no-results-icon">❌</div><p>เกิดข้อผิดพลาดในการค้นหา</p></div>';
+            }
+        }
+
+        function renderResults(data) {
+            const container = document.getElementById('resultsContainer');
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="no-results"><div class="no-results-icon">📭</div><p>ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p></div>';
+                return;
+            }
+
+            container.innerHTML = data.map(item => `
+                <div class="result-card" onclick="showDetail(${item.id})">
+                    <div class="result-header">
+                        <div class="result-title">
+                            <h3>${item.project_type === 'โครงการ' ? '📁' : '📄'} ${item.project_name || 'ไม่ระบุชื่อ'}</h3>
+                            <p>${item.division || '-'} | ปี ${item.fiscal_year || '-'} | ${item.budget_type || '-'}</p>
+                        </div>
+                        <span class="result-badge ${getStatusBadge(item.status_group)}">
+                            ${getStatusText(item.status_group, item.status)}
+                        </span>
+                    </div>
+                    <div class="result-details">
+                        <div class="result-detail">
+                            <span class="result-detail-icon">💰</span>
+                            <span class="result-detail-value">${item.contract_amount ? formatNumber(item.contract_amount) + ' บาท' : 'รอลงนาม'}</span>
+                        </div>
+                        <div class="result-detail">
+                            <span class="result-detail-icon">📅</span>
+                            <span class="result-detail-label">ลงนาม:</span>
+                            <span class="result-detail-value">${formatDate(item.contract_date)}</span>
+                        </div>
+                        <div class="result-detail">
+                            <span class="result-detail-icon">⏰</span>
+                            <span class="result-detail-label">สิ้นสุด:</span>
+                            <span class="result-detail-value">${formatDate(item.end_date)}</span>
+                        </div>
+                        <div class="result-detail">
+                            <span class="result-detail-icon">🏢</span>
+                            <span class="result-detail-value">${item.contractor || '-'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+            const { page, totalPages } = pagination;
+
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+            let html = `<button class="page-btn" onclick="search(${page - 1})" ${page === 1 ? 'disabled' : ''}>← ก่อนหน้า</button>`;
+
+            const startPage = Math.max(1, page - 2);
+            const endPage = Math.min(totalPages, page + 2);
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === page ? 'active' : ''}" onclick="search(${i})">${i}</button>`;
+            }
+
+            html += `<button class="page-btn" onclick="search(${page + 1})" ${page === totalPages ? 'disabled' : ''}>ถัดไป →</button>`;
+
+            container.innerHTML = html;
+        }
+
+        function resetFilters() {
+            document.getElementById('filterDivision').value = '';
+            document.getElementById('filterProjectType').value = '';
+            document.getElementById('filterYear').value = '';
+            document.getElementById('filterBudgetType').value = '';
+            document.getElementById('filterStatusGroup').value = '';
+            document.getElementById('filterSearch').value = '';
+            search(1);
+        }
+
+        async function showDetail(id) {
+            document.getElementById('detailModal').style.display = 'block';
+            document.getElementById('modalBody').innerHTML = '<div class="loading">กำลังโหลด...</div>';
+
+            try {
+                const response = await fetch(`/api/budget/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const d = result.data;
+                    document.getElementById('modalTitle').innerHTML = `${d.project_type === 'โครงการ' ? '📁' : '📄'} ${d.project_name || 'ไม่ระบุชื่อ'}`;
+                    
+                    document.getElementById('modalBody').innerHTML = `
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-item-label">🏛️ หน่วยงาน</div>
+                                <div class="detail-item-value">${d.division || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📂 หมวดงาน</div>
+                                <div class="detail-item-value">${d.category || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📋 ลักษณะ</div>
+                                <div class="detail-item-value">${d.project_type || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📈 สถานะ</div>
+                                <div class="detail-item-value">${d.status || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">💰 วงเงินสัญญา</div>
+                                <div class="detail-item-value">${d.contract_amount ? formatNumber(d.contract_amount) + ' บาท' : '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📅 ปีงบประมาณ</div>
+                                <div class="detail-item-value">${d.fiscal_year || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">💵 ประเภทงบ</div>
+                                <div class="detail-item-value">${d.budget_type || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📝 วันที่ลงนาม</div>
+                                <div class="detail-item-value">${formatDate(d.contract_date)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">⏰ วันที่สิ้นสุด</div>
+                                <div class="detail-item-value">${formatDate(d.end_date)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📊 งวดเงิน</div>
+                                <div class="detail-item-value">${d.installments || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">🏢 คู่สัญญา</div>
+                                <div class="detail-item-value">${d.contractor || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">📈 ความคืบหน้า</div>
+                                <div class="detail-item-value">${d.progress ? d.progress + '%' : '-'}</div>
+                            </div>
+                        </div>
+                        ${d.remarks ? `<div style="margin-top:20px;padding:15px;background:rgba(255,255,255,0.1);border-radius:10px;"><strong>📝 หมายเหตุ:</strong> ${d.remarks}</div>` : ''}
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
+        window.onclick = function(e) { if (e.target === document.getElementById('detailModal')) closeModal(); }
+        document.addEventListener('keypress', function(e) { if (e.key === 'Enter') search(1); });
+    </script>
+</body>
+</html>

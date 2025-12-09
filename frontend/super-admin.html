@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Super Admin - สพฐ.ตร.</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            padding: 20px 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2d2d44 0%, #1a1a2e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #3d3d5c;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .icon { font-size: 30px; margin-bottom: 10px; }
+        .stat-card .value { font-size: 32px; font-weight: bold; color: #fff; }
+        .stat-card .label { color: #888; font-size: 14px; margin-top: 5px; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            padding: 0 30px;
+            border-bottom: 1px solid #3d3d5c;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 15px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .tab .badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        /* Tab Content */
+        .tab-content { display: none; padding: 20px 30px; }
+        .tab-content.active { display: block; }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input, .search-bar select {
+            padding: 12px 15px;
+            border: 1px solid #3d3d5c;
+            border-radius: 10px;
+            background: #2d2d44;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .search-bar input { flex: 1; min-width: 200px; }
+        .search-bar select { min-width: 150px; }
+
+        .search-bar button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-search { background: #667eea; color: white; }
+        .btn-reset { background: #3d3d5c; color: white; }
+
+        /* Table */
+        .table-container {
+            background: #2d2d44;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #3d3d5c; }
+        th { background: #1a1a2e; color: #888; font-weight: 500; font-size: 14px; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        .status { padding: 5px 12px; border-radius: 20px; font-size: 13px; display: inline-block; }
+        .status.active { background: #27ae60; color: white; }
+        .status.pending { background: #f39c12; color: white; }
+        .status.locked { background: #e74c3c; color: white; }
+        .status.expired { background: #95a5a6; color: white; }
+
+        .online-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .online-dot.online { background: #2ecc71; }
+        .online-dot.offline { background: #7f8c8d; }
+
+        .btn-action {
+            background: #3d3d5c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .btn-action:hover { background: #667eea; }
+
+        /* Bulk Actions */
+        .bulk-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; align-items: center; }
+        .bulk-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-approve { background: #27ae60; color: white; }
+        .btn-lock { background: #e74c3c; color: white; }
+        .btn-unlock { background: #3498db; color: white; }
+        .btn-extend { background: #9b59b6; color: white; }
+        .btn-delete { background: #c0392b; color: white; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-secondary { background: #3d3d5c; color: white; }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            color: #888;
+        }
+
+        .pagination-buttons { display: flex; gap: 5px; }
+        .pagination-buttons button {
+            padding: 8px 15px;
+            border: 1px solid #3d3d5c;
+            background: transparent;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pagination-buttons button.active { background: #667eea; border-color: #667eea; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background: #2d2d44;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #3d3d5c;
+        }
+
+        .modal-header h2 { display: flex; align-items: center; gap: 10px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
+
+        .modal-body .form-group { margin-bottom: 15px; }
+        .modal-body label { display: block; color: #888; margin-bottom: 5px; font-size: 14px; }
+        .modal-body input, .modal-body select, .modal-body textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #3d3d5c;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .modal-body .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .modal-body .info-item { background: #1a1a2e; padding: 12px; border-radius: 8px; }
+        .modal-body .info-item label { margin-bottom: 3px; }
+        .modal-body .info-item .value { font-size: 16px; color: #fff; }
+
+        .expire-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .expire-buttons button {
+            padding: 8px 15px;
+            border: 1px solid #3d3d5c;
+            background: transparent;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .expire-buttons button:hover { background: #667eea; border-color: #667eea; }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #3d3d5c;
+        }
+        .modal-footer button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+
+        /* Pending Card */
+        .pending-card {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #3d3d5c;
+        }
+
+        .pending-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .pending-card-header h3 { display: flex; align-items: center; gap: 10px; }
+        .pending-card-header .date { color: #888; font-size: 13px; }
+
+        .pending-card-body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .pending-card-body .item { color: #888; font-size: 14px; }
+        .pending-card-body .item span { color: #fff; }
+
+        .pending-card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .pending-card-footer select { padding: 8px 15px; border: 1px solid #3d3d5c; border-radius: 8px; background: #2d2d44; color: #fff; }
+        .pending-card-footer .actions { display: flex; gap: 10px; }
+
+        /* Charts */
+        .chart-container {
+            background: #2d2d44;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container h3 { margin-bottom: 15px; color: #fff; }
+        .chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .chart-full { grid-column: span 2; }
+
+        /* Settings Form */
+        .settings-section {
+            background: #2d2d44;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3d3d5c;
+        }
+
+        .settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .settings-grid.single { grid-template-columns: 1fr; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: #888; margin-bottom: 8px; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #3d3d5c;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-group input[type="checkbox"] { width: auto; margin-right: 10px; }
+
+        .color-picker-group { display: flex; gap: 10px; align-items: center; }
+        .color-picker-group input[type="color"] { width: 50px; height: 40px; padding: 0; border: none; }
+
+        /* Logo Section */
+        .logo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+        .logo-card {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px dashed #3d3d5c;
+        }
+
+        .logo-card .preview {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            background: #2d2d44;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .logo-card .preview img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+        .logo-card h4 { margin-bottom: 5px; color: #fff; }
+        .logo-card p { color: #888; font-size: 12px; margin-bottom: 10px; }
+
+        /* Import Section */
+        .import-status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+
+        .import-status-card {
+            background: #2d2d44;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .import-status-card .count { font-size: 28px; font-weight: bold; color: #667eea; }
+        .import-status-card .label { color: #888; font-size: 14px; }
+        .import-status-card .date { color: #666; font-size: 12px; margin-top: 5px; }
+
+        .import-form {
+            background: #2d2d44;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .import-form h3 { margin-bottom: 20px; }
+
+        .data-type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+
+        .data-type-option {
+            background: #1a1a2e;
+            border: 2px solid #3d3d5c;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .data-type-option:hover { border-color: #667eea; }
+        .data-type-option.selected { border-color: #667eea; background: rgba(102, 126, 234, 0.1); }
+        .data-type-option .icon { font-size: 24px; margin-bottom: 5px; }
+
+        .upload-area {
+            border: 2px dashed #3d3d5c;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover { border-color: #667eea; background: rgba(102, 126, 234, 0.05); }
+        .upload-area .icon { font-size: 48px; margin-bottom: 15px; }
+        .upload-area p { color: #888; }
+
+        /* Activity Type Colors */
+        .activity-login { color: #2ecc71; }
+        .activity-logout { color: #e74c3c; }
+        .activity-view { color: #3498db; }
+        .activity-create { color: #27ae60; }
+        .activity-update { color: #f39c12; }
+        .activity-delete { color: #e74c3c; }
+        .activity-export { color: #9b59b6; }
+        .activity-import { color: #1abc9c; }
+
+        /* Time Range Selector */
+        .time-range-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .time-range-selector button {
+            padding: 8px 20px;
+            border: 1px solid #3d3d5c;
+            background: transparent;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .time-range-selector button.active { background: #667eea; border-color: #667eea; }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+            .chart-full { grid-column: span 1; }
+            .logo-grid { grid-template-columns: repeat(2, 1fr); }
+            .import-status-grid { grid-template-columns: repeat(2, 1fr); }
+            .data-type-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .settings-grid { grid-template-columns: 1fr; }
+            .pending-card-body { grid-template-columns: 1fr; }
+            .logo-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1>👑 SUPER ADMIN</h1>
+            <span style="color: rgba(255,255,255,0.7)">Control Panel</span>
+        </div>
+        <div class="header-right">
+            <div class="notification-badge" id="pendingBadge">🔔 <span id="pendingCount">0</span></div>
+            <div class="user-info">
+                <span>👤 <span id="userName">Admin</span></span>
+            </div>
+            <button class="btn-logout" onclick="logout()">🚪 ออกจากระบบ</button>
+        </div>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+            <div class="icon">👥</div>
+            <div class="value" id="statTotal">0</div>
+            <div class="label">ผู้ใช้รวม</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">✅</div>
+            <div class="value" id="statActive">0</div>
+            <div class="label">ใช้งานได้</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">⏳</div>
+            <div class="value" id="statPending">0</div>
+            <div class="label">รออนุมัติ</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">🔒</div>
+            <div class="value" id="statLocked">0</div>
+            <div class="label">ถูกล็อก</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">⚠️</div>
+            <div class="value" id="statExpiring">0</div>
+            <div class="label">ใกล้หมดอายุ</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">⚡</div>
+            <div class="value" id="statOnline">0</div>
+            <div class="label">ออนไลน์</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" data-tab="users">👥 ผู้ใช้ (<span id="tabUsersCount">0</span>)</button>
+        <button class="tab" data-tab="pending">⏳ รออนุมัติ <span class="badge" id="tabPendingBadge">0</span></button>
+        <button class="tab" data-tab="stats">📊 สถิติ</button>
+        <button class="tab" data-tab="logs">📜 Log</button>
+        <button class="tab" data-tab="settings">⚙️ ตั้งค่า</button>
+        <button class="tab" data-tab="logo">🖼️ โลโก้</button>
+        <button class="tab" data-tab="import">📥 Import</button>
+    </div>
+
+    <!-- Tab: Users -->
+    <div class="tab-content active" id="tab-users">
+        <div class="search-bar">
+            <input type="text" id="searchUser" placeholder="🔍 ค้นหาชื่อ, ตำแหน่ง...">
+            <select id="filterDivision"><option value="">ทุกหน่วยงาน</option></select>
+            <select id="filterStatus">
+                <option value="">ทุกสถานะ</option>
+                <option value="active">✅ ใช้งาน</option>
+                <option value="pending">⏳ รออนุมัติ</option>
+                <option value="locked">🔒 ล็อก</option>
+                <option value="expired">⚠️ หมดอายุ</option>
+            </select>
+            <button class="btn-search" onclick="searchUsers()">🔍 ค้นหา</button>
+            <button class="btn-reset" onclick="resetSearch()">🔄 ล้าง</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>หน่วยงาน</th>
+                        <th>สถานะ</th>
+                        <th>หมดอายุ</th>
+                        <th>ล็อกอินล่าสุด</th>
+                        <th>ออนไลน์</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="bulk-actions">
+            <span style="color: #888;">เลือกแล้ว: <span id="selectedCount">0</span> รายการ</span>
+            <button class="btn-approve" onclick="bulkAction('approve')">✅ อนุมัติ</button>
+            <button class="btn-lock" onclick="bulkAction('lock')">🔒 ล็อก</button>
+            <button class="btn-unlock" onclick="bulkAction('unlock')">🔓 ปลดล็อก</button>
+            <button class="btn-extend" onclick="bulkAction('extend30')">📅 +30 วัน</button>
+            <button class="btn-extend" onclick="bulkAction('extend365')">📅 +1 ปี</button>
+            <button class="btn-delete" onclick="bulkAction('delete')">❌ ลบ</button>
+        </div>
+
+        <div class="pagination">
+            <span>แสดง <span id="showingFrom">0</span>-<span id="showingTo">0</span> จาก <span id="totalUsers">0</span> รายการ</span>
+            <div class="pagination-buttons" id="paginationButtons"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Pending -->
+    <div class="tab-content" id="tab-pending">
+        <h2 style="margin-bottom: 20px;">🆕 รายการรออนุมัติ (<span id="pendingListCount">0</span> รายการ)</h2>
+        <div id="pendingList"></div>
+        <button class="btn-approve" style="margin-top: 20px;" onclick="approveAll()">✅ อนุมัติทั้งหมด (กำหนด 90 วัน)</button>
+    </div>
+
+    <!-- Tab: Stats -->
+    <div class="tab-content" id="tab-stats">
+        <div class="time-range-selector">
+            <button class="active" onclick="setTimeRange(7)">7 วัน</button>
+            <button onclick="setTimeRange(30)">30 วัน</button>
+            <button onclick="setTimeRange(90)">90 วัน</button>
+            <button onclick="setTimeRange(365)">1 ปี</button>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-container chart-full">
+                <h3>📈 การเข้าใช้งานรายวัน</h3>
+                <canvas id="dailyLoginChart" height="100"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>🏢 การใช้งานตามหน่วยงาน</h3>
+                <canvas id="divisionChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>📱 อุปกรณ์ที่ใช้งาน</h3>
+                <canvas id="deviceChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>🕐 เวลาที่เข้าใช้งาน</h3>
+                <canvas id="hourlyChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>📄 หน้าที่เข้าชมมากสุด</h3>
+                <canvas id="pagesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Logs -->
+    <div class="tab-content" id="tab-logs">
+        <div class="search-bar">
+            <input type="text" id="searchLog" placeholder="🔍 ค้นหา...">
+            <input type="date" id="logDateFrom">
+            <input type="date" id="logDateTo">
+            <select id="logType">
+                <option value="">ทุกประเภท</option>
+                <option value="login">🔓 เข้าสู่ระบบ</option>
+                <option value="logout">🚪 ออกจากระบบ</option>
+                <option value="view">📄 ดูข้อมูล</option>
+                <option value="create">➕ สร้าง</option>
+                <option value="update">✏️ แก้ไข</option>
+                <option value="delete">❌ ลบ</option>
+                <option value="export">📥 Export</option>
+                <option value="import">📤 Import</option>
+            </select>
+            <button class="btn-search" onclick="searchLogs()">🔍 ค้นหา</button>
+            <button class="btn-reset" onclick="resetLogSearch()">🔄 ล้าง</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>วันเวลา</th>
+                        <th>ผู้ใช้</th>
+                        <th>กิจกรรม</th>
+                        <th>รายละเอียด</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <span>แสดง <span id="logShowingFrom">0</span>-<span id="logShowingTo">0</span> จาก <span id="totalLogs">0</span> รายการ</span>
+            <div class="pagination-buttons" id="logPaginationButtons"></div>
+        </div>
+
+        <div class="bulk-actions" style="margin-top: 20px;">
+            <button class="btn-primary" onclick="exportLogs()">📥 Export Log CSV</button>
+            <button class="btn-delete" onclick="deleteOldLogs()">🗑️ ลบ Log เก่ากว่า 1 ปี</button>
+        </div>
+    </div>
+
+    <!-- Tab: Settings -->
+    <div class="tab-content" id="tab-settings">
+        <div class="settings-section">
+            <h3>📝 ข้อมูลระบบ</h3>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>ชื่อระบบ</label>
+                    <input type="text" id="settingSystemName" value="ระบบสารสนเทศ สพฐ.ตร.">
+                </div>
+                <div class="form-group">
+                    <label>ชื่อหน่วยงาน</label>
+                    <input type="text" id="settingOrgName" value="สำนักงานพิสูจน์หลักฐานตำรวจ">
+                </div>
+                <div class="form-group">
+                    <label>ข้อความต้อนรับ</label>
+                    <input type="text" id="settingWelcome" value="ยินดีต้อนรับเข้าสู่ระบบ">
+                </div>
+                <div class="form-group">
+                    <label>ข้อความท้ายหน้า</label>
+                    <input type="text" id="settingFooter" value="© 2568 สพฐ.ตร. All rights reserved">
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>📧 ข้อมูลติดต่อ</h3>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>Email ผู้ดูแลระบบ</label>
+                    <input type="email" id="settingAdminEmail" value="admin@police.go.th">
+                </div>
+                <div class="form-group">
+                    <label>เบอร์โทรติดต่อ</label>
+                    <input type="text" id="settingAdminPhone" value="02-XXX-XXXX">
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>🔒 ความปลอดภัย</h3>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>จำนวนครั้งล็อกอินผิดก่อนล็อก</label>
+                    <input type="number" id="settingMaxAttempts" value="3" min="1" max="10">
+                </div>
+                <div class="form-group">
+                    <label>ระยะเวลาล็อกบัญชี (นาที)</label>
+                    <input type="number" id="settingLockDuration" value="30" min="5" max="1440">
+                </div>
+                <div class="form-group">
+                    <label>Session Timeout (นาที)</label>
+                    <input type="number" id="settingSessionTimeout" value="60" min="5" max="480">
+                </div>
+                <div class="form-group">
+                    <label>อายุเริ่มต้นผู้ใช้ใหม่ (วัน)</label>
+                    <input type="number" id="settingDefaultExpire" value="90" min="1" max="365">
+                </div>
+                <div class="form-group">
+                    <label>แจ้งเตือนก่อนหมดอายุ (วัน)</label>
+                    <input type="number" id="settingWarnExpire" value="7" min="1" max="30">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="settingForcePasswordChange"> บังคับเปลี่ยนรหัสผ่านทุก 90 วัน
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="bulk-actions">
+            <button class="btn-secondary" onclick="resetSettings()">🔄 รีเซ็ตค่าเริ่มต้น</button>
+            <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+        </div>
+    </div>
+
+    <!-- Tab: Logo -->
+    <div class="tab-content" id="tab-logo">
+        <div class="settings-section">
+            <h3>🖼️ จัดการโลโก้</h3>
+            <div class="logo-grid">
+                <div class="logo-card">
+                    <div class="preview" id="mainLogoPreview">🏛️</div>
+                    <h4>โลโก้หลัก</h4>
+                    <p>200 x 200 px</p>
+                    <input type="file" id="mainLogoInput" accept="image/*" style="display:none" onchange="previewLogo('main')">
+                    <button class="btn-action" onclick="document.getElementById('mainLogoInput').click()">📤 อัปโหลด</button>
+                </div>
+
+                <div class="logo-card">
+                    <div class="preview" id="loginLogoPreview">🔐</div>
+                    <h4>โลโก้หน้าล็อกอิน</h4>
+                    <p>150 x 150 px</p>
+                    <input type="file" id="loginLogoInput" accept="image/*" style="display:none" onchange="previewLogo('login')">
+                    <button class="btn-action" onclick="document.getElementById('loginLogoInput').click()">📤 อัปโหลด</button>
+                </div>
+
+                <div class="logo-card">
+                    <div class="preview" id="faviconPreview">⭐</div>
+                    <h4>Favicon</h4>
+                    <p>32 x 32 px</p>
+                    <input type="file" id="faviconInput" accept="image/*" style="display:none" onchange="previewLogo('favicon')">
+                    <button class="btn-action" onclick="document.getElementById('faviconInput').click()">📤 อัปโหลด</button>
+                </div>
+
+                <div class="logo-card">
+                    <div class="preview" id="bgPreview" style="background: linear-gradient(135deg, #1a3a5c, #2c5282);">📷</div>
+                    <h4>พื้นหลังล็อกอิน</h4>
+                    <p>1920 x 1080 px</p>
+                    <input type="file" id="bgInput" accept="image/*" style="display:none" onchange="previewLogo('bg')">
+                    <button class="btn-action" onclick="document.getElementById('bgInput').click()">📤 อัปโหลด</button>
+                </div>
+                 <div class="logo-card">
+                    <div class="preview" id="weaponsPreview">🔫</div>
+                    <h4>โลโก้ยุทธภัณฑ์</h4>
+                    <p>200 x 200 px</p>
+                    <input type="file" id="weaponsInput" accept="image/*" style="display:none" onchange="previewLogo('weapons')">
+                    <button class="btn-action" onclick="document.getElementById('weaponsInput').click()">📤 อัปโหลด</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>🎨 ธีมสี</h3>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>สีหลัก (Primary Color)</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="primaryColor" value="#667eea">
+                        <input type="text" id="primaryColorHex" value="#667eea" style="width: 100px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>สีรอง (Secondary Color)</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="secondaryColor" value="#764ba2">
+                        <input type="text" id="secondaryColorHex" value="#764ba2" style="width: 100px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bulk-actions">
+            <button class="btn-secondary" onclick="resetTheme()">🔄 รีเซ็ตธีม</button>
+            <button class="btn-primary" onclick="saveTheme()">💾 บันทึกธีม</button>
+        </div>
+    </div>
+
+    <!-- Tab: Import -->
+    <div class="tab-content" id="tab-import">
+        <div class="import-status-grid">
+            <div class="import-status-card">
+                <div class="count" id="importPersonnel">0</div>
+                <div class="label">👤 บุคลากร</div>
+                <div class="date" id="importPersonnelDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importVehicle">0</div>
+                <div class="label">🚗 ยานพาหนะ</div>
+                <div class="date" id="importVehicleDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importEquipment">0</div>
+                <div class="label">🖥️ ครุภัณฑ์</div>
+                <div class="date" id="importEquipmentDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importHousing">0</div>
+                <div class="label">🏠 ที่พักอาศัย</div>
+                <div class="date" id="importHousingDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importBudget">0</div>
+                <div class="label">💰 งบลงทุน</div>
+                <div class="date" id="importBudgetDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importBuilding">0</div>
+                <div class="label">🏢 อาคาร</div>
+                <div class="date" id="importBuildingDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importWeapon">0</div>
+                <div class="label">🔫 ยุทธภัณฑ์</div>
+                <div class="date" id="importWeaponDate">-</div>
+            </div>
+            <div class="import-status-card">
+                <div class="count" id="importUser">0</div>
+                <div class="label">👥 ผู้ใช้งาน</div>
+                <div class="date" id="importUserDate">-</div>
+            </div>
+        </div>
+
+        <div class="import-form">
+            <h3>📤 Import ข้อมูลใหม่</h3>
+
+            <div class="form-group">
+                <label>1. เลือกประเภทข้อมูล</label>
+                <div class="data-type-grid">
+                    <div class="data-type-option" data-type="personnel" onclick="selectDataType('personnel')">
+                        <div class="icon">👤</div>
+                        <div>บุคลากร</div>
+                    </div>
+                    <div class="data-type-option" data-type="vehicle" onclick="selectDataType('vehicle')">
+                        <div class="icon">🚗</div>
+                        <div>ยานพาหนะ</div>
+                    </div>
+                    <div class="data-type-option" data-type="equipment" onclick="selectDataType('equipment')">
+                        <div class="icon">🖥️</div>
+                        <div>ครุภัณฑ์</div>
+                    </div>
+                    <div class="data-type-option" data-type="housing" onclick="selectDataType('housing')">
+                        <div class="icon">🏠</div>
+                        <div>ที่พักอาศัย</div>
+                    </div>
+                    <div class="data-type-option" data-type="budget" onclick="selectDataType('budget')">
+                        <div class="icon">💰</div>
+                        <div>งบลงทุน</div>
+                    </div>
+                    <div class="data-type-option" data-type="building" onclick="selectDataType('building')">
+                        <div class="icon">🏢</div>
+                        <div>อาคาร</div>
+                    </div>
+                    <div class="data-type-option" data-type="weapon" onclick="selectDataType('weapon')">
+                        <div class="icon">🔫</div>
+                        <div>ยุทธภัณฑ์</div>
+                    </div>
+                    <div class="data-type-option" data-type="user" onclick="selectDataType('user')">
+                        <div class="icon">👥</div>
+                        <div>ผู้ใช้งาน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>2. อัปโหลดไฟล์ Excel</label>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('importFile').click()">
+                    <div class="icon">📁</div>
+                    <p>คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
+                    <p style="font-size: 12px; margin-top: 10px;">.xlsx, .xls (สูงสุด 10MB)</p>
+                </div>
+                <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(event)">
+                <div id="selectedFile" style="margin-top: 10px; display: none;">
+                    <span>📄 <span id="fileName"></span></span>
+                    <button class="btn-action" onclick="clearFile()" style="margin-left: 10px;">❌ ยกเลิก</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>3. ตัวเลือก Import</label>
+                <div class="settings-grid">
+                    <div>
+                        <label><input type="radio" name="importMode" value="add" checked> เพิ่มข้อมูลใหม่เท่านั้น</label><br>
+                        <label><input type="radio" name="importMode" value="update"> อัปเดตข้อมูลที่ซ้ำ + เพิ่มใหม่</label><br>
+                        <label><input type="radio" name="importMode" value="replace"> ลบข้อมูลเก่าทั้งหมด แล้ว Import ใหม่ ⚠️</label>
+                    </div>
+                    <div>
+                        <label><input type="checkbox" id="skipErrors" checked> ข้ามแถวที่มีข้อผิดพลาด</label><br>
+                        <label><input type="checkbox" id="createBackup" checked> สร้าง Backup ก่อน Import</label><br>
+                        <label><input type="checkbox" id="logImport" checked> บันทึก Log การ Import</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bulk-actions">
+                <button class="btn-secondary" onclick="downloadTemplate()">📥 ดาวน์โหลด Template</button>
+                <button class="btn-primary" onclick="startImport()" id="startImportBtn" disabled>🚀 เริ่ม Import</button>
+            </div>
+        </div>
+
+        <div class="settings-section" style="margin-top: 20px;">
+            <h3>📋 ประวัติการ Import</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>วันที่/เวลา</th>
+                            <th>ประเภท</th>
+                            <th>ไฟล์</th>
+                            <th>ผลลัพธ์</th>
+                            <th>โดย</th>
+                        </tr>
+                    </thead>
+                    <tbody id="importHistoryBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Kicked Modal -->
+    <div class="modal" id="kickedModal" style="display:none;">
+        <div class="modal-content" style="max-width: 450px; text-align: center;">
+            <div style="font-size: 80px; margin-bottom: 20px;">⚠️</div>
+            <h2 style="color: #e74c3c; margin-bottom: 15px;">ถูกเตะออกจากระบบ</h2>
+            <p style="color: #888; margin-bottom: 25px; line-height: 1.6;">
+                บัญชีนี้มีการล็อกอินเข้าใช้งานจากอุปกรณ์อื่น<br>
+                คุณถูกออกจากระบบอัตโนมัติ
+            </p>
+            <button class="btn-primary" onclick="goToLogin()" style="width: 100%; padding: 15px; font-size: 16px;">
+                🔐 ไปหน้าเข้าสู่ระบบ
+            </button>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👤 ข้อมูลผู้ใช้</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>ชื่อ-นามสกุล</label>
+                        <div class="value" id="modalFullName">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>ยศ</label>
+                        <div class="value" id="modalRank">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>ตำแหน่ง</label>
+                        <div class="value" id="modalPosition">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>หน่วยงาน</label>
+                        <div class="value" id="modalDivision">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>เบอร์โทร</label>
+                        <div class="value" id="modalPhone">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>อีเมล</label>
+                        <div class="value" id="modalEmail">-</div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>📅 วันหมดอายุ</label>
+                    <input type="date" id="modalExpireDate">
+                    <div class="expire-buttons">
+                        <button onclick="addDays(30)">+30 วัน</button>
+                        <button onclick="addDays(90)">+90 วัน</button>
+                        <button onclick="addDays(365)">+1 ปี</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 หมายเหตุ</label>
+                    <input type="text" id="modalRemarks" placeholder="หมายเหตุ...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-approve" onclick="modalAction('approve')">✅ อนุมัติ</button>
+                <button class="btn-lock" onclick="modalAction('lock')">🔒 ล็อก</button>
+                <button class="btn-unlock" onclick="modalAction('unlock')">🔓 ปลดล็อก</button>
+                <button class="btn-extend" onclick="modalAction('save')">💾 บันทึก</button>
+                <button class="btn-delete" onclick="resetPassword()">🔑 รีเซ็ตรหัสผ่าน</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        let currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        let users = [];
+        let logs = [];
+        let selectedUsers = new Set();
+        let currentPage = 1;
+        let logCurrentPage = 1;
+        let currentUserId = null;
+        let selectedDataType = null;
+        let selectedFile = null;
+
+        // Charts
+        let dailyLoginChart, divisionChart, deviceChart, hourlyChart, pagesChart;
+
+        // Check auth
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        document.getElementById('userName').textContent = currentUser.fullName || 'Admin';
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+                
+                // Load tab-specific data
+                if (this.dataset.tab === 'stats') loadStatsCharts();
+                if (this.dataset.tab === 'logs') loadLogs();
+                if (this.dataset.tab === 'settings') loadSettings();
+                if (this.dataset.tab === 'import') loadImportStatus();
+            });
+        });
+
+        // API Helper
+        async function api(endpoint, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            if (data) options.body = JSON.stringify(data);
+            
+            const response = await fetch(endpoint, options);
+            if (response.status === 401) {
+                const result = await response.json();
+                if (result.code === 'SESSION_KICKED') {
+                    // แสดง modal แจ้งเตือนก่อน redirect
+                    document.getElementById('kickedModal').style.display = 'block';
+                    return null;
+                }
+                localStorage.removeItem('token');
+                window.location.href = '/login.html';
+                return null;
+            }
+            return response.json();
+        }
+
+        function goToLogin() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        // ==================== STATS ====================
+        async function loadStats() {
+            try {
+                const result = await api('/api/admin/stats');
+                if (result.success) {
+                    const s = result.data;
+                    document.getElementById('statTotal').textContent = s.total || 0;
+                    document.getElementById('statActive').textContent = s.active || 0;
+                    document.getElementById('statPending').textContent = s.pending || 0;
+                    document.getElementById('statLocked').textContent = s.locked || 0;
+                    document.getElementById('statExpiring').textContent = s.expiring || 0;
+                    document.getElementById('statOnline').textContent = s.online || 0;
+                    
+                    document.getElementById('pendingCount').textContent = s.pending || 0;
+                    document.getElementById('tabPendingBadge').textContent = s.pending || 0;
+                    document.getElementById('tabUsersCount').textContent = s.total || 0;
+                }
+            } catch (error) {
+                console.error('Load stats error:', error);
+            }
+        }
+
+        // ==================== CHARTS ====================
+        async function loadStatsCharts() {
+            try {
+                const result = await api('/api/admin/stats/charts?days=30');
+                const data = result.success ? result.data : getMockChartData();
+                
+                renderDailyLoginChart(data.dailyLogins || []);
+                renderDivisionChart(data.divisions || []);
+                renderDeviceChart(data.devices || { desktop: 60, mobile: 30, tablet: 10 });
+                renderHourlyChart(data.hourly || []);
+                renderPagesChart(data.pages || []);
+            } catch (error) {
+                console.error('Load charts error:', error);
+                // Use mock data
+                const mockData = getMockChartData();
+                renderDailyLoginChart(mockData.dailyLogins);
+                renderDivisionChart(mockData.divisions);
+                renderDeviceChart(mockData.devices);
+                renderHourlyChart(mockData.hourly);
+                renderPagesChart(mockData.pages);
+            }
+        }
+
+        function getMockChartData() {
+            const days = [];
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                days.push({
+                    date: d.toISOString().split('T')[0],
+                    count: Math.floor(Math.random() * 50) + 10
+                });
+            }
+            return {
+                dailyLogins: days,
+                divisions: [
+                    { name: 'สพฐ.ตร.', count: 45 },
+                    { name: 'พฐก.', count: 32 },
+                    { name: 'ศพฐ.1', count: 28 },
+                    { name: 'ศพฐ.2', count: 25 },
+                    { name: 'ศพฐ.3', count: 20 }
+                ],
+                devices: { desktop: 65, mobile: 25, tablet: 10 },
+                hourly: Array.from({length: 24}, (_, i) => ({ hour: i, count: Math.floor(Math.random() * 30) })),
+                pages: [
+                    { name: 'หน้าหลัก', count: 234 },
+                    { name: 'บุคลากร', count: 189 },
+                    { name: 'ยานพาหนะ', count: 145 },
+                    { name: 'ครุภัณฑ์', count: 112 },
+                    { name: 'ที่พักอาศัย', count: 87 }
+                ]
+            };
+        }
+
+        function renderDailyLoginChart(data) {
+            const ctx = document.getElementById('dailyLoginChart').getContext('2d');
+            if (dailyLoginChart) dailyLoginChart.destroy();
+            
+            dailyLoginChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date.substring(5)),
+                    datasets: [{
+                        label: 'การเข้าใช้งาน',
+                        data: data.map(d => d.count),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#3d3d5c' }, ticks: { color: '#888' } },
+                        x: { grid: { color: '#3d3d5c' }, ticks: { color: '#888' } }
+                    }
+                }
+            });
+        }
+
+        function renderDivisionChart(data) {
+            const ctx = document.getElementById('divisionChart').getContext('2d');
+            if (divisionChart) divisionChart.destroy();
+            
+            divisionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        data: data.map(d => d.count),
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#3d3d5c' }, ticks: { color: '#888' } },
+                        y: { grid: { display: false }, ticks: { color: '#888' } }
+                    }
+                }
+            });
+        }
+
+        function renderDeviceChart(data) {
+            const ctx = document.getElementById('deviceChart').getContext('2d');
+            if (deviceChart) deviceChart.destroy();
+            
+            deviceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Desktop', 'Mobile', 'Tablet'],
+                    datasets: [{
+                        data: [data.desktop, data.mobile, data.tablet],
+                        backgroundColor: ['#667eea', '#f5576c', '#4facfe']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#888' } } }
+                }
+            });
+        }
+
+        function renderHourlyChart(data) {
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            if (hourlyChart) hourlyChart.destroy();
+            
+            hourlyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => `${d.hour}:00`),
+                    datasets: [{
+                        data: data.map(d => d.count),
+                        backgroundColor: '#764ba2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#3d3d5c' }, ticks: { color: '#888' } },
+                        x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 90 } }
+                    }
+                }
+            });
+        }
+
+        function renderPagesChart(data) {
+            const ctx = document.getElementById('pagesChart').getContext('2d');
+            if (pagesChart) pagesChart.destroy();
+            
+            pagesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        data: data.map(d => d.count),
+                        backgroundColor: '#4facfe'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#3d3d5c' }, ticks: { color: '#888' } },
+                        y: { grid: { display: false }, ticks: { color: '#888' } }
+                    }
+                }
+            });
+        }
+
+        function setTimeRange(days) {
+            document.querySelectorAll('.time-range-selector button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            loadStatsCharts(days);
+        }
+
+        // ==================== USERS ====================
+        async function loadUsers(page = 1) {
+            try {
+                const search = document.getElementById('searchUser').value;
+                const division = document.getElementById('filterDivision').value;
+                const status = document.getElementById('filterStatus').value;
+                
+                let url = `/api/admin/users?page=${page}&limit=10`;
+                if (search) url += `&search=${encodeURIComponent(search)}`;
+                if (division) url += `&division=${encodeURIComponent(division)}`;
+                if (status) url += `&status=${status}`;
+                
+                const result = await api(url);
+                if (result.success) {
+                    users = result.data;
+                    currentPage = result.pagination.page;
+                    renderUsers();
+                    renderPagination(result.pagination);
+                }
+            } catch (error) {
+                console.error('Load users error:', error);
+            }
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const isOnline = user.last_login && (new Date() - new Date(user.last_login)) < 3600000;
+                const expireDate = user.expire_date ? new Date(user.expire_date).toLocaleDateString('th-TH') : '-';
+                const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString('th-TH') : '-';
+                
+                let statusClass = user.status;
+                let statusText = '';
+                switch(user.status) {
+                    case 'active': statusText = '✅ ใช้งาน'; break;
+                    case 'pending': statusText = '⏳ รออนุมัติ'; break;
+                    case 'locked': statusText = '🔒 ล็อก'; break;
+                    case 'expired': statusText = '⚠️ หมดอายุ'; break;
+                    default: statusText = user.status;
+                }
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><input type="checkbox" class="user-checkbox" value="${user.id}" onchange="updateSelectedCount()"></td>
+                        <td>${user.rank || ''} ${user.full_name}</td>
+                        <td>${user.division || '-'}</td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td>${expireDate}</td>
+                        <td>${lastLogin}</td>
+                        <td><span class="online-dot ${isOnline ? 'online' : 'offline'}"></span></td>
+                        <td><button class="btn-action" onclick="openUserModal(${user.id})">⚙️ จัดการ</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderPagination(pagination) {
+            document.getElementById('showingFrom').textContent = pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0;
+            document.getElementById('showingTo').textContent = Math.min(pagination.page * pagination.limit, pagination.total);
+            document.getElementById('totalUsers').textContent = pagination.total;
+            
+            const buttons = document.getElementById('paginationButtons');
+            buttons.innerHTML = '';
+            
+            for (let i = 1; i <= pagination.totalPages; i++) {
+                buttons.innerHTML += `<button class="${i === pagination.page ? 'active' : ''}" onclick="loadUsers(${i})">${i}</button>`;
+            }
+        }
+
+        // ==================== LOGS ====================
+        async function loadLogs(page = 1) {
+            try {
+                const search = document.getElementById('searchLog').value;
+                const dateFrom = document.getElementById('logDateFrom').value;
+                const dateTo = document.getElementById('logDateTo').value;
+                const type = document.getElementById('logType').value;
+                
+                let url = `/api/admin/logs?page=${page}&limit=15`;
+                if (search) url += `&search=${encodeURIComponent(search)}`;
+                if (dateFrom) url += `&dateFrom=${dateFrom}`;
+                if (dateTo) url += `&dateTo=${dateTo}`;
+                if (type) url += `&type=${type}`;
+                
+                const result = await api(url);
+                if (result.success) {
+                    logs = result.data;
+                    logCurrentPage = result.pagination.page;
+                    renderLogs();
+                    renderLogPagination(result.pagination);
+                }
+            } catch (error) {
+                console.error('Load logs error:', error);
+                // Show mock data
+                renderMockLogs();
+            }
+        }
+
+        function renderMockLogs() {
+            const tbody = document.getElementById('logsTableBody');
+            const mockLogs = [
+                { created_at: new Date().toISOString(), user_name: 'นาย อรรถพล ไสญาติ', action: 'login', details: 'เข้าสู่ระบบสำเร็จ', ip_address: '192.168.1.1' },
+                { created_at: new Date(Date.now() - 3600000).toISOString(), user_name: 'Super Admin', action: 'user_approve', details: 'อนุมัติผู้ใช้ใหม่', ip_address: '192.168.1.1' }
+            ];
+            
+            tbody.innerHTML = mockLogs.map(log => {
+                const time = new Date(log.created_at).toLocaleString('th-TH');
+                const actionIcon = getActionIcon(log.action);
+                return `
+                    <tr>
+                        <td>${time}</td>
+                        <td>${log.user_name || '-'}</td>
+                        <td class="activity-${log.action}">${actionIcon} ${log.action}</td>
+                        <td>${log.details || '-'}</td>
+                        <td>${log.ip_address || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('logShowingFrom').textContent = '1';
+            document.getElementById('logShowingTo').textContent = mockLogs.length;
+            document.getElementById('totalLogs').textContent = mockLogs.length;
+        }
+
+        function renderLogs() {
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = logs.map(log => {
+                const time = new Date(log.created_at).toLocaleString('th-TH');
+                const actionIcon = getActionIcon(log.action);
+                return `
+                    <tr>
+                        <td>${time}</td>
+                        <td>${log.user_name || '-'}</td>
+                        <td class="activity-${log.action}">${actionIcon} ${log.action}</td>
+                        <td>${log.details || '-'}</td>
+                        <td>${log.ip_address || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getActionIcon(action) {
+            const icons = {
+                login: '🔓', logout: '🚪', view: '📄', create: '➕',
+                update: '✏️', delete: '❌', export: '📥', import: '📤',
+                user_approve: '✅', user_lock: '🔒', user_unlock: '🔓'
+            };
+            return icons[action] || '📋';
+        }
+
+        function renderLogPagination(pagination) {
+            document.getElementById('logShowingFrom').textContent = pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0;
+            document.getElementById('logShowingTo').textContent = Math.min(pagination.page * pagination.limit, pagination.total);
+            document.getElementById('totalLogs').textContent = pagination.total;
+            
+            const buttons = document.getElementById('logPaginationButtons');
+            buttons.innerHTML = '';
+            
+            for (let i = 1; i <= pagination.totalPages; i++) {
+                buttons.innerHTML += `<button class="${i === pagination.page ? 'active' : ''}" onclick="loadLogs(${i})">${i}</button>`;
+            }
+        }
+
+        function searchLogs() { loadLogs(1); }
+        function resetLogSearch() {
+            document.getElementById('searchLog').value = '';
+            document.getElementById('logDateFrom').value = '';
+            document.getElementById('logDateTo').value = '';
+            document.getElementById('logType').value = '';
+            loadLogs(1);
+        }
+
+        // ==================== SETTINGS ====================
+        async function loadSettings() {
+            try {
+                const result = await api('/api/admin/settings');
+                if (result.success) {
+                    const s = result.data;
+                    if (s.system_name) document.getElementById('settingSystemName').value = s.system_name;
+                    if (s.organization_name) document.getElementById('settingOrgName').value = s.organization_name;
+                    // ... load other settings
+                }
+            } catch (error) {
+                console.error('Load settings error:', error);
+            }
+        }
+
+        async function saveSettings() {
+            try {
+                const settings = {
+                    system_name: document.getElementById('settingSystemName').value,
+                    organization_name: document.getElementById('settingOrgName').value,
+                    welcome_message: document.getElementById('settingWelcome').value,
+                    footer_text: document.getElementById('settingFooter').value,
+                    admin_email: document.getElementById('settingAdminEmail').value,
+                    admin_phone: document.getElementById('settingAdminPhone').value,
+                    max_login_attempts: document.getElementById('settingMaxAttempts').value,
+                    lock_duration_minutes: document.getElementById('settingLockDuration').value,
+                    session_timeout_minutes: document.getElementById('settingSessionTimeout').value,
+                    default_expire_days: document.getElementById('settingDefaultExpire').value,
+                    warn_expire_days: document.getElementById('settingWarnExpire').value
+                };
+                
+                const result = await api('/api/admin/settings', 'PUT', settings);
+                alert(result.success ? 'บันทึกการตั้งค่าสำเร็จ!' : 'เกิดข้อผิดพลาด');
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด');
+            }
+        }
+
+        function resetSettings() {
+            if (confirm('ต้องการรีเซ็ตค่าเริ่มต้นหรือไม่?')) {
+                document.getElementById('settingSystemName').value = 'ระบบสารสนเทศ สพฐ.ตร.';
+                document.getElementById('settingOrgName').value = 'สำนักงานพิสูจน์หลักฐานตำรวจ';
+                document.getElementById('settingWelcome').value = 'ยินดีต้อนรับเข้าสู่ระบบ';
+                document.getElementById('settingFooter').value = '© 2568 สพฐ.ตร. All rights reserved';
+                document.getElementById('settingMaxAttempts').value = '3';
+                document.getElementById('settingLockDuration').value = '30';
+                document.getElementById('settingSessionTimeout').value = '60';
+                document.getElementById('settingDefaultExpire').value = '90';
+                document.getElementById('settingWarnExpire').value = '7';
+            }
+        }
+
+        // ==================== IMPORT ====================
+        async function loadImportStatus() {
+            try {
+                const result = await api('/api/admin/import/status');
+                if (result.success) {
+                    const s = result.data;
+                    document.getElementById('importPersonnel').textContent = s.personnel?.count || 0;
+                    document.getElementById('importVehicle').textContent = s.vehicle?.count || 0;
+                    document.getElementById('importEquipment').textContent = s.equipment?.count || 0;
+                    document.getElementById('importHousing').textContent = s.housing?.count || 0;
+                    document.getElementById('importBudget').textContent = s.budget?.count || 0;
+                    document.getElementById('importBuilding').textContent = s.building?.count || 0;
+                    document.getElementById('importWeapon').textContent = s.weapon?.count || 0;
+                }
+            } catch (error) {
+                console.error('Load import status error:', error);
+            }
+        }
+
+        function selectDataType(type) {
+            selectedDataType = type;
+            document.querySelectorAll('.data-type-option').forEach(o => o.classList.remove('selected'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+            updateImportButton();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('selectedFile').style.display = 'block';
+                document.getElementById('fileName').textContent = file.name;
+                updateImportButton();
+            }
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            document.getElementById('importFile').value = '';
+            document.getElementById('selectedFile').style.display = 'none';
+            updateImportButton();
+        }
+
+        function updateImportButton() {
+            document.getElementById('startImportBtn').disabled = !(selectedDataType && selectedFile);
+        }
+
+        async function startImport() {
+            if (!selectedDataType || !selectedFile) return;
+            
+            alert(`กำลังพัฒนา: Import ${selectedDataType} จากไฟล์ ${selectedFile.name}`);
+        }
+
+        function downloadTemplate() {
+            if (!selectedDataType) {
+                alert('กรุณาเลือกประเภทข้อมูลก่อน');
+                return;
+            }
+            alert(`กำลังพัฒนา: ดาวน์โหลด Template สำหรับ ${selectedDataType}`);
+        }
+
+        // ==================== PENDING ====================
+        async function loadPendingUsers() {
+            try {
+                const result = await api('/api/admin/users?status=pending');
+                if (result.success) {
+                    const pendingList = document.getElementById('pendingList');
+                    pendingList.innerHTML = '';
+                    
+                    document.getElementById('pendingListCount').textContent = result.data.length;
+                    
+                    result.data.forEach(user => {
+                        const createdAt = new Date(user.created_at).toLocaleString('th-TH');
+                        pendingList.innerHTML += `
+                            <div class="pending-card">
+                                <div class="pending-card-header">
+                                    <h3>📋 ${user.rank || ''} ${user.full_name}</h3>
+                                    <div class="date">สมัครเมื่อ: ${createdAt}</div>
+                                </div>
+                                <div class="pending-card-body">
+                                    <div class="item">หน่วยงาน: <span>${user.division || '-'}</span></div>
+                                    <div class="item">ตำแหน่ง: <span>${user.position || '-'}</span></div>
+                                    <div class="item">เบอร์โทร: <span>${user.phone || '-'}</span></div>
+                                    <div class="item">อีเมล: <span>${user.email || '-'}</span></div>
+                                </div>
+                                <div class="pending-card-footer">
+                                    <select id="expireDays-${user.id}">
+                                        <option value="30">30 วัน</option>
+                                        <option value="90" selected>90 วัน</option>
+                                        <option value="365">1 ปี</option>
+                                    </select>
+                                    <div class="actions">
+                                        <button class="btn-approve" onclick="approveUser(${user.id})">✅ อนุมัติ</button>
+                                        <button class="btn-lock" onclick="rejectUser(${user.id})">❌ ปฏิเสธ</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error('Load pending error:', error);
+            }
+        }
+
+        async function loadDivisions() {
+            try {
+                const result = await api('/api/admin/divisions');
+                if (result.success) {
+                    const select = document.getElementById('filterDivision');
+                    result.data.forEach(div => {
+                        select.innerHTML += `<option value="${div}">${div}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Load divisions error:', error);
+            }
+        }
+
+        // ==================== ACTIONS ====================
+        function searchUsers() { loadUsers(1); }
+        function resetSearch() {
+            document.getElementById('searchUser').value = '';
+            document.getElementById('filterDivision').value = '';
+            document.getElementById('filterStatus').value = '';
+            loadUsers(1);
+        }
+
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = checked);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            document.getElementById('selectedCount').textContent = checkboxes.length;
+        }
+
+        async function bulkAction(action) {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            if (userIds.length === 0) { alert('กรุณาเลือกผู้ใช้'); return; }
+            if (action === 'delete' && !confirm('ต้องการลบผู้ใช้ที่เลือกหรือไม่?')) return;
+            
+            try {
+                const result = await api('/api/admin/users/bulk', 'POST', { action, userIds });
+                if (result.success) {
+                    alert(result.message);
+                    loadUsers(currentPage);
+                    loadStats();
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด');
+            }
+        }
+
+        async function openUserModal(userId) {
+            currentUserId = userId;
+            const user = users.find(u => u.id === userId);
+            
+            if (user) {
+                document.getElementById('modalFullName').textContent = `${user.rank || ''} ${user.full_name}`;
+                document.getElementById('modalRank').textContent = user.rank || '-';
+                document.getElementById('modalPosition').textContent = user.position || '-';
+                document.getElementById('modalDivision').textContent = user.division || '-';
+                document.getElementById('modalPhone').textContent = user.phone || '-';
+                document.getElementById('modalEmail').textContent = user.email || '-';
+                document.getElementById('modalExpireDate').value = user.expire_date ? user.expire_date.split('T')[0] : '';
+                document.getElementById('userModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('userModal').style.display = 'none';
+            currentUserId = null;
+        }
+
+        function addDays(days) {
+            const input = document.getElementById('modalExpireDate');
+            const current = input.value ? new Date(input.value) : new Date();
+            current.setDate(current.getDate() + days);
+            input.value = current.toISOString().split('T')[0];
+        }
+
+        async function modalAction(action) {
+            if (!currentUserId) return;
+            
+            try {
+                const expireDate = document.getElementById('modalExpireDate').value;
+                const result = await api(`/api/admin/users/${currentUserId}`, 'PUT', { action, expireDate });
+                
+                if (result.success) {
+                    alert(result.message);
+                    closeModal();
+                    loadUsers(currentPage);
+                    loadStats();
+                    loadPendingUsers();
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด');
+            }
+        }
+
+        async function approveUser(userId) {
+            const days = document.getElementById(`expireDays-${userId}`).value;
+            try {
+                const result = await api(`/api/admin/users/${userId}`, 'PUT', { action: 'approve', days: parseInt(days) });
+                if (result.success) {
+                    alert('อนุมัติสำเร็จ');
+                    loadPendingUsers();
+                    loadStats();
+                    loadUsers(currentPage);
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด');
+            }
+        }
+
+        async function rejectUser(userId) {
+            if (!confirm('ต้องการปฏิเสธผู้ใช้นี้หรือไม่?')) return;
+            try {
+                const result = await api(`/api/admin/users/${userId}`, 'PUT', { action: 'reject' });
+                if (result.success) {
+                    alert('ปฏิเสธสำเร็จ');
+                    loadPendingUsers();
+                    loadStats();
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด');
+            }
+        }
+
+        async function approveAll() {
+            if (!confirm('ต้องการอนุมัติทั้งหมดหรือไม่?')) return;
+            try {
+                const result = await api('/api/admin/users/approve-all', 'POST', { days: 90 });
+                if (result.success) {
+                    alert(result.message);
+                    loadPendingUsers();
+                    loadStats();
+                    loadUsers(currentPage);
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด');
+            }
+        }
+
+ function previewLogo(type) {
+            // Map type to input/preview IDs
+            const inputMap = {
+                'main': 'mainLogoInput',
+                'login': 'loginLogoInput', 
+                'favicon': 'faviconInput',
+                'bg': 'bgInput',
+                'weapons': 'weaponsInput'
+            };
+            const previewMap = {
+                'main': 'mainLogoPreview',
+                'login': 'loginLogoPreview',
+                'favicon': 'faviconPreview', 
+                'bg': 'bgPreview',
+                'weapons': 'weaponsPreview'
+            };
+            
+            const input = document.getElementById(inputMap[type]);
+            const preview = document.getElementById(previewMap[type]);
+            
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Preview locally
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+                
+                // Upload to server
+                uploadLogo(type, file);
+            }
+        }
+
+        async function uploadLogo(type, file) {
+            try {
+                const formData = new FormData();
+                formData.append('logo', file);
+                formData.append('type', type);
+                
+                const response = await fetch('/api/admin/upload/logo', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('อัพโหลดโลโก้สำเร็จ!');
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('เกิดข้อผิดพลาดในการอัพโหลด');
+            }
+        }
+
+        function saveTheme() {
+            alert('บันทึกธีมสำเร็จ!');
+        }
+
+        function resetTheme() {
+            if (confirm('ต้องการรีเซ็ตธีมหรือไม่?')) {
+                document.getElementById('primaryColor').value = '#667eea';
+                document.getElementById('primaryColorHex').value = '#667eea';
+                document.getElementById('secondaryColor').value = '#764ba2';
+                document.getElementById('secondaryColorHex').value = '#764ba2';
+            }
+        }
+
+        // Color picker sync
+        document.getElementById('primaryColor').addEventListener('input', e => {
+            document.getElementById('primaryColorHex').value = e.target.value;
+        });
+        document.getElementById('secondaryColor').addEventListener('input', e => {
+            document.getElementById('secondaryColorHex').value = e.target.value;
+        });
+
+        // ==================== LOGOUT ====================
+        async function resetPassword() {
+            if (!currentUserId) return;
+            const newPassword = prompt("กรุณาใส่รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร):");
+            if (!newPassword) return;
+            if (newPassword.length < 6) {
+                alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+                return;
+            }
+            try {
+                const result = await api(`/api/admin/users/${currentUserId}/reset-password`, 'POST', { newPassword });
+                if (result.success) {
+                    alert(`รีเซ็ตรหัสผ่านสำเร็จ!nรหัสผ่านใหม่: ${result.newPassword}`);
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + result.error);
+                }
+            } catch (error) {
+                alert("เกิดข้อผิดพลาด");
+            }
+        }
+
+        async function logout() {
+            try { await api('/api/auth/logout', 'POST'); } catch (e) {}
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadUsers();
+            loadPendingUsers();
+            loadDivisions();
+        });
+    </script>
+</body>
+</html>

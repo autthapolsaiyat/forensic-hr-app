@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยุทธภัณฑ์และอุปกรณ์ - สพฐ.ตร.</title>
+    <style>
+        :root {
+            --bg-primary: #1a3a5c;
+            --bg-secondary: #2c5282;
+            --bg-card: #2b4a6f;
+            --bg-stat: #3d6a99;
+            --text-primary: #ffffff;
+            --text-secondary: #a0c4e8;
+            --accent-green: #48bb78;
+            --accent-blue: #4299e1;
+            --accent-orange: #ed8936;
+            --accent-red: #e53e3e;
+            --border-color: #4a7ab0;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8f0f5;
+            --bg-secondary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-stat: #d6eaf8;
+            --text-primary: #1a5276;
+            --text-secondary: #5a7a9a;
+            --border-color: #c5d9e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        [data-theme="light"] .header {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid #3498db;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .logo {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 35px;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-title h1 { font-size: 32px; font-weight: bold; }
+        .header-title p { font-size: 16px; color: var(--text-secondary); }
+
+        .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn.search { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+        .nav-btn.secondary { background: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .nav-btn:hover { transform: translateY(-2px); }
+
+        [data-theme="light"] .nav-btn.secondary { background: var(--bg-stat); }
+
+        .section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        [data-theme="light"] .section {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title { 
+            font-size: 24px; 
+            font-weight: bold; 
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-stat);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        [data-theme="light"] .stat-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 45px;
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+
+        [data-theme="light"] .stat-icon {
+            filter: none;
+            opacity: 0.8;
+        }
+
+        .stat-title { font-size: 16px; color: var(--text-secondary); line-height: 1.4; }
+        .stat-number { font-size: 48px; font-weight: bold; }
+        .stat-unit { font-size: 18px; color: var(--text-secondary); margin-left: 8px; }
+
+        .stat-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 14px;
+        }
+
+        [data-theme="light"] .stat-footer {
+            border-top-color: var(--border-color);
+        }
+
+        .stat-footer-item { display: flex; align-items: center; gap: 5px; }
+        .stat-footer-item.green { color: var(--accent-green); }
+        .stat-footer-item.red { color: var(--accent-red); }
+        .stat-footer-item.orange { color: var(--accent-orange); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1100px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        [data-theme="light"] .modal-content {
+            background: var(--bg-secondary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        [data-theme="light"] .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .modal-header-left { display: flex; align-items: center; gap: 15px; }
+        .modal-header h2 { font-size: 24px; }
+        .modal-count { font-size: 36px; font-weight: bold; color: var(--accent-blue); }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .modal-stat {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        [data-theme="light"] .modal-stat {
+            background: var(--bg-stat);
+        }
+
+        .modal-stat-value { font-size: 24px; font-weight: bold; }
+        .modal-stat-label { font-size: 12px; color: var(--text-secondary); }
+        .modal-stat.green .modal-stat-value { color: var(--accent-green); }
+        .modal-stat.red .modal-stat-value { color: var(--accent-red); }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+
+        .modal-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .modal-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-item:hover { transform: translateX(5px); }
+
+        .modal-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .modal-item-title { font-size: 18px; font-weight: bold; }
+        .modal-item-count { font-size: 24px; font-weight: bold; color: var(--accent-blue); }
+        .modal-item-unit { font-size: 14px; color: var(--text-secondary); }
+
+        .modal-item-details { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+        .loading { text-align: center; padding: 60px; font-size: 20px; color: var(--text-secondary); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .stat-number { font-size: 36px; }
+            .modal-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo" id="pageLogo">🔫</div>
+                <div class="header-title">
+                    <h1>ยุทธภัณฑ์และอุปกรณ์ | สพฐ.ตร.</h1>
+                    <p>Dashboard - ระบบจัดการยุทธภัณฑ์และอุปกรณ์</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="/weapons-search.html" class="nav-btn search">🔍 ค้นหา</a>
+                <a href="/intro.html" class="nav-btn secondary">← กลับ</a>
+                <button class="nav-btn secondary" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">โหมดมืด</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📊 สถิติยุทธภัณฑ์และอุปกรณ์</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="loading">กำลังโหลดข้อมูล...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <span id="modalIcon" style="font-size:40px">🔫</span>
+                    <div>
+                        <h2 id="modalTitle">-</h2>
+                    </div>
+                    <span class="modal-count" id="modalCount">0</span>
+                    <span id="modalUnit" style="color:var(--text-secondary)">กระบอก</span>
+                </div>
+                <button class="close-btn" onclick="closeModal()">← ย้อนกลับ</button>
+            </div>
+            <div class="modal-stats" id="modalStats"></div>
+            <div class="modal-grid" id="modalGrid">
+                <div class="loading">กำลังโหลด...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const weaponIcons = {
+            'อาวุธปืนพก': '🔫',
+            'อาวุธปืนเล็กสั้น': '🎯',
+            'อาวุธปืนเล็กยาว': '🎯',
+            'เสื้อเกราะ': '🦺',
+            'เครื่องรบกวนสัญญาณ': '📡',
+            'เครื่องตรวจวัตถุระเบิด': '💥',
+            'เครื่องวัดรังสี': '☢️'
+        };
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            return Number(num).toLocaleString('th-TH');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+            document.getElementById('themeText').textContent = newTheme === 'light' ? 'โหมดมืด' : 'โหมดสว่าง';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // ===== AUTH CHECK =====
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Check session & load data
+            checkSession();
+            loadLogo();
+            
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '🌙';
+                document.getElementById('themeText').textContent = 'โหมดมืด';
+            }
+            
+            loadData();
+        });
+
+        // ===== AUTH & SESSION FUNCTIONS =====
+        async function checkSession() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (response.status === 401) {
+                    const result = await response.json();
+                    if (result.code === 'SESSION_KICKED') {
+                        showKickedModal();
+                    } else {
+                        localStorage.removeItem('token');
+                        window.location.href = '/login.html';
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function showKickedModal() {
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;">
+                    <div style="background:#2d2d44;padding:40px;border-radius:20px;text-align:center;max-width:400px;">
+                        <div style="font-size:80px;margin-bottom:20px;">⚠️</div>
+                        <h2 style="color:#e74c3c;margin-bottom:15px;">ถูกเตะออกจากระบบ</h2>
+                        <p style="color:#888;margin-bottom:25px;">บัญชีนี้มีการล็อกอินเข้าใช้งานจากอุปกรณ์อื่น<br>คุณถูกออกจากระบบอัตโนมัติ</p>
+                        <button onclick="localStorage.removeItem('token');window.location.href='/login.html'" style="background:#667eea;color:white;border:none;padding:15px 30px;border-radius:10px;cursor:pointer;font-size:16px;width:100%;">🔐 ไปหน้าเข้าสู่ระบบ</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+
+        async function loadLogo() {
+            try {
+                const response = await fetch('/api/auth/settings');
+                const result = await response.json();
+                if (result.success && result.data.weapons_logo) {
+                    document.getElementById('pageLogo').innerHTML = `<img src="${result.data.weapons_logo}" alt="Logo">`;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // Check session every 30 seconds
+        setInterval(checkSession, 30000);
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/weapons/subcategories');
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderStats(result.data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('statsGrid').innerHTML = '<div class="loading">ไม่สามารถโหลดข้อมูลได้</div>';
+            }
+        }
+
+        function getIcon(subcategory) {
+            for (const [key, icon] of Object.entries(weaponIcons)) {
+                if (subcategory && subcategory.includes(key)) return icon;
+            }
+            return '📦';
+        }
+
+        function renderStats(data) {
+            const container = document.getElementById('statsGrid');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="loading">ไม่มีข้อมูล</div>';
+                return;
+            }
+
+            container.innerHTML = data.map(item => {
+                const icon = getIcon(item.subcategory);
+                const title = item.caliber ? `${item.subcategory} ขนาด ${item.caliber}` : item.subcategory;
+                const usable = parseInt(item.usable) || 0;
+                const damaged = parseInt(item.damaged) || 0;
+                const disposed = parseInt(item.disposed) || 0;
+                
+                return `
+                    <div class="stat-card" onclick="showDetail('${item.subcategory}', '${item.caliber || ''}', '${item.unit || ''}')">
+                        <div class="stat-card-header">
+                            <span class="stat-icon">${icon}</span>
+                            <div class="stat-title">${title}</div>
+                        </div>
+                        <div>
+                            <span class="stat-number">${formatNumber(item.total)}</span>
+                            <span class="stat-unit">${item.unit || 'รายการ'}</span>
+                        </div>
+                        <div class="stat-footer">
+                            <span class="stat-footer-item green">ใช้งานได้ ${usable}</span>
+                            <span class="stat-footer-item red">ชำรุด ${damaged}</span>
+                            ${disposed > 0 ? `<span class="stat-footer-item orange">จำหน่าย ${disposed}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('detailModal')) closeModal();
+        }
+
+        async function showDetail(subcategory, caliber, unit) {
+            document.getElementById('detailModal').style.display = 'block';
+            
+            const title = caliber ? `${subcategory} ขนาด ${caliber}` : subcategory;
+            document.getElementById('modalIcon').textContent = getIcon(subcategory);
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalUnit').textContent = unit || 'รายการ';
+            document.getElementById('modalCount').textContent = '-';
+            document.getElementById('modalStats').innerHTML = '';
+            document.getElementById('modalGrid').innerHTML = '<div class="loading">กำลังโหลด...</div>';
+
+            try {
+                let url = `/api/weapons/by-subcategory/${encodeURIComponent(subcategory)}`;
+                if (caliber) url += `?caliber=${encodeURIComponent(caliber)}`;
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    document.getElementById('modalCount').textContent = formatNumber(stats.total);
+                    
+                    document.getElementById('modalStats').innerHTML = `
+                        <div class="modal-stat green">
+                            <div class="modal-stat-value">${formatNumber(stats.usable)}</div>
+                            <div class="modal-stat-label">ใช้งานได้</div>
+                        </div>
+                        <div class="modal-stat red">
+                            <div class="modal-stat-value">${formatNumber(stats.damaged)}</div>
+                            <div class="modal-stat-label">ชำรุด</div>
+                        </div>
+                        ${parseInt(stats.disposed) > 0 ? `
+                        <div class="modal-stat">
+                            <div class="modal-stat-value">${formatNumber(stats.disposed)}</div>
+                            <div class="modal-stat-label">จำหน่าย</div>
+                        </div>
+                        ` : ''}
+                        ${parseInt(stats.need) > 0 ? `
+                        <div class="modal-stat">
+                            <div class="modal-stat-value">${formatNumber(stats.need)}</div>
+                            <div class="modal-stat-label">ความต้องการเพิ่ม</div>
+                        </div>
+                        ` : ''}
+                    `;
+                    
+                    renderModalGrid(result.data, unit);
+                }
+            } catch (error) {
+                document.getElementById('modalGrid').innerHTML = '<div class="loading">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        function renderModalGrid(data, unit) {
+            const container = document.getElementById('modalGrid');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="loading">ไม่พบข้อมูล</div>';
+                return;
+            }
+
+            container.innerHTML = data.map(item => `
+                <div class="modal-item">
+                    <div class="modal-item-header">
+                        <div class="modal-item-title">${item.division || 'ไม่ระบุหน่วย'}</div>
+                        <div>
+                            <span class="modal-item-count">${formatNumber(item.total_quantity)}</span>
+                            <span class="modal-item-unit">${item.unit || unit || ''}</span>
+                        </div>
+                    </div>
+                    <div class="modal-item-details">
+                        ${item.brand ? `<div>ยี่ห้อ: ${item.brand}${item.model ? ' รุ่น ' + item.model : ''}</div>` : ''}
+                        ${item.priority_text ? `<div>${item.priority_text}</div>` : ''}
+                        ${item.service_life ? `<div>อายุการใช้งาน: ${item.service_life} ปี</div>` : ''}
+                        ${item.additional_need > 0 ? `<div>ความต้องการเพิ่ม: ${item.additional_need} ${item.unit || ''}</div>` : ''}
+                        ${item.remarks ? `<div style="margin-top:5px;font-size:12px;opacity:0.8">${item.remarks}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

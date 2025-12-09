@@ -1,0 +1,81 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Log requests
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
+// Frontend path
+const frontendPath = path.join(__dirname, 'frontend');
+console.log('Frontend path:', frontendPath);
+
+// Serve static files
+app.use(express.static(frontendPath));
+
+// API Routes
+const statisticsRoutes = require('./routes/statistics');
+const searchRoutes = require('./routes/search');
+
+app.use('/api/statistics', statisticsRoutes);
+app.use('/api/search', searchRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({ success: true, message: 'Server running', frontendPath });
+});
+
+// HTML routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'summary.html'));
+});
+
+app.get('/summary.html', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'summary.html'));
+});
+
+app.get('/organization.html', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'organization.html'));
+});
+
+app.get('/search.html', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'search.html'));
+});
+
+app.get('/map.html', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'map.html'));
+});
+
+app.get('/department.html', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'department.html'));
+});
+
+// 404
+app.use((req, res) => {
+    console.log('404:', req.path);
+    res.status(404).json({ success: false, message: 'Not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({ success: false, error: err.message });
+});
+
+app.listen(PORT, () => {
+    console.log('🚀 Server running on port ' + PORT);
+    console.log('📂 Frontend: ' + frontendPath);
+});
+
+module.exports = app;

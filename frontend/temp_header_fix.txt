@@ -1,0 +1,6 @@
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+                <a href="/organization.html" class="search-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">🌲 <span class="btn-text">โครงสร้าง</span></a>
+                <a href="/search.html" class="search-btn">🔍 <span class="btn-text">ค้นหา</span></a>
+                <a href="/map.html" class="map-btn">🗺️ <span class="btn-text">แผนที่</span></a>
+            </div>

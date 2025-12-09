@@ -1,0 +1,19 @@
+// Organization structure
+router.get('/organization', async (req, res) => {
+  try {
+    const hqResult = await query(`
+      SELECT 
+        headquarters,
+        COUNT(DISTINCT department) as dept_count,
+        COUNT(*) as total
+      FROM personnel
+      WHERE headquarters IS NOT NULL AND headquarters != 'ไม่ระบุ'
+      GROUP BY headquarters
+      ORDER BY 
+        CASE 
+          WHEN headquarters = 'บก.อก.' THEN 0
+          WHEN headquarters = 'สพฐ.ตร.' THEN 1
+          ELSE 2
+        END,
+        total DESC
+    `);

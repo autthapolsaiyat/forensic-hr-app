@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>ระบบจัดการยานพาหนะ | สพฐ.ตร.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --card-bg: rgba(255,255,255,0.15);
+            --card-border: rgba(255,255,255,0.3);
+            --text-color: white;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+        [data-theme="light"] {
+            --bg-gradient-start: #f0f4f8;
+            --bg-gradient-mid: #d9e2ec;
+            --bg-gradient-end: #bcccdc;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(0,0,0,0.1);
+            --text-color: #1e3c72;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.5);
+        }
+        
+        .header-title h1 {
+            font-size: clamp(20px, 4vw, 36px);
+            color: var(--text-color);
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        
+        .header-title p {
+            font-size: clamp(14px, 2vw, 18px);
+            color: var(--text-color);
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            box-shadow: 0 5px 20px rgba(149,165,166,0.4);
+        }
+        
+        .btn-theme {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            padding: 12px;
+            min-width: 44px;
+            font-size: 20px;
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            box-shadow: 0 5px 20px rgba(52,152,219,0.4);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            box-shadow: 0 5px 20px rgba(39,174,96,0.4);
+        }
+        
+        .btn-report {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+        
+        .btn:active { transform: scale(0.98); }
+        
+        /* Vehicle Grid */
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .vehicle-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-color);
+        }
+        
+        .vehicle-card:active { transform: scale(0.98); }
+        
+        .vehicle-icon {
+            font-size: clamp(36px, 6vw, 48px);
+            margin-bottom: 10px;
+        }
+        
+        .vehicle-name {
+            font-size: clamp(14px, 2.5vw, 16px);
+            color: var(--text-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            min-height: 38px;
+        }
+        
+        .vehicle-count {
+            font-size: clamp(32px, 6vw, 48px);
+            color: var(--text-color);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .vehicle-status {
+            display: flex;
+            justify-content: space-around;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: clamp(11px, 2vw, 13px);
+            color: var(--text-color);
+            opacity: 0.85;
+        }
+        
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .status-label {
+            font-size: clamp(10px, 1.8vw, 11px);
+            opacity: 0.7;
+        }
+        
+        .status-value {
+            font-weight: bold;
+            color: #f1c40f;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px var(--shadow-color);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--card-border);
+        }
+        
+        .modal-title {
+            font-size: clamp(24px, 4vw, 32px);
+            color: var(--text-color);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+        
+        /* Department Grid in Modal */
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .dept-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+        
+        .dept-name {
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .dept-vehicles {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .dept-vehicle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: clamp(13px, 2vw, 14px);
+            color: var(--text-color);
+        }
+        
+        .dept-vehicle-detail {
+            font-size: clamp(11px, 1.8vw, 12px);
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+        
+        .dept-status {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--card-border);
+            font-size: clamp(11px, 1.8vw, 12px);
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+        
+        /* Icon Modal */
+        .icon-modal-content {
+            max-width: 600px;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+        
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon-badge {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            position: relative;
+        }
+        
+        .icon-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--card-bg);
+            border: 2px solid white;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-label {
+            font-size: clamp(12px, 2vw, 14px);
+            color: var(--text-color);
+            text-align: center;
+        }
+        
+        /* Colors for icon badges */
+        .badge-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .badge-yellow { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+        .badge-orange { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .badge-green { background: linear-gradient(135deg, #27ae60, #229954); }
+        .badge-blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .badge-purple { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .badge-teal { background: linear-gradient(135deg, #1abc9c, #16a085); }
+        
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-color);
+            font-size: clamp(12px, 2vw, 14px);
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            body { padding: 25px; }
+            .header { padding: 30px; }
+            .logo { width: 70px; height: 70px; font-size: 36px; }
+            .vehicle-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+        }
+        
+        @media (min-width: 1024px) {
+            .vehicle-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        @media (min-width: 1440px) {
+            .vehicle-grid { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">🚔</div>
+                <div class="header-title">
+                    <h1>🚗 สถานภาพยานพาหนะ | 4M – สพฐ.ตร.</h1>
+                    <p>Dashboard</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="#" class="btn btn-back" onclick="window.history.back(); return false;">← กลับ</a>
+                <button class="btn btn-theme" onclick="toggleTheme()">🌓</button>
+                <button class="btn btn-search">🔍 โครงสร้าง</button>
+                <button class="btn btn-add">✚ ค้นหา</button>
+                <button class="btn btn-report">📊 แผนที่</button>
+            </div>
+        </div>
+        
+        <!-- Vehicle Grid -->
+        <div class="vehicle-grid" id="vehicleGrid"></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div><strong>Developed by:</strong> Autthapol Saiyat (AS)</div>
+            <div>Copyright © 2025 All rights reserved.</div>
+        </div>
+    </div>
+    
+    <!-- Modal for Vehicle Details -->
+    <div class="modal" id="vehicleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle"></div>
+                <button class="modal-close" onclick="closeModal('vehicleModal')">×</button>
+            </div>
+            <div class="dept-grid" id="deptGrid"></div>
+        </div>
+    </div>
+    
+    <!-- Modal for Icon View -->
+    <div class="modal" id="iconModal">
+        <div class="modal-content icon-modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="iconModalTitle"></div>
+                <button class="modal-close" onclick="closeModal('iconModal')">×</button>
+            </div>
+            <div class="icon-grid" id="iconGrid"></div>
+        </div>
+    </div>
+    
+    <!-- Modal for Department Details -->
+    <div class="modal" id="deptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="deptModalTitle"></div>
+                <button class="modal-close" onclick="closeModal('deptModal')">←  ย้อนกลับ</button>
+            </div>
+            <div class="vehicle-grid" id="deptVehicleGrid"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Mock Data
+        const vehicleData = {
+            categories: [
+                { id: 1, name: 'รถเก๋งเล็ก', icon: '🚗', count: 18, damaged: 0, waiting: 0 },
+                { id: 2, name: 'รถเก๋งกลาง', icon: '🚙', count: 8, damaged: 0, waiting: 0 },
+                { id: 3, name: 'กระบะ 4 ประตู\nชั้นเคลื่อน 2 ล้อ', icon: '🛻', count: 232, damaged: 0, waiting: 0 },
+                { id: 4, name: 'กระบะ 4 ประตู\nชั้นเคลื่อน 4 ล้อ', icon: '🚚', count: 36, damaged: 0, waiting: 0 },
+                { id: 5, name: 'กระบะ 2 ประตู\nชั้นเคลื่อน 4 ล้อ', icon: '🚐', count: 1, damaged: 0, waiting: 0 },
+                { id: 6, name: 'กระบะ ไม่มี CAB\nชั้นเคลื่อน 4 ล้อ', icon: '🚛', count: 1, damaged: 0, waiting: 0 },
+                { id: 7, name: 'รถจักรยานยนต์', icon: '🏍️', count: 120, damaged: 0, waiting: 0 },
+                { id: 8, name: 'รถตู้', icon: '🚌', count: 29, damaged: 0, waiting: 0 },
+                { id: 9, name: 'รถบัสใหญ่', icon: '🚎', count: 2, damaged: 0, waiting: 0 },
+                { id: 10, name: 'รถตรวจการณ์', icon: '🚓', count: 3, damaged: 0, waiting: 0 },
+                { id: 11, name: 'รถพิมพ์เกราะ', icon: '🚔', count: 24, damaged: 0, waiting: 0 }
+            ],
+            departments: {
+                1: [ // รถเก๋งเล็ก
+                    { name: 'บก.อก.', count: 10, details: 'สมง.ผบก. 1, สมง.สบ7 1, สมง.ผบก. 1, ส่วนกลาง 7', damaged: 0, waiting: 0 },
+                    { name: 'ศพฐ.1', count: 1, details: 'สมง.ผบก. 1', damaged: 0, waiting: 0 },
+                    { name: 'ศพฐ.2', count: 1, details: 'สมง.ผบก. 1', damaged: 0, waiting: 0 },
+                    { name: 'ศพฐ.3', count: 2, details: '', damaged: 0, waiting: 0 },
+                    { name: 'ศพฐ.4', count: 1, details: '', damaged: 0, waiting: 0 },
+                    { name: 'ศพฐ.5', count: 2, details: '', damaged: 0, waiting: 0 },
+                    { name: 'ศพฐ.6', count: 1, details: '', damaged: 0, waiting: 0 }
+                ]
+            },
+            deptVehicles: {
+                'บก.อก.': [
+                    { name: 'รถเก๋งเล็ก', icon: '🚗', count: 4, damaged: 0, waiting: 0, color: 'badge-red' },
+                    { name: 'รถเก๋งกลาง', icon: '🚙', count: 2, damaged: 0, waiting: 0, color: 'badge-yellow' },
+                    { name: 'กระบะ 4 ประตู\nชั้นเคลื่อน 2 ล้อ', icon: '🛻', count: 7, damaged: 0, waiting: 0, color: 'badge-orange' },
+                    { name: 'กระบะ 4 ประตู\nชั้นเคลื่อน 4 ล้อ', icon: '🚚', count: 3, damaged: 0, waiting: 0, color: 'badge-green' },
+                    { name: 'กระบะ 2 ประตู\nชั้นเคลื่อน 4 ล้อ', icon: '🚐', count: 1, damaged: 0, waiting: 0, color: 'badge-blue' },
+                    { name: 'กระบะ ไม่มี CAB\nชั้นเคลื่อน 4 ล้อ', icon: '🚛', count: 1, damaged: 0, waiting: 0, color: 'badge-purple' },
+                    { name: 'รถจักรยานยนต์', icon: '🏍️', count: 8, damaged: 0, waiting: 0, color: 'badge-teal' },
+                    { name: 'รถตู้', icon: '🚌', count: 0, damaged: 0, waiting: 0, color: 'badge-yellow' },
+                    { name: 'รถบัสใหญ่', icon: '🚎', count: 0, damaged: 0, waiting: 0, color: 'badge-purple' },
+                    { name: 'รถตรวจการณ์', icon: '🚓', count: 1, damaged: 0, waiting: 0, color: 'badge-teal' },
+                    { name: 'รถพิมพ์เกราะ', icon: '🚔', count: 0, damaged: 0, waiting: 0, color: 'badge-blue' }
+                ]
+            }
+        };
+        
+        // Theme Toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? '' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('vehicleTheme', newTheme);
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('vehicleTheme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        // Render Vehicle Grid
+        function renderVehicleGrid() {
+            const grid = document.getElementById('vehicleGrid');
+            grid.innerHTML = vehicleData.categories.map(vehicle => `
+                <div class="vehicle-card" onclick="showVehicleDetails(${vehicle.id})">
+                    <div class="vehicle-icon">${vehicle.icon}</div>
+                    <div class="vehicle-name">${vehicle.name.replace(/\n/g, '<br>')}</div>
+                    <div class="vehicle-count">${vehicle.count}</div>
+                    <div class="vehicle-status">
+                        <div class="status-item">
+                            <span class="status-label">ชำรุด</span>
+                            <span class="status-value">${vehicle.damaged}</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">รอซ่อมหน่วย</span>
+                            <span class="status-value">${vehicle.waiting}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Show Vehicle Details Modal
+        function showVehicleDetails(vehicleId) {
+            const vehicle = vehicleData.categories.find(v => v.id === vehicleId);
+            if (!vehicle) return;
+            
+            const departments = vehicleData.departments[vehicleId] || [];
+            
+            document.getElementById('modalTitle').innerHTML = `${vehicle.icon} ${vehicle.name.replace(/\n/g, ' ')} <span style="font-size: 0.8em;">${vehicle.count}</span>`;
+            
+            const deptGrid = document.getElementById('deptGrid');
+            deptGrid.innerHTML = departments.map(dept => `
+                <div class="dept-card" onclick="showDeptDetails('${dept.name}')">
+                    <div class="dept-name">${dept.name}</div>
+                    <div class="dept-vehicles">
+                        <div class="dept-vehicle-item">
+                            <span>รวม:</span>
+                            <strong style="font-size: 24px;">${dept.count}</strong>
+                        </div>
+                        ${dept.details ? `<div class="dept-vehicle-detail">${dept.details}</div>` : ''}
+                    </div>
+                    <div class="dept-status">
+                        <span>ชำรุด: ${dept.damaged}</span>
+                        <span>รอซ่อมหน่วย: ${dept.waiting}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            openModal('vehicleModal');
+        }
+        
+        // Show Department Details
+        function showDeptDetails(deptName) {
+            const vehicles = vehicleData.deptVehicles[deptName] || [];
+            
+            // First show icon view
+            showIconView(deptName, vehicles);
+        }
+        
+        // Show Icon View Modal
+        function showIconView(deptName, vehicles) {
+            closeModal('vehicleModal');
+            
+            document.getElementById('iconModalTitle').innerHTML = `🏢 ${deptName}`;
+            
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = vehicles.filter(v => v.count > 0).map(vehicle => `
+                <div class="icon-item" onclick="showDeptVehicleGrid('${deptName}')">
+                    <div class="icon-badge ${vehicle.color}">
+                        ${vehicle.icon}
+                        <div class="icon-count">${vehicle.count}</div>
+                    </div>
+                    <div class="icon-label">${vehicle.name.split('\n')[0]}</div>
+                </div>
+            `).join('');
+            
+            openModal('iconModal');
+        }
+        
+        // Show Department Vehicle Grid
+        function showDeptVehicleGrid(deptName) {
+            closeModal('iconModal');
+            
+            const vehicles = vehicleData.deptVehicles[deptName] || [];
+            
+            document.getElementById('deptModalTitle').innerHTML = `🏢 ${deptName}`;
+            
+            const grid = document.getElementById('deptVehicleGrid');
+            grid.innerHTML = vehicles.map(vehicle => `
+                <div class="vehicle-card">
+                    <div class="vehicle-icon">${vehicle.icon}</div>
+                    <div class="vehicle-name">${vehicle.name.replace(/\n/g, '<br>')}</div>
+                    <div class="vehicle-count">${vehicle.count}</div>
+                    <div class="vehicle-status">
+                        <div class="status-item">
+                            <span class="status-label">ชำรุด</span>
+                            <span class="status-value">${vehicle.damaged}</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">รอซ่อมหน่วย</span>
+                            <span class="status-value">${vehicle.waiting}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            openModal('deptModal');
+        }
+        
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // If closing dept or icon modal, reopen vehicle modal
+            if (modalId === 'deptModal' || modalId === 'iconModal') {
+                // Could add logic to go back to previous modal
+            }
+        }
+        
+        // Close modal on background click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+        
+        // Initialize
+        renderVehicleGrid();
+    </script>
+</body>
+</html>

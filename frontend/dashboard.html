@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ระบบจัดการกำลังพล</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+        
+        tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge-green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-yellow {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .filter-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-select, .search-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            font-size: 1rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-white font-bold">
+                        ตร.
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">ระบบจัดการกำลังพล</h1>
+                        <p class="text-sm text-gray-600">สำนักงานนิติวิทยาศาสตร์ กรมตำรวจ</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">ผู้ใช้: <span id="userName" class="font-semibold">-</span></span>
+                    <button onclick="handleImport()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        📥 Import Excel
+                    </button>
+                    <button onclick="handleLogout()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                        🚪 ออกจากระบบ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+        
+        <!-- Filter Section -->
+        <div class="filter-box">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex-1">
+                    <label class="block text-white font-semibold mb-2 text-lg">🔍 เลือกหน่วยงาน/สังกัด</label>
+                    <select id="sangkatFilter" class="filter-select" onchange="filterBySangkat()">
+                        <option value="all">-- ทั้งหมด --</option>
+                    </select>
+                </div>
+                <div class="text-white">
+                    <p class="text-sm opacity-90">แสดงข้อมูล</p>
+                    <p class="text-3xl font-bold" id="displayCount">0</p>
+                    <p class="text-sm opacity-90">รายการ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="stat-card bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-lg shadow-lg p-6">
+                <p class="text-blue-100 text-sm mb-2">ทั้งหมด</p>
+                <h3 class="text-5xl font-bold mb-2" id="statTotal">0</h3>
+                <p class="text-blue-100 text-lg font-semibold">100 %</p>
+            </div>
+            
+            <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6">
+                <p class="text-green-100 text-sm mb-2">คนครอง</p>
+                <h3 class="text-5xl font-bold mb-2" id="statOccupied">0</h3>
+                <p class="text-green-100 text-lg font-semibold"><span id="statOccupiedPercent">0</span> %</p>
+            </div>
+            
+            <div class="stat-card bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-lg shadow-lg p-6">
+                <p class="text-yellow-100 text-sm mb-2">ตำแหน่งว่าง</p>
+                <h3 class="text-5xl font-bold mb-2" id="statVacant">0</h3>
+                <p class="text-yellow-100 text-lg font-semibold"><span id="statVacantPercent">0</span> %</p>
+            </div>
+
+            <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
+                <p class="text-purple-100 text-sm mb-2">สัดส่วนเพศ</p>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-purple-100">ชาย</p>
+                        <h3 class="text-3xl font-bold" id="statMale">0</h3>
+                    </div>
+                    <div>
+                        <p class="text-sm text-purple-100">หญิง</p>
+                        <h3 class="text-3xl font-bold" id="statFemale">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Grid -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">📋 ตารางข้อมูลกำลังพล</h2>
+                <div class="flex items-center space-x-4">
+                    <input type="text" id="searchBox" class="search-box" placeholder="🔍 ค้นหา..." onkeyup="searchTable()">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="personnelTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ยศ</th>
+                            <th>เพศ</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>ตำแหน่ง</th>
+                            <th>สังกัด</th>
+                            <th>สถานะ</th>
+                            <th>วันบรรจุ</th>
+                            <th>วันเกษียณ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="9" class="text-center py-8">
+                                <div class="loading mx-auto"></div>
+                                <p class="text-gray-500 mt-4">กำลังโหลดข้อมูล...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-sm text-gray-600">
+                แสดง <span id="tableCount" class="font-semibold">0</span> รายการ
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let allData = [];
+        let filteredData = [];
+        let currentSangkat = 'all';
+
+        // ตรวจสอบ Authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('userName').textContent = user.full_name || user.username || '-';
+            return true;
+        }
+
+        // Logout
+        async function handleLogout() {
+            try {
+                await fetch(`${API_URL}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Import
+        function handleImport() {
+            window.location.href = 'import.html';
+        }
+
+        // โหลดข้อมูลเริ่มต้น
+        async function loadInitialData() {
+            if (!checkAuth()) return;
+
+            try {
+                // โหลดรายการสังกัด
+                const deptResponse = await fetch(`${API_URL}/personnel/departments/list`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    credentials: 'include'
+                });
+                const departments = await deptResponse.json();
+                
+                const sangkatFilter = document.getElementById('sangkatFilter');
+                if (departments.success) {
+                    departments.data.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept;
+                        option.textContent = dept;
+                        sangkatFilter.appendChild(option);
+                    });
+                }
+
+                // โหลดข้อมูล
+                await filterBySangkat();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                if (error.toString().includes('401')) {
+                    handleLogout();
+                }
+            }
+        }
+
+        // กรองตามสังกัด
+        async function filterBySangkat() {
+            const sangkat = document.getElementById('sangkatFilter').value;
+            currentSangkat = sangkat;
+
+            try {
+                const response = await fetch(`${API_URL}/personnel?department=${sangkat}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    filteredData = result.data;
+                    allData = result.data;
+                    updateTable(filteredData);
+                    document.getElementById('displayCount').textContent = filteredData.length.toLocaleString();
+                }
+
+                // อัพเดท Dashboard
+                await updateDashboard(sangkat);
+
+            } catch (error) {
+                console.error('Error filtering data:', error);
+            }
+        }
+
+        // อัพเดท Dashboard
+        async function updateDashboard(sangkat) {
+            try {
+                const response = await fetch(`${API_URL}/personnel/stats/summary?department=${sangkat}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    const stats = result.data;
+                    
+                    document.getElementById('statTotal').textContent = stats.total.toLocaleString();
+                    document.getElementById('statOccupied').textContent = stats.occupied.toLocaleString();
+                    document.getElementById('statVacant').textContent = stats.vacant.toLocaleString();
+                    document.getElementById('statOccupiedPercent').textContent = stats.occupiedPercent;
+                    document.getElementById('statVacantPercent').textContent = stats.vacantPercent;
+                    document.getElementById('statMale').textContent = stats.male.toLocaleString();
+                    document.getElementById('statFemale').textContent = stats.female.toLocaleString();
+                }
+
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+            }
+        }
+
+        // อัพเดทตาราง
+        function updateTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center py-8 text-gray-500">
+                            ไม่พบข้อมูล
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('tableCount').textContent = '0';
+                return;
+            }
+
+            tableBody.innerHTML = data.map((row, index) => {
+                const statusBadge = row.status === 'คนครอง' 
+                    ? '<span class="badge badge-green">คนครอง</span>'
+                    : '<span class="badge badge-yellow">ว่าง</span>';
+
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${row.rank || '-'}</td>
+                        <td>${row.gender || '-'}</td>
+                        <td>${row.full_name || '-'}</td>
+                        <td>${row.position || '-'}</td>
+                        <td>${row.department || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${row.hire_date || '-'}</td>
+                        <td>${row.retirement_date || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('tableCount').textContent = data.length.toLocaleString();
+        }
+
+        // ค้นหา
+        function searchTable() {
+            const searchText = document.getElementById('searchBox').value.toLowerCase();
+            
+            if (searchText === '') {
+                updateTable(allData);
+                return;
+            }
+
+            const filtered = allData.filter(row => {
+                return (
+                    (row.full_name && row.full_name.toLowerCase().includes(searchText)) ||
+                    (row.rank && row.rank.toLowerCase().includes(searchText)) ||
+                    (row.position && row.position.toLowerCase().includes(searchText)) ||
+                    (row.department && row.department.toLowerCase().includes(searchText))
+                );
+            });
+
+            updateTable(filtered);
+        }
+
+        // เริ่มต้น
+        loadInitialData();
+    </script>
+
+</body>
+</html>

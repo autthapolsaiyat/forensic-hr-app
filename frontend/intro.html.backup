@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management | 4M – สพฐ.ตร.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 90%;
+            padding: 40px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3em;
+            animation: slideDown 1s ease-out 0.2s both;
+        }
+
+        .four-m-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .m-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.6s ease-out backwards;
+        }
+
+        .m-card:nth-child(1) { animation-delay: 0.3s; }
+        .m-card:nth-child(2) { animation-delay: 0.5s; }
+        .m-card:nth-child(3) { animation-delay: 0.7s; }
+        .m-card:nth-child(4) { animation-delay: 0.9s; }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .m-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .m-card:hover::before {
+            opacity: 1;
+        }
+
+        .m-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .m-card.man {
+            border-top: 6px solid #FDB44B;
+        }
+
+        .m-card.money {
+            border-top: 6px solid #4ECDC4;
+        }
+
+        .m-card.material {
+            border-top: 6px solid #9B59B6;
+        }
+
+        .m-card.management {
+            border-top: 6px solid #E74C3C;
+        }
+
+        .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            transition: transform 0.4s;
+        }
+
+        .m-card:hover .icon-wrapper {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .man .icon-wrapper {
+            background: linear-gradient(135deg, #FDB44B, #FFD93D);
+            box-shadow: 0 10px 30px rgba(253, 180, 75, 0.4);
+        }
+
+        .money .icon-wrapper {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+        }
+
+        .material .icon-wrapper {
+            background: linear-gradient(135deg, #9B59B6, #C44569);
+            box-shadow: 0 10px 30px rgba(155, 89, 182, 0.4);
+        }
+
+        .management .icon-wrapper {
+            background: linear-gradient(135deg, #E74C3C, #D63031);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+
+        .m-card h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .m-card h3 {
+            font-size: 1.3em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .m-card p {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+            animation: none;
+        }
+
+        .cta-wrapper {
+            text-align: center;
+            margin-top: 50px;
+            animation: fadeIn 1s ease-in 1.2s both;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .four-m-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .m-card {
+                padding: 35px 25px;
+            }
+
+            .icon-wrapper {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5em;
+            }
+        }
+
+        /* Floating elements background */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-shapes">
+        <svg class="shape" width="200" height="200" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="80" fill="white"/>
+        </svg>
+        <svg class="shape" width="150" height="150" viewBox="0 0 150 150">
+            <rect x="25" y="25" width="100" height="100" fill="white"/>
+        </svg>
+        <svg class="shape" width="180" height="180" viewBox="0 0 180 180">
+            <polygon points="90,20 170,160 10,160" fill="white"/>
+        </svg>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Management | 4M</h1>
+            <p>ระบบจัดการข้อมูลกำลังพล สำนักงานนิติวิทยาศาสตร์ตำรวจ</p>
+        </div>
+
+        <div class="four-m-container">
+            <!-- Man -->
+            <div class="m-card man">
+                <div class="icon-wrapper">
+                    👨‍💼
+                </div>
+                <h2>1. Man คน</h2>
+                <h3>การพัฒนาคน</h3>
+                <p>การพัฒนาคนในการจัดการ จำเป็นอย่างยิ่งที่บุคลากรต้องมีความรู้ ความเข้าใจความสามารถ การฝึกอบรมและการพัฒนาบุคลากรอย่างสม่ำเสมอ การบริหารกำลังพลที่มีประสิทธิภาพ การจัดคนให้ถูกงานเพื่อการจัดการที่มีประสิทธิภาพสูงสุด</p>
+            </div>
+
+            <!-- Money -->
+            <div class="m-card money">
+                <div class="icon-wrapper">
+                    💰
+                </div>
+                <h2>2. Money เงิน</h2>
+                <h3>การบริหารงบประมาณ</h3>
+                <p>เงินทุนหรือทรัพย์สินที่ใช้ในการดำเนินงานทางธุรกิจ ทั้งการลงทุนในทรัพย์สินต่างๆ ที่จำเป็นในการดำเนินการต้องการเงินทุนที่เพียงพอ การจัดสรรงบประมาณการเงิน การวางแผนทางการเงิน และการควบคุมต้นทุนอย่างมีประสิทธิภาพ</p>
+            </div>
+
+            <!-- Material -->
+            <div class="m-card material">
+                <div class="icon-wrapper">
+                    📦
+                </div>
+                <h2>3. Material วัสดุ</h2>
+                <h3>การจัดการทรัพยากร</h3>
+                <p>วัสดุสนับสนุนที่ใช้ในการจัดการสำคัญต่อการผลิตและการให้บริการ ในการอำนวยความสะดวก การบริหารคลังวัสดุอุปกรณ์ การจัดซื้อ-จัดจ้าง การจัดเก็บและการกระจายทรัพยากรให้เหมาะสมกับความต้องการ การบำรุงรักษาและซ่อมบำรุงอุปกรณ์ต่างๆ เพื่อให้มีสภาพพร้อมใช้งาน</p>
+            </div>
+
+            <!-- Management -->
+            <div class="m-card management">
+                <div class="icon-wrapper">
+                    📊
+                </div>
+                <h2>4. Management การจัดการ</h2>
+                <h3>การบูรณาการข้อมูล</h3>
+                <p>ด้วยการบูรณาการเชื่อมร่วมเงื่อนทั้งสี่ด้านนี้ อัน​ได้แก่ การวางแผน​ การควบคุม​ การจัดการฐานข้อมูลอย่างครบถ้วน​ การจัดการเชิงกลยุทธ์​ การวิเคราะห์ข้อมูลเพื่อการตัดสินใจ​ การติดตามและประเมินผลอย่างต่อเนื่อง</p>
+            </div>
+        </div>
+
+        <div class="cta-wrapper">
+            <a href="summary.html" class="cta-button">
+                เข้าสู่ระบบ Dashboard →
+            </a>
+        </div>
+    </div>
+</body>
+</html>
