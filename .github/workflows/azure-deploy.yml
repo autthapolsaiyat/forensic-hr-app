@@ -37,13 +37,11 @@ jobs:
         echo "IMAGE_TAG=${TIMESTAMP}" >> $GITHUB_ENV
         docker build --no-cache --platform linux/amd64 \
           -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${TIMESTAMP} \
-          -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest \
           .
     
     - name: 📤 Push to ACR
       run: |
         docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-        docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
     
     - name: 🚀 Deploy to Azure Container Apps
       run: |
