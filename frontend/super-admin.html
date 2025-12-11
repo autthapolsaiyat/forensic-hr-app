@@ -200,6 +200,17 @@
         }
         .btn-action:hover { background: #667eea; }
 
+        /* Username badge style */
+        .username-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
         /* Bulk Actions */
         .bulk-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; align-items: center; }
         .bulk-actions button {
@@ -308,8 +319,180 @@
             margin-top: 20px;
             padding-top: 15px;
             border-top: 1px solid #3d3d5c;
+            flex-wrap: wrap;
         }
         .modal-footer button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+
+        /* Reset Password Modal - NEW */
+        .reset-password-modal .modal-content {
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .reset-password-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .reset-user-info {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .reset-user-info .username {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .reset-user-info .fullname {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .password-display {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .password-display label {
+            display: block;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .password-value {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2ecc71;
+            letter-spacing: 3px;
+            word-break: break-all;
+            padding: 10px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 8px;
+        }
+        
+        .password-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-copy:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-copy.copied {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        
+        .btn-regenerate {
+            background: #3d3d5c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-regenerate:hover {
+            background: #4d4d6c;
+        }
+        
+        .password-warning {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid #f39c12;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .password-warning h4 {
+            color: #f39c12;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .password-warning ul {
+            color: #ccc;
+            font-size: 13px;
+            margin-left: 20px;
+        }
+        
+        .password-warning li {
+            margin-bottom: 5px;
+        }
+        
+        .reset-modal-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        .btn-confirm-reset {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-confirm-reset:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-cancel-reset {
+            background: #3d3d5c;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel-reset:hover {
+            background: #4d4d6c;
+        }
 
         /* Pending Card */
         .pending-card {
@@ -566,7 +749,7 @@
     <!-- Tab: Users -->
     <div class="tab-content active" id="tab-users">
         <div class="search-bar">
-            <input type="text" id="searchUser" placeholder="🔍 ค้นหาชื่อ, ตำแหน่ง...">
+            <input type="text" id="searchUser" placeholder="🔍 ค้นหาชื่อ, Username, ตำแหน่ง...">
             <select id="filterDivision"><option value="">ทุกหน่วยงาน</option></select>
             <select id="filterStatus">
                 <option value="">ทุกสถานะ</option>
@@ -584,6 +767,7 @@
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>Username</th>
                         <th>ชื่อ-นามสกุล</th>
                         <th>หน่วยงาน</th>
                         <th>สถานะ</th>
@@ -1017,6 +1201,10 @@
             <div class="modal-body">
                 <div class="info-grid">
                     <div class="info-item">
+                        <label>Username</label>
+                        <div class="value" id="modalUsername" style="color: #667eea; font-weight: bold;">-</div>
+                    </div>
+                    <div class="info-item">
                         <label>ชื่อ-นามสกุล</label>
                         <div class="value" id="modalFullName">-</div>
                     </div>
@@ -1062,8 +1250,68 @@
                 <button class="btn-lock" onclick="modalAction('lock')">🔒 ล็อก</button>
                 <button class="btn-unlock" onclick="modalAction('unlock')">🔓 ปลดล็อก</button>
                 <button class="btn-extend" onclick="modalAction('save')">💾 บันทึก</button>
-                <button class="btn-delete" onclick="resetPassword()">🔑 รีเซ็ตรหัสผ่าน</button>
+                <button class="btn-delete" onclick="openResetPasswordModal()">🔑 รีเซ็ตรหัสผ่าน</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal - NEW -->
+    <div class="modal reset-password-modal" id="resetPasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔑 รีเซ็ตรหัสผ่าน</h2>
+                <button class="modal-close" onclick="closeResetPasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div class="reset-password-icon">🔐</div>
+                
+                <div class="reset-user-info">
+                    <div class="username" id="resetUsername">-</div>
+                    <div class="fullname" id="resetFullName">-</div>
+                </div>
+                
+                <div class="password-display">
+                    <label>🆕 รหัสผ่านใหม่</label>
+                    <div class="password-value" id="newPasswordDisplay">----------</div>
+                    <div class="password-actions">
+                        <button class="btn-copy" id="copyPasswordBtn" onclick="copyPassword()">
+                            📋 คัดลอก
+                        </button>
+                        <button class="btn-regenerate" onclick="regeneratePassword()">
+                            🔄 สุ่มใหม่
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="password-warning">
+                    <h4>⚠️ คำเตือนสำคัญ</h4>
+                    <ul>
+                        <li>กรุณาคัดลอกและบันทึกรหัสผ่านนี้ไว้ก่อนปิดหน้าต่าง</li>
+                        <li>รหัสผ่านนี้จะไม่สามารถดูได้อีกหลังจากปิดหน้าต่างนี้</li>
+                        <li>แจ้งรหัสผ่านใหม่ให้ผู้ใช้ทราบโดยช่องทางที่ปลอดภัย</li>
+                        <li>แนะนำให้ผู้ใช้เปลี่ยนรหัสผ่านหลังจากเข้าสู่ระบบครั้งแรก</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="reset-modal-footer">
+                <button class="btn-cancel-reset" onclick="closeResetPasswordModal()">❌ ยกเลิก</button>
+                <button class="btn-confirm-reset" onclick="confirmResetPassword()">✅ ยืนยันรีเซ็ต</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal" style="display:none;">
+        <div class="modal-content" style="max-width: 450px; text-align: center;">
+            <div style="font-size: 80px; margin-bottom: 20px;">✅</div>
+            <h2 style="color: #27ae60; margin-bottom: 15px;">รีเซ็ตรหัสผ่านสำเร็จ!</h2>
+            <p style="color: #888; margin-bottom: 15px;">รหัสผ่านของ</p>
+            <p style="color: #667eea; font-size: 20px; font-weight: bold; margin-bottom: 15px;" id="successUsername">-</p>
+            <p style="color: #888; margin-bottom: 25px;">ถูกเปลี่ยนเรียบร้อยแล้ว</p>
+            <button class="btn-primary" onclick="closeSuccessModal()" style="width: 100%; padding: 15px; font-size: 16px;">
+                👍 ตกลง
+            </button>
         </div>
     </div>
 
@@ -1076,8 +1324,10 @@
         let currentPage = 1;
         let logCurrentPage = 1;
         let currentUserId = null;
+        let currentUserData = null; // Store current user data for reset password
         let selectedDataType = null;
         let selectedFile = null;
+        let generatedPassword = '';
 
         // Charts
         let dailyLoginChart, divisionChart, deviceChart, hourlyChart, pagesChart;
@@ -1135,6 +1385,133 @@
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = '/login.html';
+        }
+
+        // ==================== PASSWORD GENERATOR ====================
+        function generateRandomPassword(length = 10) {
+            const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+            const lowercase = 'abcdefghjkmnpqrstuvwxyz';
+            const numbers = '23456789';
+            const special = '@#$%&*!';
+            
+            let password = '';
+            
+            // Ensure at least one of each type
+            password += uppercase[Math.floor(Math.random() * uppercase.length)];
+            password += lowercase[Math.floor(Math.random() * lowercase.length)];
+            password += numbers[Math.floor(Math.random() * numbers.length)];
+            password += special[Math.floor(Math.random() * special.length)];
+            
+            // Fill the rest
+            const allChars = uppercase + lowercase + numbers + special;
+            for (let i = password.length; i < length; i++) {
+                password += allChars[Math.floor(Math.random() * allChars.length)];
+            }
+            
+            // Shuffle the password
+            return password.split('').sort(() => Math.random() - 0.5).join('');
+        }
+
+        function openResetPasswordModal() {
+            if (!currentUserId || !currentUserData) {
+                alert('กรุณาเลือกผู้ใช้ก่อน');
+                return;
+            }
+            
+            // Generate new password
+            generatedPassword = generateRandomPassword(10);
+            
+            // Update modal content
+            document.getElementById('resetUsername').textContent = currentUserData.username || '-';
+            document.getElementById('resetFullName').textContent = 
+                `${currentUserData.rank || ''} ${currentUserData.full_name || '-'}`;
+            document.getElementById('newPasswordDisplay').textContent = generatedPassword;
+            
+            // Reset copy button state
+            const copyBtn = document.getElementById('copyPasswordBtn');
+            copyBtn.innerHTML = '📋 คัดลอก';
+            copyBtn.classList.remove('copied');
+            
+            // Show modal
+            document.getElementById('resetPasswordModal').style.display = 'block';
+        }
+
+        function closeResetPasswordModal() {
+            document.getElementById('resetPasswordModal').style.display = 'none';
+            generatedPassword = '';
+        }
+
+        function regeneratePassword() {
+            generatedPassword = generateRandomPassword(10);
+            document.getElementById('newPasswordDisplay').textContent = generatedPassword;
+            
+            // Reset copy button
+            const copyBtn = document.getElementById('copyPasswordBtn');
+            copyBtn.innerHTML = '📋 คัดลอก';
+            copyBtn.classList.remove('copied');
+        }
+
+        async function copyPassword() {
+            try {
+                await navigator.clipboard.writeText(generatedPassword);
+                
+                const copyBtn = document.getElementById('copyPasswordBtn');
+                copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = '📋 คัดลอก';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = generatedPassword;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const copyBtn = document.getElementById('copyPasswordBtn');
+                copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = '📋 คัดลอก';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }
+        }
+
+        async function confirmResetPassword() {
+            if (!currentUserId || !generatedPassword) {
+                alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+                return;
+            }
+            
+            try {
+                const result = await api(`/api/admin/users/${currentUserId}/reset-password`, 'POST', { 
+                    newPassword: generatedPassword 
+                });
+                
+                if (result && result.success) {
+                    // Close reset password modal
+                    closeResetPasswordModal();
+                    
+                    // Show success modal
+                    document.getElementById('successUsername').textContent = currentUserData.username || '-';
+                    document.getElementById('successModal').style.display = 'block';
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (result?.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Reset password error:', error);
+                alert('เกิดข้อผิดพลาดในการรีเซ็ตรหัสผ่าน');
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
         }
 
         // ==================== STATS ====================
@@ -1387,6 +1764,7 @@
                 tbody.innerHTML += `
                     <tr>
                         <td><input type="checkbox" class="user-checkbox" value="${user.id}" onchange="updateSelectedCount()"></td>
+                        <td><span class="username-badge">${user.username || '-'}</span></td>
                         <td>${user.rank || ''} ${user.full_name}</td>
                         <td>${user.division || '-'}</td>
                         <td><span class="status ${statusClass}">${statusText}</span></td>
@@ -1646,6 +2024,7 @@
                                     <div class="date">สมัครเมื่อ: ${createdAt}</div>
                                 </div>
                                 <div class="pending-card-body">
+                                    <div class="item">Username: <span style="color: #667eea; font-weight: bold;">${user.username || '-'}</span></div>
                                     <div class="item">หน่วยงาน: <span>${user.division || '-'}</span></div>
                                     <div class="item">ตำแหน่ง: <span>${user.position || '-'}</span></div>
                                     <div class="item">เบอร์โทร: <span>${user.phone || '-'}</span></div>
@@ -1729,8 +2108,10 @@
         async function openUserModal(userId) {
             currentUserId = userId;
             const user = users.find(u => u.id === userId);
+            currentUserData = user; // Store for reset password
             
             if (user) {
+                document.getElementById('modalUsername').textContent = user.username || '-';
                 document.getElementById('modalFullName').textContent = `${user.rank || ''} ${user.full_name}`;
                 document.getElementById('modalRank').textContent = user.rank || '-';
                 document.getElementById('modalPosition').textContent = user.position || '-';
@@ -1745,6 +2126,7 @@
         function closeModal() {
             document.getElementById('userModal').style.display = 'none';
             currentUserId = null;
+            currentUserData = null;
         }
 
         function addDays(days) {
@@ -1825,7 +2207,7 @@
             }
         }
 
- function previewLogo(type) {
+        function previewLogo(type) {
             // Map type to input/preview IDs
             const inputMap = {
                 'main': 'mainLogoInput',
@@ -1908,26 +2290,6 @@
         });
 
         // ==================== LOGOUT ====================
-        async function resetPassword() {
-            if (!currentUserId) return;
-            const newPassword = prompt("กรุณาใส่รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร):");
-            if (!newPassword) return;
-            if (newPassword.length < 6) {
-                alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
-                return;
-            }
-            try {
-                const result = await api(`/api/admin/users/${currentUserId}/reset-password`, 'POST', { newPassword });
-                if (result.success) {
-                    alert(`รีเซ็ตรหัสผ่านสำเร็จ!nรหัสผ่านใหม่: ${result.newPassword}`);
-                } else {
-                    alert("เกิดข้อผิดพลาด: " + result.error);
-                }
-            } catch (error) {
-                alert("เกิดข้อผิดพลาด");
-            }
-        }
-
         async function logout() {
             try { await api('/api/auth/logout', 'POST'); } catch (e) {}
             localStorage.removeItem('token');
