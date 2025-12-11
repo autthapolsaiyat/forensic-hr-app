@@ -35,7 +35,7 @@ jobs:
       run: |
         TIMESTAMP=$(date +%Y%m%d%H%M%S)
         echo "IMAGE_TAG=${TIMESTAMP}" >> $GITHUB_ENV
-        docker build --platform linux/amd64 \
+        docker build --no-cache --platform linux/amd64 \
           -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${TIMESTAMP} \
           -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest \
           .
