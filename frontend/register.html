@@ -188,6 +188,168 @@
             display: none;
         }
 
+        /* Success Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .success-modal {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #27ae60, #2ecc71, #27ae60);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 50px;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .success-modal h2 {
+            color: #27ae60;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .success-modal .message {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .contact-box {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border: 2px solid #27ae60;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .contact-box .contact-title {
+            color: #1a5c2e;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .contact-box .contact-name {
+            color: #1a3a5c;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .contact-box .contact-phone {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #27ae60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .contact-box .contact-phone:hover {
+            background: #219653;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .contact-note {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+            padding: 12px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border-left: 4px solid #f1c40f;
+        }
+
+        .btn-login {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
         @media (max-width: 600px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -195,6 +357,19 @@
             
             .register-container {
                 padding: 30px 20px;
+            }
+
+            .success-modal {
+                padding: 30px 20px;
+            }
+
+            .success-modal h2 {
+                font-size: 24px;
+            }
+
+            .contact-box .contact-phone {
+                font-size: 18px;
+                padding: 10px 20px;
             }
         }
     </style>
@@ -323,6 +498,32 @@
         </div>
     </div>
 
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="success-modal">
+            <div class="success-icon">✅</div>
+            <h2>การสมัครสมาชิกเสร็จสมบูรณ์</h2>
+            <p class="message">ระบบได้บันทึกข้อมูลของท่านเรียบร้อยแล้ว</p>
+            
+            <div class="contact-box">
+                <div class="contact-title">📞 โปรดติดต่อเพื่อดำเนินการอนุมัติสิทธิ์ผู้ใช้งาน</div>
+                <div class="contact-name">พ.ต.ต.วิวัฒน์ ศรีเกิด</div>
+                <a href="tel:0894624497" class="contact-phone">
+                    📱 089-462-4497
+                </a>
+            </div>
+            
+            <div class="contact-note">
+                ⚠️ กรุณาติดต่อผู้ดูแลระบบเพื่อขออนุมัติสิทธิ์การใช้งาน<br>
+                ก่อนจึงจะสามารถเข้าสู่ระบบได้
+            </div>
+            
+            <a href="/login.html" class="btn-login">
+                🔐 ไปหน้าเข้าสู่ระบบ
+            </a>
+        </div>
+    </div>
+
     <script>
         // Validate form
         function validateForm() {
@@ -391,6 +592,18 @@
             
             return isValid;
         }
+
+        // Show success modal
+        function showSuccessModal() {
+            document.getElementById('successModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close success modal
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
         
         // Submit form
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
@@ -429,16 +642,11 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    successMsg.textContent = '✅ สมัครสมาชิกสำเร็จ! กรุณารอผู้ดูแลระบบอนุมัติ';
-                    successMsg.style.display = 'block';
-                    
                     // Clear form
                     document.getElementById('registerForm').reset();
                     
-                    // Redirect after 3 seconds
-                    setTimeout(() => {
-                        window.location.href = '/login.html';
-                    }, 3000);
+                    // Show success modal
+                    showSuccessModal();
                 } else {
                     errorMsg.textContent = result.error;
                     errorMsg.style.display = 'block';
@@ -474,6 +682,13 @@
             } else {
                 this.classList.remove('error');
                 confirmPasswordError.style.display = 'none';
+            }
+        });
+
+        // Close modal on click outside
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                // Don't close on outside click - user must click button
             }
         });
     </script>
