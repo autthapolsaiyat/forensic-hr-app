@@ -37,14 +37,14 @@
         .logo {
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 50px;
-            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
         .logo img {
@@ -264,10 +264,13 @@
             color: #333;
         }
     </style>
-<script src="/config.js"></script></head>
+<link rel="stylesheet" href="/shared-theme.css">
+    <script src="/config.js"></script>
+    <script src="/theme.js"></script>
+</head>
 <body>
     <div class="login-container">
-        <div class="logo" id="logoContainer">🏛️</div>
+        <div class="logo" id="logoContainer"><img src="logo/logo.png" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='🏛️';"></div>
         
         <h1 id="systemName">ระบบสารสนเทศ สพฐ.ตร.</h1>
         <p class="subtitle" id="welcomeMessage">ยินดีต้อนรับเข้าสู่ระบบ</p>
