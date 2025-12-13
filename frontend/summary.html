@@ -332,7 +332,7 @@
             </div>
         </div>
         <div class="section">
-            <h3 class="section-title">🏆 Top 10 หน่วยงาน</h3>
+            <h3 class="section-title">🏆 หน่วยงานทั้งหมด (เรียงตามจำนวน)</h3>
             <div class="bar-chart" id="topChart">
                 <div class="loading">กำลังโหลด...</div>
             </div>
@@ -425,7 +425,7 @@
         }
         function displayDepartments(depts) {
             const sorted = [...depts].sort((a, b) => parseInt(b.total) - parseInt(a.total));
-            const top10 = sorted.slice(0, 10);
+            const top10 = sorted;
             const maxTotal = parseInt(top10[0]?.total) || 1;
             document.getElementById('topChart').innerHTML = top10.map(dept => {
                 const total = parseInt(dept.total) || 0;
