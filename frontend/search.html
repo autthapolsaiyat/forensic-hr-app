@@ -275,7 +275,7 @@
             if (vacancy) params.append('vacancy_status', vacancy);
             
             try {
-                const res = await fetch(`/api/search?${params}`);
+                const res = await fetch(API_BASE_URL + '/api/search?' + params);
                 const data = await res.json();
                 
                 if (data.success && data.data.length > 0) {
