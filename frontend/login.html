@@ -364,10 +364,6 @@
                         document.getElementById('footerText').textContent = settings.footer_text;
                     }
                     
-                    if (settings.login_logo) {
-                        document.getElementById('logoContainer').innerHTML = 
-                            `<img src="${settings.login_logo}" alt="Logo" onerror="this.parentElement.innerHTML='🏛️'">`;
-                    }
                 }
             } catch (error) {
                 console.error('Load settings error:', error);
