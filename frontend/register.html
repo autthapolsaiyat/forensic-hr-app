@@ -110,6 +110,65 @@
             border-color: #e74c3c;
         }
 
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #a0aec0;
+            padding: 5px;
+        }
+        
+        .toggle-password:hover {
+            color: #667eea;
+        }
+        
+        .strength-meter {
+            margin-top: 8px;
+        }
+        
+        .strength-bar {
+            height: 6px;
+            background: #2d3748;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        .strength-fill.weak { width: 25%; background: #e74c3c; }
+        .strength-fill.fair { width: 50%; background: #f39c12; }
+        .strength-fill.good { width: 75%; background: #3498db; }
+        .strength-fill.strong { width: 100%; background: #2ecc71; }
+        
+        .strength-text {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #a0aec0;
+        }
+        
+        .strength-text.weak { color: #e74c3c; }
+        .strength-text.fair { color: #f39c12; }
+        .strength-text.good { color: #3498db; }
+        .strength-text.strong { color: #2ecc71; }
+        
         .error-text {
             color: #e74c3c;
             font-size: 12px;
@@ -493,12 +552,26 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>รหัสผ่าน <span class="required">*</span></label>
-                    <input type="password" id="password" placeholder="อย่างน้อย 6 ตัวอักษร" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="อย่างน้อย 6 ตัวอักษร" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
+                    <div class="strength-meter">
+                        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                        <div class="strength-text" id="strengthText"></div>
+                    </div>
                     <div class="error-text" id="passwordError">รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร</div>
                 </div>
                 <div class="form-group">
                     <label>ยืนยันรหัสผ่าน <span class="required">*</span></label>
-                    <input type="password" id="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                            👁️
+                        </button>
+                    </div>
                     <div class="error-text" id="confirmPasswordError">รหัสผ่านไม่ตรงกัน</div>
                 </div>
             </div>
@@ -550,6 +623,60 @@
     </div>
 
     <script>
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const btn = field.parentElement.querySelector(".toggle-password");
+            if (field.type === "password") {
+                field.type = "text";
+                btn.textContent = "🙈";
+            } else {
+                field.type = "password";
+                btn.textContent = "👁️";
+            }
+        }
+        
+        // Check password strength
+        function checkStrength(password) {
+            let strength = 0;
+            const fill = document.getElementById("strengthFill");
+            const text = document.getElementById("strengthText");
+            
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            fill.className = "strength-fill";
+            text.className = "strength-text";
+            
+            if (password.length === 0) {
+                text.textContent = "";
+            } else if (strength <= 1) {
+                fill.classList.add("weak");
+                text.classList.add("weak");
+                text.textContent = "อ่อน - ควรเพิ่มความยาวหรือตัวอักษรพิเศษ";
+            } else if (strength === 2) {
+                fill.classList.add("fair");
+                text.classList.add("fair");
+                text.textContent = "พอใช้ - ควรเพิ่มตัวพิมพ์ใหญ่หรือตัวเลข";
+            } else if (strength === 3) {
+                fill.classList.add("good");
+                text.classList.add("good");
+                text.textContent = "ดี - เพิ่มตัวอักษรพิเศษจะปลอดภัยขึ้น";
+            } else {
+                fill.classList.add("strong");
+                text.classList.add("strong");
+                text.textContent = "แข็งแกร่ง ✓";
+            }
+        }
+        
+        // Add event listener for password strength
+        document.getElementById("password").addEventListener("input", function() {
+            checkStrength(this.value);
+        });
+        
         // Validate form
         function validateForm() {
             let isValid = true;
