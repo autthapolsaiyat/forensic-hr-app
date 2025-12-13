@@ -93,5 +93,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Display username after header loaded
     setTimeout(displayUsername, 100);
-    }
 });
