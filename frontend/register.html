@@ -331,6 +331,25 @@
             border-left: 4px solid #f1c40f;
         }
 
+        .countdown-box {
+            text-align: center;
+            margin: 20px 0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        .countdown-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 10px;
+            margin: 0 8px;
+            min-width: 50px;
+        }
+        
         .btn-login {
             display: inline-block;
             padding: 15px 40px;
@@ -518,6 +537,12 @@
                 ก่อนจึงจะสามารถเข้าสู่ระบบได้
             </div>
             
+            <div class="countdown-box">
+                <span>ระบบจะพาไปหน้าเข้าสู่ระบบอัตโนมัติใน</span>
+                <span class="countdown-number" id="countdown">30</span>
+                <span>วินาที</span>
+            </div>
+            
             <a href="/login.html" class="btn-login">
                 🔐 ไปหน้าเข้าสู่ระบบ
             </a>
@@ -595,6 +620,17 @@
 
         // Show success modal
         function showSuccessModal() {
+            // Start countdown
+            let seconds = 30;
+            const countdownEl = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                seconds--;
+                countdownEl.textContent = seconds;
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = '/login.html';
+                }
+            }, 1000);
             document.getElementById('successModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
