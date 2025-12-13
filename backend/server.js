@@ -35,6 +35,7 @@ const buildingRoutes = require('./routes/building.routes');
 const weaponsRoutes = require('./routes/weapons.routes');
 const authRoutes = require('./routes/auth.routes');
 const adminRoutes = require('./routes/admin.routes');
+const secondmentRoutes = require('./routes/secondment.routes');
 
 app.use('/api/statistics', statisticsRoutes);
 app.use('/api/search', searchRoutes);
@@ -46,6 +47,7 @@ app.use('/api/building', buildingRoutes);
 app.use('/api/weapons', weaponsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/secondment', secondmentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
