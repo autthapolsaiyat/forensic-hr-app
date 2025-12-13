@@ -1,0 +1,23 @@
+:root {
+    --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --bg-card: linear-gradient(145deg, #1e3a5f 0%, #0d2137 100%);
+    --bg-card-hover: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
+    --text-primary: #fff;
+    --text-secondary: #a0aec0;
+    --text-muted: #718096;
+    --progress-bg: #2d3748;
+    --header-bg: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    --card-border: rgba(255,255,255,0.1);
+    --shadow-color: rgba(0,0,0,0.3);
+}
+[data-theme="light"] {
+    --bg-primary: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+    --bg-card: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
+    --bg-card-hover: linear-gradient(145deg, #f8fafc 0%, #e8ecf0 100%);
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --progress-bg: #e2e8f0;
+    --card-border: rgba(0,0,0,0.1);
+    --shadow-color: rgba(0,0,0,0.1);
+}
