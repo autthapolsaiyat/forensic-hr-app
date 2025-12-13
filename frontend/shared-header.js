@@ -58,6 +58,7 @@ function getHeaderHTML() {
             <a href="intro.html" class="btn btn-back">← <span class="btn-text">กลับ</span></a>
             ${menuButtons}
             <button class="btn btn-export" onclick="typeof exportExcel === 'function' ? exportExcel() : alert('กำลังพัฒนา...')">📥 <span class="btn-text">Export</span></button>
+            <button class="btn btn-danger" onclick="logout()" title="ออกจากระบบ">🚪 <span class="btn-text">Logout</span></button>
         </div>
     </header>
     `;
