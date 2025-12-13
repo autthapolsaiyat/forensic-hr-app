@@ -55,7 +55,7 @@ function getHeaderHTML() {
         </div>
         <div class="header-buttons">
             <button class="btn btn-theme" onclick="toggleTheme()" title="สลับธีม">🌓</button>
-            <a href="dashboard.html" class="btn btn-back">← <span class="btn-text">กลับ</span></a>
+            <a href="intro.html" class="btn btn-back">← <span class="btn-text">กลับ</span></a>
             ${menuButtons}
             <button class="btn btn-export" onclick="typeof exportExcel === 'function' ? exportExcel() : alert('กำลังพัฒนา...')">📥 <span class="btn-text">Export</span></button>
         </div>
