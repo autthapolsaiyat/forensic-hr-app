@@ -72,7 +72,8 @@ function getHeaderHTML() {
             <button class="btn btn-theme" onclick="toggleTheme()" title="สลับธีม">🌓</button>
             <a href="intro.html" class="btn btn-back">← <span class="btn-text">กลับ</span></a>
             ${menuButtons}
-            <button class="btn btn-export" onclick="typeof exportExcel === 'function' ? exportExcel() : alert('กำลังพัฒนา...')">📥 <span class="btn-text">Export</span></button>
+            <button class="btn btn-export" onclick="typeof exportExcel === 'function' ? exportExcel() : alert('กรุณาติดต่อ พล.ต.ต. เชิดพงษ์ ชิวปรีชา
+โทร 086-903-6666')">📥 <span class="btn-text">Export</span></button>
             <span class="user-info" id="userDisplay"></span>
             <button class="btn btn-danger" onclick="logout()" title="ออกจากระบบ">🚪 <span class="btn-text">Logout</span></button>
         </div>
