@@ -318,7 +318,7 @@
             `;
             
             try {
-                const vacRes = await fetch(`/api/statistics/vacancies/${encodeURIComponent(dept.name)}`);
+                const vacRes = await fetch(API_BASE_URL + '/api/statistics/vacancies/' + encodeURIComponent(dept.name));
                 const vacResult = await vacRes.json();
                 let vacanciesHtml = '';
                 
