@@ -1,16 +1,46 @@
 // Shared Header Component - สพฐ.ตร.
+// Auto-inject header when page loads
 
-function renderHeader(activePage) {
-    const pages = [
+// Theme Functions
+function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+}
+
+// Load saved theme immediately
+(function() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+})();
+
+// Get current page for menu highlight
+function getCurrentPage() {
+    const path = window.location.pathname;
+    if (path.includes('summary')) return 'summary';
+    if (path.includes('organization')) return 'org';
+    if (path.includes('search')) return 'search';
+    if (path.includes('map')) return 'map';
+    if (path.includes('department')) return 'dept';
+    return '';
+}
+
+// Render header HTML
+function getHeaderHTML() {
+    const activePage = getCurrentPage();
+    
+    const menuItems = [
         { id: 'summary', href: 'summary.html', icon: '📊', text: 'สรุป', class: 'btn-summary' },
         { id: 'org', href: 'organization.html', icon: '🏗️', text: 'โครงสร้าง', class: 'btn-org' },
         { id: 'search', href: 'search.html', icon: '🔍', text: 'ค้นหา', class: 'btn-search' },
         { id: 'map', href: 'map.html', icon: '🗺️', text: 'แผนที่', class: 'btn-map' },
     ];
 
-    const menuButtons = pages.map(page => {
-        const isActive = page.id === activePage ? 'active' : '';
-        return `<a href="${page.href}" class="btn ${page.class} ${isActive}">${page.icon} <span class="btn-text">${page.text}</span></a>`;
+    const menuButtons = menuItems.map(item => {
+        const isActive = item.id === activePage ? 'active' : '';
+        return `<a href="${item.href}" class="btn ${item.class} ${isActive}">${item.icon} <span class="btn-text">${item.text}</span></a>`;
     }).join('');
 
     return `
@@ -27,23 +57,21 @@ function renderHeader(activePage) {
             <button class="btn btn-theme" onclick="toggleTheme()" title="สลับธีม">🌓</button>
             <a href="dashboard.html" class="btn btn-back">← <span class="btn-text">กลับ</span></a>
             ${menuButtons}
-            <button class="btn btn-export" onclick="exportExcel ? exportExcel() : alert('กำลังพัฒนา...')">📥 <span class="btn-text">Export</span></button>
+            <button class="btn btn-export" onclick="typeof exportExcel === 'function' ? exportExcel() : alert('กำลังพัฒนา...')">📥 <span class="btn-text">Export</span></button>
         </div>
     </header>
     `;
 }
 
-// Theme Functions
-function toggleTheme() {
-    const html = document.documentElement;
-    const current = html.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-}
-
-// Load saved theme immediately
-(function() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-})();
+// Auto-inject header
+document.addEventListener('DOMContentLoaded', function() {
+    // Find existing header
+    const oldHeader = document.querySelector('.header');
+    if (oldHeader) {
+        // Replace with new header
+        oldHeader.outerHTML = getHeaderHTML();
+    } else {
+        // Insert at beginning of body
+        document.body.insertAdjacentHTML('afterbegin', getHeaderHTML());
+    }
+});
