@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db/connection');
 const authRoutes = require('./auth.routes');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const verifyToken = authRoutes.verifyToken;
 const superAdminOnly = authRoutes.superAdminOnly;
