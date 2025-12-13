@@ -236,7 +236,7 @@
             .main-content { height: calc(100vh - 220px); }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -286,7 +286,7 @@
         
         async function loadMap() {
             try {
-                const response = await fetch('/api/statistics/map');
+                const response = await fetch(API_BASE_URL + '/api/statistics/map');
                 const result = await response.json();
                 if (result.success) {
                     result.data.forEach(dept => {

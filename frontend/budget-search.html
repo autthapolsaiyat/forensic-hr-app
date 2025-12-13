@@ -305,7 +305,7 @@
             .result-header { flex-direction: column; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -446,7 +446,7 @@
 
         async function loadFilters() {
             try {
-                const divRes = await fetch('/api/budget/divisions');
+                const divRes = await fetch(API_BASE_URL + '/api/budget/divisions');
                 const divData = await divRes.json();
                 if (divData.success) {
                     const select = document.getElementById('filterDivision');
@@ -457,7 +457,7 @@
                     });
                 }
 
-                const yearRes = await fetch('/api/budget/years');
+                const yearRes = await fetch(API_BASE_URL + '/api/budget/years');
                 const yearData = await yearRes.json();
                 if (yearData.success) {
                     const select = document.getElementById('filterYear');

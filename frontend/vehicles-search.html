@@ -551,7 +551,7 @@
             }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <!-- Theme Toggle -->
     <div class="theme-toggle" onclick="toggleTheme()">
@@ -693,7 +693,7 @@
         // Load site settings
         async function loadSiteSettings() {
             try {
-                const response = await fetch('/api/settings');
+                const response = await fetch(API_BASE_URL + '/api/settings');
                 if (response.ok) {
                     const result = await response.json();
                     if (result.success && result.data) {
@@ -723,7 +723,7 @@
         // Load filter options
         async function loadFilterOptions() {
             try {
-                const response = await fetch('/api/vehicles/stats');
+                const response = await fetch(API_BASE_URL + '/api/vehicles/stats');
                 const result = await response.json();
 
                 if (result.success) {

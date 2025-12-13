@@ -264,7 +264,7 @@
             color: #333;
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="login-container">
         <div class="logo" id="logoContainer">🏛️</div>
@@ -338,7 +338,7 @@
         // Load settings
         async function loadSettings() {
             try {
-                const response = await fetch('/api/auth/settings');
+                const response = await fetch(API_BASE_URL + '/api/auth/settings');
                 const result = await response.json();
                 
                 if (result.success) {
@@ -372,7 +372,7 @@
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await fetch('/api/auth/me', {
+                    const response = await fetch(API_BASE_URL + '/api/auth/me', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     
@@ -410,7 +410,7 @@
             loading.style.display = 'inline-block';
             
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch(API_BASE_URL + '/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })

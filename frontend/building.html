@@ -384,7 +384,7 @@
             .stat-number { font-size: 36px; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -470,7 +470,7 @@
 
         async function loadData() {
             try {
-                const response = await fetch('/api/building/stats');
+                const response = await fetch(API_BASE_URL + '/api/building/stats');
                 const result = await response.json();
                 
                 if (result.success) {
@@ -640,7 +640,7 @@
             document.getElementById('modalList').innerHTML = '<div class="loading">กำลังโหลด...</div>';
 
             try {
-                const response = await fetch('/api/building/hq');
+                const response = await fetch(API_BASE_URL + '/api/building/hq');
                 const result = await response.json();
                 
                 if (result.success) {

@@ -373,7 +373,7 @@
             }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="register-container">
         <div class="header">
@@ -633,7 +633,7 @@
             };
             
             try {
-                const response = await fetch('/api/auth/register', {
+                const response = await fetch(API_BASE_URL + '/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)

@@ -303,7 +303,7 @@
             .modal-grid { grid-template-columns: 1fr; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -405,7 +405,7 @@
         async function checkSession() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/auth/me', {
+                const response = await fetch(API_BASE_URL + '/api/auth/me', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
                 if (response.status === 401) {
@@ -436,7 +436,7 @@
 
         async function loadLogo() {
             try {
-                const response = await fetch('/api/auth/settings');
+                const response = await fetch(API_BASE_URL + '/api/auth/settings');
                 const result = await response.json();
                 if (result.success && result.data.weapons_logo) {
                     document.getElementById('pageLogo').innerHTML = `<img src="${result.data.weapons_logo}" alt="Logo">`;
@@ -449,7 +449,7 @@
 
         async function loadData() {
             try {
-                const response = await fetch('/api/weapons/subcategories');
+                const response = await fetch(API_BASE_URL + '/api/weapons/subcategories');
                 const result = await response.json();
                 
                 if (result.success) {

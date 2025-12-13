@@ -523,7 +523,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <!-- Header with Theme Toggle -->
@@ -723,7 +723,7 @@
         // Load years
         async function loadAvailableYears() {
             try {
-                const response = await fetch('/api/equipment/years');
+                const response = await fetch(API_BASE_URL + '/api/equipment/years');
                 const result = await response.json();
                 if (result.success) {
                     const yearStart = document.getElementById('yearStart');

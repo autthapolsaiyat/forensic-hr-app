@@ -193,7 +193,7 @@
             .filters { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -239,7 +239,7 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
         
         async function loadFilters() {
-            const res = await fetch('/api/statistics/departments');
+            const res = await fetch(API_BASE_URL + '/api/statistics/departments');
             const data = await res.json();
             if (data.success) {
                 const select = document.getElementById('filterHQ');

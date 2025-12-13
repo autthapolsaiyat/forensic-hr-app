@@ -245,7 +245,7 @@
             .results-grid { grid-template-columns: 1fr; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -327,7 +327,7 @@
         async function loadFilters() {
             try {
                 // Load subcategories
-                const subRes = await fetch('/api/weapons/subcategories');
+                const subRes = await fetch(API_BASE_URL + '/api/weapons/subcategories');
                 const subData = await subRes.json();
                 const subSelect = document.getElementById('filterSubcategory');
                 if (subData.success) {
@@ -338,7 +338,7 @@
                 }
 
                 // Load divisions
-                const divRes = await fetch('/api/weapons/divisions');
+                const divRes = await fetch(API_BASE_URL + '/api/weapons/divisions');
                 const divData = await divRes.json();
                 const divSelect = document.getElementById('filterDivision');
                 if (divData.success) {

@@ -340,7 +340,7 @@
             .detail-grid { grid-template-columns: 1fr; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -459,7 +459,7 @@
         async function loadFilters() {
             try {
                 // Load divisions
-                const divRes = await fetch('/api/building/divisions');
+                const divRes = await fetch(API_BASE_URL + '/api/building/divisions');
                 const divData = await divRes.json();
                 const divSelect = document.getElementById('filterDivision');
                 if (divData.success) {
@@ -469,7 +469,7 @@
                 }
 
                 // Load provinces
-                const provRes = await fetch('/api/building/provinces');
+                const provRes = await fetch(API_BASE_URL + '/api/building/provinces');
                 const provData = await provRes.json();
                 const provSelect = document.getElementById('filterProvince');
                 if (provData.success) {

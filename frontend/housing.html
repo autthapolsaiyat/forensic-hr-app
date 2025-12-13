@@ -304,7 +304,7 @@
             .division-grid { grid-template-columns: 1fr; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -409,7 +409,7 @@
 
         async function loadYears() {
             try {
-                const response = await fetch('/api/housing/years');
+                const response = await fetch(API_BASE_URL + '/api/housing/years');
                 const result = await response.json();
                 if (result.success) {
                     const yearStart = document.getElementById('yearStart');

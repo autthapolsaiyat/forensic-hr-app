@@ -406,7 +406,7 @@
             .results-grid { grid-template-columns: 1fr; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <!-- Header -->
@@ -533,7 +533,7 @@
         async function loadFilters() {
             try {
                 // Load divisions
-                const divRes = await fetch('/api/housing/divisions');
+                const divRes = await fetch(API_BASE_URL + '/api/housing/divisions');
                 const divData = await divRes.json();
                 if (divData.success) {
                     const select = document.getElementById('filterDivision');
@@ -543,7 +543,7 @@
                 }
 
                 // Load types
-                const typeRes = await fetch('/api/housing/types');
+                const typeRes = await fetch(API_BASE_URL + '/api/housing/types');
                 const typeData = await typeRes.json();
                 if (typeData.success) {
                     const select = document.getElementById('filterType');
@@ -553,7 +553,7 @@
                 }
 
                 // Load years
-                const yearRes = await fetch('/api/housing/years');
+                const yearRes = await fetch(API_BASE_URL + '/api/housing/years');
                 const yearData = await yearRes.json();
                 if (yearData.success) {
                     const select = document.getElementById('filterYear');

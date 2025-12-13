@@ -493,7 +493,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <!-- Header -->
@@ -627,7 +627,7 @@
         // Load all data
         async function loadAllData() {
             try {
-                const response = await fetch('/api/vehicles/stats');
+                const response = await fetch(API_BASE_URL + '/api/vehicles/stats');
                 const result = await response.json();
 
                 if (result.success) {

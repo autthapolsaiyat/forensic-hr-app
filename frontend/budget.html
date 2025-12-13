@@ -428,7 +428,7 @@
             .modal-content { margin: 5% auto; padding: 20px; }
         }
     </style>
-</head>
+<script src="/config.js"></script></head>
 <body>
     <div class="container">
         <div class="header">
@@ -537,7 +537,7 @@
 
         async function loadYears() {
             try {
-                const response = await fetch('/api/budget/years');
+                const response = await fetch(API_BASE_URL + '/api/budget/years');
                 const result = await response.json();
                 if (result.success) {
                     const yearStart = document.getElementById('yearStart');
@@ -828,7 +828,7 @@
             );
             // Override to filter pending
             setTimeout(async () => {
-                const response = await fetch('/api/budget?limit=100');
+                const response = await fetch(API_BASE_URL + '/api/budget?limit=100');
                 const result = await response.json();
                 if (result.success) {
                     const pendingData = result.data.filter(d => d.status_group !== 'signed');
@@ -869,7 +869,7 @@
             document.getElementById('modalSummary').innerHTML = 'กำลังโหลด...';
             document.getElementById('modalList').innerHTML = '<div class="loading">กำลังโหลดข้อมูล...</div>';
 
-            fetch('/api/budget?limit=100')
+            fetch(API_BASE_URL + '/api/budget?limit=100')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
