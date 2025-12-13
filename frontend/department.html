@@ -14,25 +14,25 @@
             --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             --bg-gradient-mid: #16213e;
             --bg-gradient-end: #1e3a5f;
-            --card-bg: rgba(255,255,255,0.15);
+            --card-bg: linear-gradient(145deg, #1e3a5f 0%, #0d2137 100%);
             --card-border: rgba(255,255,255,0.3);
-            --text-color: white;
+            --text-primary: white;
             --shadow-color: rgba(0,0,0,0.3);
             --footer-text: rgba(255,255,255,0.7);
         }
         [data-theme="light"] {
-            --bg-gradient-start: #f5f7fa;
+            --bg-primary: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
             --bg-gradient-mid: #e4e8ed;
             --bg-gradient-end: #f0f4f8;
-            --card-bg: rgba(255,255,255,0.9);
+            --card-bg: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
             --card-border: rgba(0,0,0,0.1);
-            --text-color: #1e3c72;
+            --text-primary: #1e3c72;
             --shadow-color: rgba(0,0,0,0.1);
             --footer-text: rgba(30,60,114,0.7);
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Sarabun', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            background: var(--bg-primary);
             min-height: 100vh;
             padding: 10px;
             padding-bottom: 80px;
@@ -66,7 +66,7 @@
             flex-shrink: 0;
         }
         .header-title { flex: 1; text-align: center; min-width: 150px; }
-        .header-title h1 { font-size: clamp(18px, 4vw, 36px); color: var(--text-color); font-weight: bold; }
+        .header-title h1 { font-size: clamp(18px, 4vw, 36px); color: var(--text-primary); font-weight: bold; }
         .header-actions {
             display: flex;
             gap: 10px;
@@ -76,7 +76,7 @@
         .theme-toggle {
             background: var(--card-bg);
             border: 2px solid var(--card-border);
-            color: var(--text-color);
+            color: var(--text-primary);
             padding: 10px 15px;
             border-radius: 50px;
             cursor: pointer;
@@ -127,8 +127,8 @@
             text-align: center;
         }
         .stat-icon { font-size: clamp(28px, 5vw, 42px); margin-bottom: 8px; }
-        .stat-label { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-color); opacity: 0.9; margin-bottom: 8px; }
-        .stat-value { font-size: clamp(24px, 5vw, 48px); font-weight: bold; color: var(--text-color); text-shadow: 0 2px 10px var(--shadow-color); }
+        .stat-label { font-size: clamp(14px, 2.5vw, 18px); color: var(--text-primary); opacity: 0.9; margin-bottom: 8px; }
+        .stat-value { font-size: clamp(24px, 5vw, 48px); font-weight: bold; color: var(--text-primary); text-shadow: 0 2px 10px var(--shadow-color); }
         
         .section {
             background: var(--card-bg);
@@ -141,7 +141,7 @@
         }
         .section h2 {
             font-size: clamp(24px, 4vw, 32px);
-            color: var(--text-color);
+            color: var(--text-primary);
             margin-bottom: 20px;
             text-align: center;
         }
@@ -164,7 +164,7 @@
         .dept-name {
             font-size: clamp(16px, 2.5vw, 20px);
             font-weight: bold;
-            color: var(--text-color);
+            color: var(--text-primary);
             margin-bottom: 8px;
             word-break: break-word;
         }
@@ -172,7 +172,7 @@
             display: flex;
             justify-content: space-between;
             font-size: clamp(13px, 2vw, 15px);
-            color: var(--text-color);
+            color: var(--text-primary);
             opacity: 0.9;
             gap: 5px;
             flex-wrap: wrap;
@@ -180,7 +180,7 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--text-color);
+            color: var(--text-primary);
             font-size: clamp(16px, 3vw, 20px);
         }
         
@@ -199,7 +199,7 @@
             margin-top: 30px;
         }
         .site-footer div { margin: 5px 0; }
-        .site-footer strong { color: var(--text-color); }
+        .site-footer strong { color: var(--text-primary); }
         
         @media (min-width: 768px) {
             body { padding: 20px; padding-bottom: 100px; }
