@@ -296,7 +296,7 @@
     </div>
     
     <script>
-        const API_BASE = window.location.protocol + '//' + window.location.host + '/api';
+        const API_BASE = API_BASE_URL + '/api';
         
         function toggleTheme() {
             const html = document.documentElement;
@@ -324,7 +324,7 @@
         
         async function loadData(name) {
             try {
-                const response = await fetch(`${API_BASE}/statistics/department/${encodeURIComponent(name)}`);
+                const response = await fetch(API_BASE + '/statistics/department/' + encodeURIComponent(name));
                 const result = await response.json();
                 
                 if (result.success) {
