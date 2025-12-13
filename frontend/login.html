@@ -373,7 +373,7 @@
             if (token) {
                 try {
                     const response = await fetch(API_BASE_URL + '/api/auth/me', {
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        credentials: 'include', headers: { 'Authorization': `Bearer ${token}` }
                     });
                     
                     if (response.ok) {
@@ -412,7 +412,7 @@
             try {
                 const response = await fetch(API_BASE_URL + '/api/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
                 
