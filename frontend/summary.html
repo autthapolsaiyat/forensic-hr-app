@@ -639,8 +639,8 @@
         async function loadData() {
             try {
                 const [summaryRes, deptsRes] = await Promise.all([
-                    fetch(`${API_BASE}/statistics/summary)`),
-                    fetch(`${API_BASE}/statistics/departments)`)
+			fetch(`${API_BASE}/statistics/summary`),
+			fetch(`${API_BASE}/statistics/departments`)
                 ]);
                 
                 const summary = await summaryRes.json();
