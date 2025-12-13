@@ -83,6 +83,27 @@
         .input-wrapper {
             position: relative;
         }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #a0aec0;
+            padding: 5px;
+        }
+        
+        .toggle-password:hover {
+            color: #667eea;
+        }
+        
+        .input-wrapper-old {
+            position: relative;
+        }
 
         .input-wrapper .icon {
             position: absolute;
@@ -296,6 +317,7 @@
                 <div class="input-wrapper">
                     <span class="icon">🔒</span>
                     <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="toggleLoginPassword()">👁️</button>
                 </div>
             </div>
             
@@ -340,6 +362,18 @@
     </div>
 
     <script>
+        // Toggle password visibility
+        function toggleLoginPassword() {
+            const field = document.getElementById("password");
+            const btn = document.querySelector(".toggle-password");
+            if (field.type === "password") {
+                field.type = "text";
+                btn.textContent = "🙈";
+            } else {
+                field.type = "password";
+                btn.textContent = "👁️";
+            }
+        }
         let settings = {};
         
         // Load settings

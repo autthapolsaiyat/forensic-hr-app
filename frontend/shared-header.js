@@ -15,6 +15,21 @@ function toggleTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
 })();
+// Get current user from localStorage
+function getCurrentUser() {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
+}
+
+// Display username in header
+function displayUsername() {
+    const user = getCurrentUser();
+    const userDisplay = document.getElementById("userDisplay");
+    if (user && userDisplay) {
+        userDisplay.textContent = user.full_name || user.username || "ผู้ใช้งาน";
+    }
+}
+
 
 // Get current page for menu highlight
 function getCurrentPage() {
@@ -58,6 +73,7 @@ function getHeaderHTML() {
             <a href="intro.html" class="btn btn-back">← <span class="btn-text">กลับ</span></a>
             ${menuButtons}
             <button class="btn btn-export" onclick="typeof exportExcel === 'function' ? exportExcel() : alert('กำลังพัฒนา...')">📥 <span class="btn-text">Export</span></button>
+            <span class="user-info" id="userDisplay"></span>
             <button class="btn btn-danger" onclick="logout()" title="ออกจากระบบ">🚪 <span class="btn-text">Logout</span></button>
         </div>
     </header>
@@ -74,5 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         // Insert at beginning of body
         document.body.insertAdjacentHTML('afterbegin', getHeaderHTML());
+    }
+    // Display username after header loaded
+    setTimeout(displayUsername, 100);
     }
 });

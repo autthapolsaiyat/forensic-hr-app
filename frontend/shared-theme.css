@@ -116,6 +116,21 @@ body {
     color: white;
 }
 
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.15);
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 0.9em;
+}
+
+.user-info::before {
+    content: "👤";
+}
+
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
