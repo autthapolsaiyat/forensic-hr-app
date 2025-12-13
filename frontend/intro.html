@@ -570,7 +570,7 @@
         async function checkSession() {
             try {
                 const response = await fetch("/api/auth/me", {
-                    credentials: 'include', headers: { "Authorization": "Bearer " + token }
+                    headers: { "Authorization": "Bearer " + token }
                 });
                 if (response.status === 401) {
                     const result = await response.json();
@@ -672,7 +672,7 @@
         async function checkSession() {
             try {
                 const response = await fetch("/api/auth/me", {
-                    credentials: 'include', headers: { "Authorization": "Bearer " + token }
+                    headers: { "Authorization": "Bearer " + token }
                 });
                 if (response.status === 401) {
                     const result = await response.json();

@@ -406,7 +406,7 @@
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(API_BASE_URL + '/api/auth/me', {
-                    credentials: 'include', headers: { 'Authorization': 'Bearer ' + token }
+                    headers: { 'Authorization': 'Bearer ' + token }
                 });
                 if (response.status === 401) {
                     const result = await response.json();
