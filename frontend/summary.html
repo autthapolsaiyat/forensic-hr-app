@@ -574,7 +574,7 @@
     </div>
     
     <script>
-        const API_BASE = window.location.protocol + '//' + window.location.host + '/api';
+        const API_BASE = API_BASE_URL + '/api';
         let charts = {};
         let chartsVisible = true;
         
@@ -639,8 +639,8 @@
         async function loadData() {
             try {
                 const [summaryRes, deptsRes] = await Promise.all([
-                    fetch(`${API_BASE}/statistics/summary`),
-                    fetch(`${API_BASE}/statistics/departments`)
+                    fetch(`${API_BASE}/statistics/summary)`),
+                    fetch(`${API_BASE}/statistics/departments)`)
                 ]);
                 
                 const summary = await summaryRes.json();
