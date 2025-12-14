@@ -38,6 +38,7 @@ function getCurrentPage() {
     if (path.includes('organization')) return 'org';
     if (path.includes('search')) return 'search';
     if (path.includes('map')) return 'map';
+    if (path.includes('vehicles')) return 'vehicles';
     if (path.includes('department')) return 'dept';
     return '';
 }
@@ -49,6 +50,7 @@ function getHeaderHTML() {
     const menuItems = [
         { id: 'summary', href: 'summary.html', icon: '📊', text: 'สรุป', class: 'btn-summary' },
         { id: 'org', href: 'organization.html', icon: '🏗️', text: 'โครงสร้าง', class: 'btn-org' },
+        { id: 'vehicles', href: 'vehicles.html', icon: '🚗', text: 'ยานพาหนะ', class: 'btn-vehicles' },
         { id: 'search', href: 'search.html', icon: '🔍', text: 'ค้นหา', class: 'btn-search' },
         { id: 'map', href: 'map.html', icon: '🗺️', text: 'แผนที่', class: 'btn-map' },
     ];

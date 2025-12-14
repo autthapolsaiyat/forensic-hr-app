@@ -450,6 +450,7 @@
         }
 
         .dept-card {
+            border-left: 6px solid #667eea;
             background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
             border-radius: 12px;
             padding: 25px;
@@ -480,6 +481,22 @@
             top: -60%;
             right: -60%;
         }
+
+        .dept-card.color-0 { border-left-color: #667eea; }
+        .dept-card.color-1 { border-left-color: #48bb78; }
+        .dept-card.color-2 { border-left-color: #ed8936; }
+        .dept-card.color-3 { border-left-color: #e53e3e; }
+        .dept-card.color-4 { border-left-color: #9f7aea; }
+        .dept-card.color-5 { border-left-color: #38b2ac; }
+        .dept-card.color-6 { border-left-color: #3182ce; }
+        .dept-card.color-7 { border-left-color: #d53f8c; }
+        .dept-card.color-8 { border-left-color: #00bcd4; }
+        .dept-card.color-9 { border-left-color: #ff5722; }
+        .dept-card.color-10 { border-left-color: #607d8b; }
+        .dept-card.color-11 { border-left-color: #795548; }
+        .dept-card.color-12 { border-left-color: #8bc34a; }
+        .dept-card.color-13 { border-left-color: #ffc107; }
+        .dept-card.color-14 { border-left-color: #673ab7; }
 
         .dept-header {
             display: flex;
@@ -1005,7 +1022,7 @@
 
         <!-- Charts Header with Toggle -->
         <div class="charts-header">
-            <h2>📊 กราฟแสดงภาพรวม</h2>
+            <h2>🏆 หน่วยงานทั้งหมด (เรียงตามจำนวน)</h2>
             <button class="toggle-charts-btn" onclick="toggleCharts()">
                 <span class="toggle-icon" id="chartsToggleIcon">👁️</span>
                 <span id="chartsToggleText">ซ่อนกราฟ</span>
@@ -1015,7 +1032,7 @@
         <!-- Charts -->
         <div class="charts-section" id="chartsSection">
             <div class="chart-card">
-                <h3 class="chart-title">📈 ยานพาหนะแยกตามหน่วยงาน</h3>
+                <h3 class="chart-title">🏆 หน่วยงานทั้งหมด (เรียงตามจำนวน)</h3>
                 <canvas id="departmentChart"></canvas>
             </div>
         </div>
@@ -1329,7 +1346,7 @@
 
             depts.forEach((dept, index) => {
                 const card = document.createElement('div');
-                card.className = 'dept-card';
+                card.className = 'dept-card color-' + (index % 15);
                 card.onclick = () => showDepartmentSummary(dept.department_code);
                 
                 const total = parseInt(dept.count);
@@ -1429,13 +1446,11 @@
                     datasets: [{
                         label: 'จำนวนรถ',
                         data: allDepts.map(d => parseInt(d.count)),
-                        backgroundColor: [
-                            'rgba(102, 126, 234, 0.9)',
-                            'rgba(118, 75, 162, 0.9)',
-                            'rgba(139, 92, 246, 0.9)',
-                            'rgba(167, 139, 250, 0.9)',
-                            'rgba(196, 181, 253, 0.9)'
-                        ],
+                        backgroundColor: allDepts.map((d, i) => [
+                            '#667eea', '#48bb78', '#ed8936', '#e53e3e', '#9f7aea',
+                            '#38b2ac', '#3182ce', '#d53f8c', '#00bcd4', '#ff5722',
+                            '#607d8b', '#795548', '#8bc34a', '#ffc107', '#673ab7'
+                        ][i % 15]),
                         borderRadius: 8,
                         barThickness: 35
                     }]
