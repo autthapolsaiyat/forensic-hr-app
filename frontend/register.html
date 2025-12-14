@@ -169,6 +169,27 @@
         .strength-text.good { color: #3498db; }
         .strength-text.strong { color: #2ecc71; }
         
+        .check-status {
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .check-status.checking {
+            display: block;
+            color: #f39c12;
+        }
+        
+        .check-status.available {
+            display: block;
+            color: #2ecc71;
+        }
+        
+        .check-status.taken {
+            display: block;
+            color: #e74c3c;
+        }
+        
         .error-text {
             color: #e74c3c;
             font-size: 12px;
@@ -538,14 +559,16 @@
             
             <div class="form-group full">
                 <label>อีเมล</label>
-                <input type="email" id="email" placeholder="example@police.go.th">
+                <input type="email" id="email" placeholder="example@police.go.th" onblur="checkEmail()">
+                <div class="check-status" id="emailStatus"></div>
             </div>
             
             <div class="section-title">🔐 ข้อมูลเข้าสู่ระบบ</div>
             
             <div class="form-group">
                 <label>ชื่อผู้ใช้ <span class="required">*</span></label>
-                <input type="text" id="username" placeholder="ตัวอักษรภาษาอังกฤษและตัวเลข" required>
+                <input type="text" id="username" placeholder="ตัวอักษรภาษาอังกฤษและตัวเลข" required onblur="checkUsername()">
+                <div class="check-status" id="usernameStatus"></div>
                 <div class="error-text" id="usernameError">กรุณากรอกชื่อผู้ใช้</div>
             </div>
             
@@ -624,6 +647,69 @@
 
     <script>
         // Toggle password visibility
+
+        // Check username availability
+        async function checkUsername() {
+            const username = document.getElementById('username').value.trim();
+            const statusEl = document.getElementById('usernameStatus');
+            
+            if (!username || username.length < 3) {
+                statusEl.className = 'check-status';
+                statusEl.textContent = '';
+                return;
+            }
+            
+            statusEl.className = 'check-status checking';
+            statusEl.textContent = '⏳ กำลังตรวจสอบ...';
+            
+            try {
+                const res = await fetch(API_BASE_URL + '/api/auth/check-username/' + encodeURIComponent(username));
+                const data = await res.json();
+                
+                if (data.available) {
+                    statusEl.className = 'check-status available';
+                    statusEl.textContent = '✅ ' + data.message;
+                } else {
+                    statusEl.className = 'check-status taken';
+                    statusEl.textContent = '❌ ' + data.message;
+                }
+            } catch (err) {
+                statusEl.className = 'check-status';
+                statusEl.textContent = '';
+            }
+        }
+        
+        // Check email availability
+        async function checkEmail() {
+            const email = document.getElementById('email').value.trim();
+            const statusEl = document.getElementById('emailStatus');
+            
+            if (!email || !email.includes('@')) {
+                statusEl.className = 'check-status';
+                statusEl.textContent = '';
+                return;
+            }
+            
+            statusEl.className = 'check-status checking';
+            statusEl.textContent = '⏳ กำลังตรวจสอบ...';
+            
+            try {
+                const res = await fetch(API_BASE_URL + '/api/auth/check-email/' + encodeURIComponent(email));
+                const data = await res.json();
+                
+                if (data.available) {
+                    statusEl.className = 'check-status available';
+                    statusEl.textContent = '✅ ' + data.message;
+                } else {
+                    statusEl.className = 'check-status taken';
+                    statusEl.textContent = '❌ ' + data.message;
+                }
+            } catch (err) {
+                statusEl.className = 'check-status';
+                statusEl.textContent = '';
+            }
+        }
+
         function togglePassword(fieldId) {
             const field = document.getElementById(fieldId);
             const btn = field.parentElement.querySelector(".toggle-password");

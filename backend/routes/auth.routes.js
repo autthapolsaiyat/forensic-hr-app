@@ -401,3 +401,33 @@ router.superAdminOnly = superAdminOnly;
 router.logActivity = logActivity;
 
 module.exports = router;
+
+// Check username availability
+router.get('/check-username/:username', async (req, res) => {
+    try {
+        const { username } = req.params;
+        const result = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+        res.json({ 
+            success: true, 
+            available: result.rows.length === 0,
+            message: result.rows.length === 0 ? 'Username ใช้ได้' : 'Username นี้ถูกใช้แล้ว'
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Check email availability
+router.get('/check-email/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        res.json({ 
+            success: true, 
+            available: result.rows.length === 0,
+            message: result.rows.length === 0 ? 'Email ใช้ได้' : 'Email นี้ถูกใช้แล้ว'
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
