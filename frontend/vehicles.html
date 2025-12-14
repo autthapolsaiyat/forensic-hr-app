@@ -274,8 +274,10 @@
         }
 
         .stat-card {
+            position: relative;
             text-align: center;
-            padding: 30px 20px;
+            padding: 60px 20px 50px 20px;
+            min-height: 160px;
             border-radius: 12px;
             transition: all 0.3s ease;
         }
@@ -311,6 +313,10 @@
         }
 
         .stat-label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            text-align: left;
             font-size: 18px;
             margin-bottom: 15px;
             opacity: 0.95;
@@ -323,11 +329,19 @@
         }
 
         .stat-unit {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            text-align: right;
             font-size: 20px;
             opacity: 0.9;
         }
 
         .stat-percent {
+            position: absolute;
+            bottom: 35px;
+            right: 20px;
+            text-align: right;
             font-size: 16px;
             opacity: 0.85;
             margin-top: 5px;
@@ -524,7 +538,11 @@
             font-weight: bold;
         }
 
-        .dept-stat-label {
+        .dept.stat-label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            text-align: left;
             font-size: 12px;
             opacity: 0.8;
             margin-top: 3px;
@@ -585,6 +603,8 @@
         }
 
         .type-name {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
             font-size: 18px;
             font-weight: bold;
             color: var(--text-primary);
@@ -903,34 +923,12 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/config.js"></script></head>
+<script src="/auth-guard.js"></script>
+    <link rel="stylesheet" href="/shared-theme.css">
+    <script src="/shared-header.js"></script>
+    <script src="/config.js"></script>
+</head>
 <body>
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="themeIcon">🌙</span>
-        <span class="theme-toggle-text" id="themeText">โหมดมืด</span>
-    </div>
-
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-logo" id="headerLogo">
-                <!-- Dynamic logo - will be loaded from settings/API -->
-                <span class="fallback-icon">🏛️</span>
-            </div>
-            <div class="header-content">
-                <h1 id="headerTitle">ระบบจัดการยานพาหนะ</h1>
-                <p id="headerSubtitle">สำนักงานพิสูจน์หลักฐานตำรวจ (สพฐ.ตร.)</p>
-            </div>
-            <div class="header-nav">
-                <a href="/vehicles-search.html" class="nav-btn search-btn-nav">
-                    <span>🔍</span> ค้นหา
-                </a>
-                <a href="/" class="nav-btn">
-                    <span>🏠</span> หน้าหลัก
-                </a>
-            </div>
-        </div>
 
         <!-- Overview Statistics -->
         <div class="overview-section">
@@ -1017,11 +1015,7 @@
         <!-- Charts -->
         <div class="charts-section" id="chartsSection">
             <div class="chart-card">
-                <h3 class="chart-title">📊 สัดส่วนสถานะยานพาหนะ</h3>
-                <canvas id="statusChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h3 class="chart-title">📈 Top 5 หน่วยงานที่มีรถมากสุด</h3>
+                <h3 class="chart-title">📈 ยานพาหนะแยกตามหน่วยงาน</h3>
                 <canvas id="departmentChart"></canvas>
             </div>
         </div>
@@ -1450,81 +1444,18 @@
         // Create charts
         function createCharts(data) {
             // Status Chart - Modern Horizontal Progress Bars
-            const statusCtx = document.getElementById('statusChart').getContext('2d');
-            
-            let available = 0, damaged = 0, pending = 0, disposed = 0;
-            data.byStatus.forEach(s => {
-                if (s.status === 'ใช้งานได้') available = parseInt(s.count);
-                else if (s.status === 'ชำรุด') damaged = parseInt(s.count);
-                else if (s.status === 'รอจำหน่าย' || s.status === 'อยู่ระหว่างจำหน่าย') pending = parseInt(s.count);
-                else if (s.status === 'จำหน่าย') disposed = parseInt(s.count);
-            });
-
-            const total = data.total;
-            const availablePercent = ((available/total)*100).toFixed(1);
-            const damagedPercent = ((damaged/total)*100).toFixed(1);
-            const pendingPercent = ((pending/total)*100).toFixed(1);
-            const disposedPercent = ((disposed/total)*100).toFixed(1);
-
-            new Chart(statusCtx, {
-                type: 'bar',
-                data: {
-                    labels: [
-                        `ใช้งานได้ ${available} คัน (${availablePercent}%)`,
-                        `ชำรุด ${damaged} คัน (${damagedPercent}%)`,
-                        `รอจำหน่าย ${pending} คัน (${pendingPercent}%)`,
-                        `จำหน่าย ${disposed} คัน (${disposedPercent}%)`
-                    ],
-                    datasets: [{
-                        data: [available, damaged, pending, disposed],
-                        backgroundColor: ['#48bb78', '#f56565', '#ed8936', '#718096'],
-                        borderRadius: 8,
-                        barThickness: 40
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.x + ' คัน';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
 
             // Department Chart - Rounded Horizontal Bars
             const deptCtx = document.getElementById('departmentChart').getContext('2d');
-            const top5Depts = data.byDepartment.slice(0, 5);
+            const allDepts = data.byDepartment;
             
             new Chart(deptCtx, {
                 type: 'bar',
                 data: {
-                    labels: top5Depts.map(d => d.department_code),
+                    labels: allDepts.map(d => d.department_code),
                     datasets: [{
                         label: 'จำนวนรถ',
-                        data: top5Depts.map(d => parseInt(d.count)),
+                        data: allDepts.map(d => parseInt(d.count)),
                         backgroundColor: [
                             'rgba(102, 126, 234, 0.9)',
                             'rgba(118, 75, 162, 0.9)',
